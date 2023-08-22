@@ -9,20 +9,31 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 local geometry <const> = pd.geometry
 
--- local playerX, playerY = 200, 120
--- local playerRadius = 10
--- local playerSpeed = 3
+function setupGame()
+    pd.ui.crankIndicator:start()
 
-pd.ui.crankIndicator:start()
-createWeaponHead()
+    local backgroundImage = gfx.image.new("images/background_01")
+    if assert(backgroundImage) then
+        gfx.sprite.setBackgroundDrawingCallback(
+            function(x, y, width, height)
+                backgroundImage:draw(0, 0)
+            end
+        )
+    end
+
+    setupWeapon()
+end
+
+setupGame()
 
 function pd.update()
     gfx.clear()
     -- Update stuff every frame
+    gfx.sprite.update()
+    -- This needs to be called after the sprites are updated
     if pd.isCrankDocked() then
         pd.ui.crankIndicator:update()
     end
-    gfx.sprite.update()
     pd.timer.updateTimers()
 
     updateWeaponHead()
