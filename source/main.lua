@@ -3,7 +3,10 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/ui"
-import "weapon"
+import "gun"
+
+maxScreenWidth = 400
+maxScreenHeight = 240
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -21,7 +24,7 @@ function setupGame()
         )
     end
 
-    setupWeapon()
+    setupGun()
 end
 
 setupGame()
@@ -36,20 +39,6 @@ function pd.update()
     end
     pd.timer.updateTimers()
 
-    updateWeaponHead()
+    updateGunHead()
     pd.drawFPS(x, y)
-end
-
--- Function to rotate a point (x, y) around another point (cx, cy) by a specified angle (in radians)
-function rotatePoint(x, y, cx, cy, angle)
-    local cosAngle = math.cos(angle)
-    local sinAngle = math.sin(angle)
-    local dx = x - cx
-    local dy = y - cy
-
-    -- Calculate the new coordinates after rotation
-    local rotatedX = cx + dx * cosAngle - dy * sinAngle
-    local rotatedY = cy + dx * sinAngle + dy * cosAngle
-
-    return rotatedX, rotatedY
 end
