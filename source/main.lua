@@ -2,6 +2,7 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
+import "CoreLibs/ui"
 import "weapon"
 
 local pd <const> = playdate
@@ -12,11 +13,15 @@ local geometry <const> = pd.geometry
 -- local playerRadius = 10
 -- local playerSpeed = 3
 
+pd.ui.crankIndicator:start()
 createWeaponHead()
 
 function pd.update()
     gfx.clear()
-	-- Update stuff every frame
+    -- Update stuff every frame
+    if pd.isCrankDocked() then
+        pd.ui.crankIndicator:update()
+    end
     gfx.sprite.update()
     pd.timer.updateTimers()
 
