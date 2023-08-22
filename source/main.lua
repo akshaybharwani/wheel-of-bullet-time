@@ -3,14 +3,15 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/ui"
+import "CoreLibs/frameTimer"
 import "gun"
-
-maxScreenWidth = 400
-maxScreenHeight = 240
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local geometry <const> = pd.geometry
+
+maxScreenWidth = pd.display.getWidth()
+maxScreenHeight = pd.display.getHeight()
 
 function setupGame()
     pd.ui.crankIndicator:start()
@@ -38,7 +39,8 @@ function pd.update()
         pd.ui.crankIndicator:update()
     end
     pd.timer.updateTimers()
+    pd.frameTimer.updateTimers()
 
-    updateGunHead()
+    updateGun()
     pd.drawFPS(x, y)
 end

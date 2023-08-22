@@ -12,20 +12,29 @@ local gunBaseX, gunBaseY = nil, nil
 local gunVacuumAnimationLoop = nil
 local gunShootingAnimationLoop = nil
 
-local gunHeadRotationAngle = 0
+local gunRotationAngle = 0
 
-local gunMaxAngle = 85
+local gunMaxRotationAngle = 85
 local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
 
 -- crank
-local crankShootingTicks = 10
+local lastCrankPosition = nil
+local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
+local crankChangeTimeDivisor = 10 -- this will be divided from the current FPS
 
 -- bullet
 local bulletSpeed = 16
 
 function setupGun()
+    setupCrankInputTimer()
     drawGun()
     setupGunAnimation()
+end
+
+function setupCrankInputTimer()
+    local crankTimer = pd.frameTimer.new(pd.getFPS() / crankChangeTimeDivisor)
+    crankTimer.repeats = true
+    crankTimer.updateCallback = readCrankInput
 end
 
 function drawGun()
@@ -56,24 +65,42 @@ function setupGunAnimation()
     gunVacuumAnimationLoop:setImageTable(animationImageTable)
 end
 
-function updateGunHead()
-    -- read Gun Input
+function updateGun()
+    readRotationInput()
+end
+
+function readRotationInput()
     if pd.buttonIsPressed("RIGHT") then
-        if (gunHeadRotationAngle < gunMaxAngle) then
-            gunHeadRotationAngle += gunRotationSpeed
+        if (gunRotationAngle < gunMaxRotationAngle) then
+            gunRotationAngle += gunRotationSpeed
         end
     elseif pd.buttonIsPressed("LEFT") then
-        if (gunHeadRotationAngle > -gunMaxAngle) then
-            gunHeadRotationAngle -= gunRotationSpeed
+        if (gunRotationAngle > -gunMaxRotationAngle) then
+            gunRotationAngle -= gunRotationSpeed
         end
     end
+end
 
-    local currentShootingImage = gunShootingAnimationLoop:image()
-    currentShootingImage:drawRotated(gunBaseX, gunBaseY, gunHeadRotationAngle)
-
-    -- Get Crank input
+function readCrankInput(crankTimer)
     local currentCrankPosition = pd.getCrankPosition()
+    local crankChange = pd.getCrankChange()
     local currentCrankShootingTicks = pd.getCrankTicks(crankShootingTicks)
+
+    local gunTopImage = gunShootingAnimationLoop:image()
+
+    if (currentCrankPosition ~= lastCrankPosition) then
+        if (crankChange > 0) then
+            gunTopImage = gunShootingAnimationLoop:image()
+        else
+            gunTopImage = gunVacuumAnimationLoop:image()
+        end
+        lastCrankPosition = currentCrankPosition
+    else
+        -- TODO: what to show when there is no crank change?
+    end
+
+    gunTopImage:drawRotated(gunBaseX, gunBaseY, gunRotationAngle)
+
     if (currentCrankShootingTicks == 1) then
         gunShootingAnimationLoop.paused = false
         gunVacuumAnimationLoop.paused = true
@@ -82,7 +109,7 @@ function updateGunHead()
     elseif (currentCrankShootingTicks == -1) then
         gunShootingAnimationLoop.paused = true
         gunVacuumAnimationLoop.paused = false
-        -- print("vaccum" .. tostring(currentCrankPosition))
+        -- print("vacuum" .. tostring(currentCrankPosition))
     else
         gunShootingAnimationLoop.paused = true
         gunVacuumAnimationLoop.paused = true
