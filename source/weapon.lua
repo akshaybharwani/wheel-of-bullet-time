@@ -71,8 +71,8 @@ function updateWeaponHead()
     -- Use the rotated coordinates to draw the line
     gfx.drawLine(centerX, centerY, rotatedX, rotatedY) ]]
 
-    weaponShootingAnimationLoop:draw(weaponBaseX - (weaponBaseSize / 2),
-        weaponBaseY - (weaponBaseSize / 2))
+    local currentShootingImage = weaponShootingAnimationLoop:image()
+    currentShootingImage:drawRotated(weaponBaseX, weaponBaseY, weaponHeadRotationAngle)
 
     -- Get Crank input
     local currentCrankPosition = pd.getCrankPosition()
