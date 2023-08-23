@@ -37,7 +37,7 @@ setupGame()
 
 function pd.update()
     gfx.clear()
-    pd.drawFPS(x, y)
+
     -- Update stuff every frame
     gfx.sprite.update()
     -- This needs to be called after the sprites are updated
@@ -46,6 +46,6 @@ function pd.update()
     end
     pd.timer.updateTimers()
     pd.frameTimer.updateTimers()
-
+    pd.drawFPS(x, y)
     updateGun()
 end
