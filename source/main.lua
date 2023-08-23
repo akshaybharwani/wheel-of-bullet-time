@@ -5,6 +5,7 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
 import "gun"
+import "enemy"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -16,6 +17,12 @@ maxScreenHeight = pd.display.getHeight()
 function setupGame()
     pd.ui.crankIndicator:start()
 
+    setupBackground()
+    setupGun()
+    setupEnemySpawnTimer()
+end
+
+function setupBackground()
     local backgroundImage = gfx.image.new("images/background_01")
     if assert(backgroundImage) then
         gfx.sprite.setBackgroundDrawingCallback(
@@ -24,14 +31,21 @@ function setupGame()
             end
         )
     end
+end
 
-    setupGun()
+function setupEnemySpawnTimer()
+    local enemySpawnTimer = pd.timer.new(5000)
+    enemySpawnTimer.repeats = true
+    enemySpawnTimer.timerEndedCallback = function(timer)
+        spawnEnemy()
+    end
 end
 
 setupGame()
 
 function pd.update()
     gfx.clear()
+    pd.drawFPS(x, y)
     -- Update stuff every frame
     gfx.sprite.update()
     -- This needs to be called after the sprites are updated
@@ -42,5 +56,11 @@ function pd.update()
     pd.frameTimer.updateTimers()
 
     updateGun()
-    pd.drawFPS(x, y)
+end
+
+function spawnEnemy()
+    --[[ if pd.getCrankChange() == 0 then
+        return
+    end ]]
+    local enemy = Enemy(enemyA)
 end

@@ -2,15 +2,12 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 
---#region playdate essential constants
 local pd <const> = playdate
 local gfx <const> = pd.graphics
---#endregion
 
 class("Bullet").extends(gfx.sprite)
 
-local bulletSpeed = 5
-
+local bulletSpeed = 16
 local bulletTrailDistance = 8
 
 function Bullet:init(startX, startY, angle)
@@ -33,32 +30,30 @@ function Bullet:init(startX, startY, angle)
 end
 
 function Bullet:update()
+    if pd.getCrankChange() == 0 then
+        return
+    end
 
     local nextX, nextY  = self.x + self.dx, self.y + self.dy
     local _, _, collisions, _ = self:moveWithCollisions(nextX, nextY)
     self.bulletTrailSprite:moveTo(nextX - bulletTrailDistance * math.cos(self.angleRad),
         nextY - bulletTrailDistance * math.sin(self.angleRad))
-    --[[ for i = 1, #collisions do
-        if collisions[i].other:getTag() == kLeftWallTag then
-            rightScore += 1
-            self:moveTo(screenWidth / 2, screenHeight / 2)
-            pointSound:playNote("C5", 1, 0.5)
-            return
-        elseif collisions[i].other:getTag() == kRightWallTag then
-            leftScore += 1
-            self:moveTo(screenWidth / 2, screenHeight / 2)
-            pointSound:playNote("C5", 1, 0.5)
+
+    for i = 1, #collisions do
+        local other = collisions[i].other
+        if other.type == "enemy" then
+            other:getHit()
+            self:removeBullet()
             return
         end
+    end
 
-        if collisions[i].normal.x ~= 0 then
-            bounceSound:playNote("G4", 1, 0.2)
-            self.xSpeed *= -1
-        end
+    if self.x < 0 or self.x > 400 or self.y < 0 or self.y > 240 or self.removeme then
+        self:removeBullet()
+    end
+end
 
-        if collisions[i].normal.y ~= 0 then
-            bounceSound:playNote("G4", 1, 0.2)
-            self.ySpeed *= -1
-        end
-    end ]]
+function Bullet:removeBullet()
+    self.bulletTrailSprite:remove()
+    self:remove()
 end

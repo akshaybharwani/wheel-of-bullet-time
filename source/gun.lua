@@ -13,7 +13,7 @@ local gunBaseX, gunBaseY = nil, nil
 local gunVacuumAnimationLoop = nil
 local gunShootingAnimationLoop = nil
 
-local gunRotationAngle = 0
+local gunCurrentRotationAngle = 0
 
 local gunMaxRotationAngle = 85
 local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
@@ -69,12 +69,12 @@ end
 
 function readRotationInput()
     if pd.buttonIsPressed("RIGHT") then
-        if (gunRotationAngle < gunMaxRotationAngle) then
-            gunRotationAngle += gunRotationSpeed
+        if (gunCurrentRotationAngle < gunMaxRotationAngle) then
+            gunCurrentRotationAngle += gunRotationSpeed
         end
     elseif pd.buttonIsPressed("LEFT") then
-        if (gunRotationAngle > -gunMaxRotationAngle) then
-            gunRotationAngle -= gunRotationSpeed
+        if (gunCurrentRotationAngle > -gunMaxRotationAngle) then
+            gunCurrentRotationAngle -= gunRotationSpeed
         end
     end
 end
@@ -97,12 +97,12 @@ function readCrankInput(crankTimer)
         -- TODO: what to show when there is no crank change?
     end
 
-    gunTopImage:drawRotated(gunBaseX, gunBaseY, gunRotationAngle)
+    gunTopImage:drawRotated(gunBaseX, gunBaseY, gunCurrentRotationAngle)
 
     if (currentCrankShootingTicks == 1) then
         gunShootingAnimationLoop.paused = false
         gunVacuumAnimationLoop.paused = true
-        shootBullet(gunBaseX, gunBaseY, gunRotationAngle)
+        shootBullet(gunBaseX, gunBaseY, gunCurrentRotationAngle)
         -- print("shoot" .. tostring(currentCrankPosition))
     elseif (currentCrankShootingTicks == -1) then
         gunShootingAnimationLoop.paused = true
