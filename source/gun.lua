@@ -1,5 +1,6 @@
 import "CoreLibs/crank"
 import "CoreLibs/animation"
+import "bullet"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -21,9 +22,6 @@ local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
 local lastCrankPosition = nil
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
 local crankChangeTimeDivisor = 10 -- this will be divided from the current FPS
-
--- bullet
-local bulletSpeed = 16
 
 function setupGun()
     setupCrankInputTimer()
@@ -86,7 +84,7 @@ function readCrankInput(crankTimer)
     local crankChange = pd.getCrankChange()
     local currentCrankShootingTicks = pd.getCrankTicks(crankShootingTicks)
 
-    local gunTopImage = gunShootingAnimationLoop:image()
+    local gunTopImage = gunShootingAnimationLoop:image() -- the Gun top toggles between Vacuum and
 
     if (currentCrankPosition ~= lastCrankPosition) then
         if (crankChange > 0) then
@@ -104,7 +102,7 @@ function readCrankInput(crankTimer)
     if (currentCrankShootingTicks == 1) then
         gunShootingAnimationLoop.paused = false
         gunVacuumAnimationLoop.paused = true
-        -- shoot(gunBaseX, gunBaseY, rotationAngle)
+        shootBullet(gunBaseX, gunBaseY, gunRotationAngle)
         -- print("shoot" .. tostring(currentCrankPosition))
     elseif (currentCrankShootingTicks == -1) then
         gunShootingAnimationLoop.paused = true
@@ -116,10 +114,7 @@ function readCrankInput(crankTimer)
     end
 end
 
-function shoot(x, y, angle)
-    local bulletImage = gfx.image.new("images/bullet_body")
-    assert(bulletImage)
-    local bulletSprite = gfx.sprite.new(bulletImage)
-    bulletSprite:moveTo(x, y + 1)
-    bulletSprite:add()
+function shootBullet(startX, startY, angle)
+    local bullet = Bullet(startX, startY, angle)
+    bullet:add()
 end
