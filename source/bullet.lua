@@ -9,25 +9,35 @@ local gfx <const> = pd.graphics
 
 class("Bullet").extends(gfx.sprite)
 
-local bulletSpeed = 10
+local bulletSpeed = 5
+
+local bulletTrailDistance = 8
 
 function Bullet:init(startX, startY, angle)
     Bullet.super.init(self)
 
-    -- need to subract 90 as the default angle of the gun is UP
-    local angleRad = math.rad(angle - 90)
-    self.dx = bulletSpeed * math.cos(angleRad)
-    self.dy = bulletSpeed * math.sin(angleRad)
+    -- need to subract 90 as the default angle of the gun is up
+    self.angleRad = math.rad(angle - 90)
+    self.dx = bulletSpeed * math.cos(self.angleRad)
+    self.dy = bulletSpeed * math.sin(self.angleRad)
 
-    local bulletImage = gfx.image.new("images/bullet_body")
-    self:setImage(bulletImage)
+    self:setImage(gfx.image.new("images/bullet_body"))
     self:setCollideRect(0, 0, self:getSize())
     self:moveTo(startX, startY)
+    self:add()
+
+    self.bulletTrailSprite = gfx.sprite.new(gfx.image.new("images/bullet_trail"))
+    self.bulletTrailSprite:moveTo(startX - bulletTrailDistance * math.cos(self.angleRad),
+        startY - bulletTrailDistance * math.sin(self.angleRad))
+    self.bulletTrailSprite:add()
 end
 
 function Bullet:update()
-    local _, _, collisions, _ = self:moveWithCollisions(self.x + self.dx, self.y + self.dy)
 
+    local nextX, nextY  = self.x + self.dx, self.y + self.dy
+    local _, _, collisions, _ = self:moveWithCollisions(nextX, nextY)
+    self.bulletTrailSprite:moveTo(nextX - bulletTrailDistance * math.cos(self.angleRad),
+        nextY - bulletTrailDistance * math.sin(self.angleRad))
     --[[ for i = 1, #collisions do
         if collisions[i].other:getTag() == kLeftWallTag then
             rightScore += 1

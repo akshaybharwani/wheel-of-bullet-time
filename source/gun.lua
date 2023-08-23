@@ -116,5 +116,4 @@ end
 
 function shootBullet(startX, startY, angle)
     local bullet = Bullet(startX, startY, angle)
-    bullet:add()
 end
