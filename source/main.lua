@@ -5,7 +5,7 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
 import "gun"
-import "enemy"
+import "enemySpawner"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -19,7 +19,7 @@ function setupGame()
 
     setupBackground()
     setupGun()
-    setupEnemySpawnTimer()
+    setupEnemySpawn()
 end
 
 function setupBackground()
@@ -30,14 +30,6 @@ function setupBackground()
                 backgroundImage:draw(0, 0)
             end
         )
-    end
-end
-
-function setupEnemySpawnTimer()
-    local enemySpawnTimer = pd.timer.new(5000)
-    enemySpawnTimer.repeats = true
-    enemySpawnTimer.timerEndedCallback = function(timer)
-        spawnEnemy()
     end
 end
 
@@ -56,11 +48,4 @@ function pd.update()
     pd.frameTimer.updateTimers()
 
     updateGun()
-end
-
-function spawnEnemy()
-    --[[ if pd.getCrankChange() == 0 then
-        return
-    end ]]
-    local enemy = Enemy(enemyA)
 end

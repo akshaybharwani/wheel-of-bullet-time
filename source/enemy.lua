@@ -12,13 +12,6 @@ class("Enemy").extends(gfx.sprite)
 
 local minSpeed, maxSpeed = 2, 6
 
-enemyA = {
-    hp = 1,
-    attackColliderSize = 22,
-    shieldColliderSize = 26,
-    baseImagePath = "images/enemy_a",
-    explostionImagePath = "images/enemy_explosionattack_a" }
-
 function Enemy:init(enemyType)
     Enemy.super.init(self)
 
@@ -27,10 +20,10 @@ function Enemy:init(enemyType)
     self.speed = math.random(minSpeed, maxSpeed)
 
     self:setImage(gfx.image.new(enemyType.baseImagePath))
-    self:setCollideRect(0, 0, enemyType.attackColliderSize, enemyType.attackColliderSize)
+    self:setCollideRect(0, 0, enemyType.shieldColliderSize, enemyType.shieldColliderSize)
 
     local startX = math.random(self.width / 2, maxScreenWidth - self.width / 2)
-    local startY = 0
+    local startY = self.height / 2
     self:moveTo(startX, startY)
     self:add()
 end
@@ -43,18 +36,28 @@ function Enemy:update()
     local nextX, nextY        = self.x, self.y + self.speed
     local _, _, collisions, _ = self:moveWithCollisions(nextX, nextY)
 
-    --[[ if self.x < 0 or self.x > 400 or self.y < 0 or self.y > 240 or self.removeme then
-        self:explode()
-    end ]]
+    for i = 1, #collisions do
+        local other = collisions[i].other
+        if other.type == "target" then
+            other:getHit()
+            self:explode()
+            return
+        end
+    end
 end
 
 function Enemy:getHit()
     self.hp -= 1
     if self.hp <= 0 then
-        self:explode()
+        self:shatter()
     else
-        -- make enemy blink quickly to show hit
+        -- TODO: make enemy blink quickly to show hit
     end
+end
+
+function Enemy:shatter()
+    -- TODO: create debris objects
+    self:remove()
 end
 
 function Enemy:explode()
