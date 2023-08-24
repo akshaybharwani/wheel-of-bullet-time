@@ -1,13 +1,11 @@
 import "CoreLibs/crank"
 import "CoreLibs/animation"
-import "bullet"
+import "scripts/bullet"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 -- gun
-local gunBaseSprite = nil
-local gunBaseSize = 64
 local gunBaseX, gunBaseY = nil, nil
 
 local gunVacuumAnimationLoop = nil
@@ -42,9 +40,9 @@ end
 function drawGunBase()
     local gunBaseImage = gfx.image.new("images/base")
     assert(gunBaseImage)
-    gunBaseSprite = gfx.sprite.new(gunBaseImage)
+    local gunBaseSprite = gfx.sprite.new(gunBaseImage)
     gunBaseX = maxScreenWidth / 2
-    gunBaseY = maxScreenHeight - (gunBaseSize / 2)
+    gunBaseY = maxScreenHeight - (gunBaseSprite.width / 2)
     gunBaseSprite:moveTo(gunBaseX, gunBaseY)
     gunBaseSprite:add()
 end

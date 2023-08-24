@@ -5,9 +5,6 @@ import "CoreLibs/sprites"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
-local maxScreenWidth = pd.display.getWidth()
-local maxScreenHeight = pd.display.getHeight()
-
 class("Enemy").extends(gfx.sprite)
 
 local minSpeed, maxSpeed = 2, 6

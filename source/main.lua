@@ -4,8 +4,8 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
-import "gun"
-import "enemySpawner"
+import "scripts/gun"
+import "scripts/enemySpawner"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -37,7 +37,6 @@ setupGame()
 
 function pd.update()
     gfx.clear()
-
     -- Update stuff every frame
     gfx.sprite.update()
     -- This needs to be called after the sprites are updated

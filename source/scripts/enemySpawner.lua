@@ -1,4 +1,4 @@
-import "enemy"
+import "scripts/enemy"
 
 local pd <const> = playdate
 
