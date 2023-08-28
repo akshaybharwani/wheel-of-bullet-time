@@ -47,9 +47,7 @@ end
 local function handleEnemyWave()
     if (maxEnemyRate > currentEnemyRate) then
         currentWaveDuration += enemySpawnWaitDuration
-        print(currentWaveDuration)
         if (currentWaveDuration >= oneWaveDuration) then
-            print(currentEnemyRate)
             currentEnemyRate += 1
             currentWaveDuration = 0
         end

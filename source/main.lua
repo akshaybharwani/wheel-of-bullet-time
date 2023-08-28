@@ -10,6 +10,8 @@ import "scripts/gunManager"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
+deltaTime = 0
+
 maxScreenWidth = pd.display.getWidth()
 maxScreenHeight = pd.display.getHeight()
 
@@ -35,6 +37,8 @@ end
 setupGame()
 
 function pd.update()
+    deltaTime = pd.getElapsedTime()
+    pd.resetElapsedTime()
     gfx.clear()
     -- Update stuff every frame
     gfx.sprite.update()

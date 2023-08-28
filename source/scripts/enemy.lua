@@ -30,7 +30,7 @@ function Enemy:update()
         return
     end
 
-    local nextX, nextY        = self.x, self.y + (pd.getFPS() / self.speed)
+    local nextX, nextY        = self.x, self.y + (pd.getFPS() * self.speed * deltaTime)
     local _, _, collisions, _ = self:moveWithCollisions(nextX, nextY)
 
     for i = 1, #collisions do
