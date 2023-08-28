@@ -16,6 +16,8 @@ function Enemy:init(enemyType)
     self.type = "enemy"
     self.speed = math.random(minSpeed, maxSpeed)
 
+    self.explosionSprite = gfx.sprite.new(gfx.image.new(enemyType.explosionImagePath))
+
     self:setImage(gfx.image.new(enemyType.baseImagePath))
     self:setCollideRect(0, 0, enemyType.shieldColliderSize, enemyType.shieldColliderSize)
 
@@ -26,6 +28,14 @@ function Enemy:init(enemyType)
 end
 
 function Enemy:update()
+    if self.explosionAnimator then
+        if self.explosionAnimator:ended() then
+            self:remove()
+            self.explosionSprite:remove()
+        end
+        return
+    end
+
     if pd.getCrankChange() == 0 then
         return
     end
@@ -52,6 +62,7 @@ function Enemy:getHit()
     if self.hp <= 0 then
         self:shatter()
     else
+
         -- TODO: make enemy blink quickly to show hit
     end
 end
@@ -62,6 +73,8 @@ function Enemy:shatter()
 end
 
 function Enemy:explode()
-    -- TODO: show explosion animation
-    self:remove()
+    self.explosionAnimator = gfx.animator.new(1000, 32, 0)
+    self.explosionSprite:moveTo(self.x, self.y)
+    self.explosionSprite:add()
+    self:setVisible(false)
 end

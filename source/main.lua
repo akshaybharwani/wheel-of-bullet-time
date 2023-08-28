@@ -40,7 +40,7 @@ function pd.update()
     deltaTime = pd.getElapsedTime()
     pd.resetElapsedTime()
 
-    gfx.clear()
+    -- gfx.clear()
     -- Update stuff every frame
     gfx.sprite.update()
     -- This needs to be called after the sprites are updated

@@ -13,7 +13,7 @@ local enemyA = {
     attackColliderSize = 22,
     shieldColliderSize = 26,
     baseImagePath = "images/enemy_a",
-    explostionImagePath = "images/enemy_explosionattack_a"
+    explosionImagePath = "images/enemy_explosionattack_a"
 }
 
 local enemyB = {
@@ -21,7 +21,7 @@ local enemyB = {
     attackColliderSize = 26,
     shieldColliderSize = 30,
     baseImagePath = "images/enemy_b",
-    explostionImagePath = "images/enemy_explosionattack_bc"
+    explosionImagePath = "images/enemy_explosionattack_bc"
 }
 
 local enemyC = {
@@ -29,7 +29,7 @@ local enemyC = {
     attackColliderSize = 40,
     shieldColliderSize = 46,
     baseImagePath = "images/enemy_c",
-    explostionImagePath = "images/enemy_explosionattack_bc"
+    explosionImagePath = "images/enemy_explosionattack_bc"
 }
 
 local enemies = { enemyA, enemyB, enemyC }
