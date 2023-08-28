@@ -5,7 +5,8 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
 import "scripts/gun"
-import "scripts/enemySpawner"
+import "scripts/enemyManager"
+import "scripts/recycler"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -14,12 +15,19 @@ local geometry <const> = pd.geometry
 maxScreenWidth = pd.display.getWidth()
 maxScreenHeight = pd.display.getHeight()
 
+function setupRecyclers()
+    for i = 1, 5 do
+        local recycler = Recycler()
+    end
+end
+
 function setupGame()
     pd.ui.crankIndicator:start()
 
     setupBackground()
     setupGun()
     setupEnemySpawn()
+    setupRecyclers()
 end
 
 function setupBackground()

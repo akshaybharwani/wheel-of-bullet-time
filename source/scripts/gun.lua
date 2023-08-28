@@ -12,7 +12,6 @@ local gunVacuumAnimationLoop = nil
 local gunShootingAnimationLoop = nil
 
 local gunCurrentRotationAngle = 0
-
 local gunMaxRotationAngle = 85
 local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
 

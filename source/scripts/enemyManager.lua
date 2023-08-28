@@ -2,6 +2,8 @@ import "scripts/enemy"
 
 local pd <const> = playdate
 
+local enemySpawnWaitDuration = 5000
+
 enemyA = {
     hp = 1,
     attackColliderSize = 22,
@@ -33,7 +35,7 @@ function setupEnemySpawn()
 end
 
 function setupEnemySpawnerTimer()
-    local enemySpawnTimer = pd.timer.new(5000)
+    local enemySpawnTimer = pd.timer.new(enemySpawnWaitDuration)
     enemySpawnTimer.repeats = true
     enemySpawnTimer.timerEndedCallback = function(timer)
         spawnEnemy()
