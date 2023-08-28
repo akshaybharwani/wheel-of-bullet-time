@@ -3,8 +3,12 @@ import "scripts/enemy"
 local pd <const> = playdate
 
 local enemySpawnWaitDuration = 5000
+local currentEnemyRate = 1
+local oneWaveDuration = 30000
+local currentWaveDuration = 0
+local maxEnemyRate = 6
 
-enemyA = {
+local enemyA = {
     hp = 1,
     attackColliderSize = 22,
     shieldColliderSize = 26,
@@ -12,7 +16,7 @@ enemyA = {
     explostionImagePath = "images/enemy_explosionattack_a"
 }
 
-enemyB = {
+local enemyB = {
     hp = 3,
     attackColliderSize = 26,
     shieldColliderSize = 30,
@@ -20,7 +24,7 @@ enemyB = {
     explostionImagePath = "images/enemy_explosionattack_bc"
 }
 
-enemyC = {
+local enemyC = {
     hp = 5,
     attackColliderSize = 40,
     shieldColliderSize = 46,
@@ -28,24 +32,39 @@ enemyC = {
     explostionImagePath = "images/enemy_explosionattack_bc"
 }
 
-enemies = { enemyA, enemyB, enemyC }
+local enemies = { enemyA, enemyB, enemyC }
 
-function setupEnemySpawn()
-    setupEnemySpawnerTimer()
-end
-
-function setupEnemySpawnerTimer()
-    local enemySpawnTimer = pd.timer.new(enemySpawnWaitDuration)
-    enemySpawnTimer.repeats = true
-    enemySpawnTimer.timerEndedCallback = function(timer)
-        spawnEnemy()
-    end
-end
-
-function spawnEnemy()
+local function spawnEnemies()
     --[[ if pd.getCrankChange() == 0 then
         return
     end ]]
-    local enemyToSpawn = enemies[math.random(1, #enemies)]
-    local enemy = Enemy(enemyToSpawn)
+    for i = 1, currentEnemyRate do
+        local enemyToSpawn = enemies[math.random(1, #enemies)]
+        local enemy = Enemy(enemyToSpawn)
+    end
+end
+
+local function handleEnemyWave()
+    if (maxEnemyRate > currentEnemyRate) then
+        currentWaveDuration += enemySpawnWaitDuration
+        print(currentWaveDuration)
+        if (currentWaveDuration >= oneWaveDuration) then
+            print(currentEnemyRate)
+            currentEnemyRate += 1
+            currentWaveDuration = 0
+        end
+    end
+end
+
+local function setupEnemySpawnerTimer()
+    local enemySpawnTimer = pd.timer.new(enemySpawnWaitDuration)
+    enemySpawnTimer.repeats = true
+    enemySpawnTimer.timerEndedCallback = function(timer)
+        handleEnemyWave()
+        spawnEnemies()
+    end
+end
+
+function setupEnemySpawn()
+    setupEnemySpawnerTimer()
 end

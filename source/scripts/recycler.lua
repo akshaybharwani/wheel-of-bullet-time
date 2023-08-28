@@ -11,10 +11,15 @@ local recyclerImagePath = "images/recycler"
 
 function Recycler:init(x, y)
     Recycler.super.init(self)
+    self.type = "gun-element"
 
     self:setImage(gfx.image.new(recyclerImagePath))
     self:setCollideRect(0, 0, self:getSize())
 
     self:moveTo(x, y)
     self:add()
+end
+
+function Recycler:getHit()
+
 end

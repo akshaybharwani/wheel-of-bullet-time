@@ -30,12 +30,12 @@ function Enemy:update()
         return
     end
 
-    local nextX, nextY        = self.x, self.y + self.speed
+    local nextX, nextY        = self.x, self.y + (pd.getFPS() / self.speed)
     local _, _, collisions, _ = self:moveWithCollisions(nextX, nextY)
 
     for i = 1, #collisions do
         local other = collisions[i].other
-        if other.type == "target" then
+        if other.type == "gun-element" then
             other:getHit()
             self:explode()
             return
