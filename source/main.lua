@@ -39,6 +39,7 @@ setupGame()
 function pd.update()
     deltaTime = pd.getElapsedTime()
     pd.resetElapsedTime()
+
     gfx.clear()
     -- Update stuff every frame
     gfx.sprite.update()

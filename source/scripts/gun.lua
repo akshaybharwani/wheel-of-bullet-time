@@ -13,10 +13,17 @@ local gunCurrentRotationAngle = 0
 local gunMaxRotationAngle = 85
 local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
 
+local maxFiringCooldown = 0.5
+local currentFiringCooldown = maxFiringCooldown
+
 -- crank
 local lastCrankPosition = nil
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
 local crankChangeTimeDivisor = 10 -- this will be divided from the current FPS
+
+function setFiringCooldown()
+    currentFiringCooldown = math.max(0, currentFiringCooldown - deltaTime)
+end
 
 function drawGunBase()
     local gunBaseImage = gfx.image.new("images/base")
@@ -68,28 +75,27 @@ local function readCrankInput(crankTimer)
     if (currentCrankPosition ~= lastCrankPosition) then
         if (crankChange > 0) then
             gunTopImage = gunShootingAnimationLoop:image()
+            gunShootingAnimationLoop.paused = false
+            gunVacuumAnimationLoop.paused = true
         else
             gunTopImage = gunVacuumAnimationLoop:image()
+            gunShootingAnimationLoop.paused = true
+            gunVacuumAnimationLoop.paused = false
         end
-        lastCrankPosition = currentCrankPosition
     else
-        -- TODO: what to show when there is no crank change?
+        gunShootingAnimationLoop.paused = true
+        gunVacuumAnimationLoop.paused = true
     end
-
+    lastCrankPosition = currentCrankPosition
     gunTopImage:drawRotated(gunBaseX, gunBaseY, gunCurrentRotationAngle)
 
     if (currentCrankShootingTicks == 1) then
-        gunShootingAnimationLoop.paused = false
-        gunVacuumAnimationLoop.paused = true
-        shootBullet(gunBaseX, gunBaseY, gunCurrentRotationAngle)
-        -- print("shoot" .. tostring(currentCrankPosition))
+        if (currentFiringCooldown == 0) then
+            shootBullet(gunBaseX, gunBaseY, gunCurrentRotationAngle)
+            currentFiringCooldown = maxFiringCooldown
+        end
     elseif (currentCrankShootingTicks == -1) then
-        gunShootingAnimationLoop.paused = true
-        gunVacuumAnimationLoop.paused = false
-        -- print("vacuum" .. tostring(currentCrankPosition))
-    else
-        gunShootingAnimationLoop.paused = true
-        gunVacuumAnimationLoop.paused = true
+        -- vacuum action
     end
 end
 

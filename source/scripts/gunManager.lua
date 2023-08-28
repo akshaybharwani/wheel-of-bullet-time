@@ -65,5 +65,6 @@ function setupGun()
 end
 
 function updateGun()
+    setFiringCooldown()
     readRotationInput()
 end

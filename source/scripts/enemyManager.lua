@@ -54,7 +54,7 @@ local function handleEnemyWave()
     end
 end
 
-local function setupEnemySpawnerTimer()
+local function setupEnemySpawnTimer()
     local enemySpawnTimer = pd.timer.new(enemySpawnWaitDuration)
     enemySpawnTimer.repeats = true
     enemySpawnTimer.timerEndedCallback = function(timer)
@@ -64,5 +64,6 @@ local function setupEnemySpawnerTimer()
 end
 
 function setupEnemySpawn()
-    setupEnemySpawnerTimer()
+    spawnEnemies()
+    setupEnemySpawnTimer()
 end

@@ -30,6 +30,10 @@ function Enemy:update()
         return
     end
 
+    self:move()
+end
+
+function Enemy:move()
     local nextX, nextY        = self.x, self.y + (pd.getFPS() * self.speed * deltaTime)
     local _, _, collisions, _ = self:moveWithCollisions(nextX, nextY)
 
