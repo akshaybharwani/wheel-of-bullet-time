@@ -6,8 +6,6 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 -- gun
-local gunBaseX, gunBaseY = nil, nil
-
 local gunVacuumAnimationLoop = nil
 local gunShootingAnimationLoop = nil
 
@@ -19,22 +17,6 @@ local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
 local lastCrankPosition = nil
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
 local crankChangeTimeDivisor = 10 -- this will be divided from the current FPS
-
-function setupGun()
-    setupCrankInputTimer()
-    drawGun()
-    setupGunAnimation()
-end
-
-function setupCrankInputTimer()
-    local crankTimer = pd.frameTimer.new(pd.getFPS() / crankChangeTimeDivisor)
-    crankTimer.repeats = true
-    crankTimer.updateCallback = readCrankInput
-end
-
-function drawGun()
-    drawGunBase()
-end
 
 function drawGunBase()
     local gunBaseImage = gfx.image.new("images/base")
@@ -60,10 +42,6 @@ function setupGunAnimation()
     gunVacuumAnimationLoop:setImageTable(animationImageTable)
 end
 
-function updateGun()
-    readRotationInput()
-end
-
 function readRotationInput()
     if pd.buttonIsPressed("RIGHT") then
         if (gunCurrentRotationAngle < gunMaxRotationAngle) then
@@ -76,7 +54,11 @@ function readRotationInput()
     end
 end
 
-function readCrankInput(crankTimer)
+local function shootBullet(startX, startY, angle)
+    local bullet = Bullet(startX, startY, angle)
+end
+
+local function readCrankInput(crankTimer)
     local currentCrankPosition = pd.getCrankPosition()
     local crankChange = pd.getCrankChange()
     local currentCrankShootingTicks = pd.getCrankTicks(crankShootingTicks)
@@ -111,6 +93,8 @@ function readCrankInput(crankTimer)
     end
 end
 
-function shootBullet(startX, startY, angle)
-    local bullet = Bullet(startX, startY, angle)
+function setupCrankInputTimer()
+    local crankTimer = pd.frameTimer.new(pd.getFPS() / crankChangeTimeDivisor)
+    crankTimer.repeats = true
+    crankTimer.updateCallback = readCrankInput
 end
