@@ -1,6 +1,7 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
+import "scripts/debrisManager"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -66,6 +67,10 @@ function Enemy:move()
             return
         end
     end
+
+    if self.y > maxScreenHeight then
+        self:remove()
+    end
 end
 
 function Enemy:getHit()
@@ -80,6 +85,7 @@ end
 
 function Enemy:shatter()
     -- TODO: create debris objects
+    spawnDebris(self.x, self.y)
     self:remove()
 end
 
