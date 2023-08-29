@@ -8,6 +8,8 @@ local gfx <const> = pd.graphics
 class("Enemy").extends(gfx.sprite)
 
 local minSpeed, maxSpeed = 2, 6
+local explosionDuration = 1000
+local hitDuration = 100
 
 function Enemy:init(enemyType)
     Enemy.super.init(self)
@@ -18,7 +20,16 @@ function Enemy:init(enemyType)
 
     self.explosionSprite = gfx.sprite.new(gfx.image.new(enemyType.explosionImagePath))
 
-    self:setImage(gfx.image.new(enemyType.baseImagePath))
+    self.hitAnimator = pd.timer.new(hitDuration)
+    self.hitAnimator.discardOnCompletion = false
+    self.hitAnimator:pause()
+    self.hitAnimator.timerEndedCallback = function(timer)
+        self.enemyBaseImage:setInverted(false)
+        self.isHit = false
+    end
+
+    self.enemyBaseImage = gfx.image.new(enemyType.baseImagePath)
+    self:setImage(self.enemyBaseImage)
     self:setCollideRect(0, 0, enemyType.shieldColliderSize, enemyType.shieldColliderSize)
 
     local startX = math.random(self.width / 2, maxScreenWidth - self.width / 2)
@@ -29,11 +40,11 @@ end
 
 function Enemy:update()
     if self.explosionAnimator then
-        if self.explosionAnimator:ended() then
-            self:remove()
-            self.explosionSprite:remove()
-        end
         return
+    end
+
+    if self.isHit then
+        self.enemyBaseImage:setInverted(true)
     end
 
     if pd.getCrankChange() == 0 then
@@ -62,8 +73,8 @@ function Enemy:getHit()
     if self.hp <= 0 then
         self:shatter()
     else
-
-        -- TODO: make enemy blink quickly to show hit
+        self.hitAnimator:start()
+        self.isHit = true
     end
 end
 
@@ -73,7 +84,12 @@ function Enemy:shatter()
 end
 
 function Enemy:explode()
-    self.explosionAnimator = gfx.animator.new(1000, 32, 0)
+    self.explosionAnimator = pd.timer.new(explosionDuration)
+    self.explosionAnimator.discardOnCompletion = true
+    self.explosionAnimator.timerEndedCallback = function(timer)
+        self:remove()
+        self.explosionSprite:remove()
+    end
     self.explosionSprite:moveTo(self.x, self.y)
     self.explosionSprite:add()
     self:setVisible(false)
