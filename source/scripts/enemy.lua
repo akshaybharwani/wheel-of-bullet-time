@@ -26,7 +26,6 @@ function Enemy:init(enemyType)
     self.hitAnimator:pause()
     self.hitAnimator.timerEndedCallback = function(timer)
         self.enemyBaseImage:setInverted(false)
-        self.isHit = false
     end
 
     self.enemyBaseImage = gfx.image.new(enemyType.baseImagePath)
@@ -42,10 +41,6 @@ end
 function Enemy:update()
     if self.explosionAnimator then
         return
-    end
-
-    if self.isHit then
-        self.enemyBaseImage:setInverted(true)
     end
 
     if pd.getCrankChange() == 0 then
@@ -78,6 +73,7 @@ function Enemy:getHit()
     if self.hp <= 0 then
         self:shatter()
     else
+        self.enemyBaseImage:setInverted(true)
         self.hitAnimator:start()
         self.isHit = true
     end

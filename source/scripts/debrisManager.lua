@@ -1,10 +1,13 @@
 import "scripts/debris"
 
+local pd <const> = playdate
+
 local gridSize = 64
 local debrisSize = 16
 local debrisCenter = (gridSize / 4) - (debrisSize / 2)
 
 local minDebris, maxDebris = 3, 8
+local debrisActiveDuration = 1000
 
 local quadrants = {
     {
@@ -30,15 +33,22 @@ local quadrants = {
         { 3, -3 },
         { 1, -1 },
         { -3, -1 }
-    },
+    }
 }
 
 function spawnDebris(enemyX, enemyY)
     local noOfDebrisToSpawn = math.random(minDebris, maxDebris)
+    local debris = {}
 
     local debrisSpawnPositions = getDebrisSpawnPositions(enemyX, enemyY, noOfDebrisToSpawn)
     for i = 1, noOfDebrisToSpawn do
-        local debris = Debris(debrisSpawnPositions[i][1], debrisSpawnPositions[i][2])
+        table.insert(debris, Debris(debrisSpawnPositions[i][1], debrisSpawnPositions[i][2]))
+    end
+    local activeAnimator = pd.timer.new(debrisActiveDuration)
+    activeAnimator.timerEndedCallback = function(timer)
+        for i = 1, #debris do
+            debris[i]:remove()
+        end
     end
 end
 

@@ -9,8 +9,10 @@ local gunBaseSize = 64
 gunBaseX, gunBaseY = 0, 0
 
 -- recycler
-local numOfRecyclers = 5
+local maxRecyclerCount = 5
 local recyclerSize = 32
+
+local activeRecyclers = {}
 
 local function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
     -- logic to check if it doesn't overlap gun base
@@ -49,11 +51,11 @@ end
 
 local function spawnRecyclers()
     local recyclerCenterPos = recyclerSize / 2
-    local pairs = generateRecyclerPositions(numOfRecyclers, recyclerCenterPos,
+    local pairs = generateRecyclerPositions(maxRecyclerCount, recyclerCenterPos,
         maxScreenWidth - recyclerCenterPos, maxScreenHeight - recyclerCenterPos)
 
-    for i, pair in ipairs(pairs) do
-        local recycler = Recycler(pair.x, pair.y)
+    for _, pair in ipairs(pairs) do
+        table.insert(activeRecyclers, Recycler(pair.x, pair.y))
     end
 end
 

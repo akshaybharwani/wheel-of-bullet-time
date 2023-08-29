@@ -21,5 +21,6 @@ function Recycler:init(x, y)
 end
 
 function Recycler:getHit()
-
+    -- show damaged states
+    self:remove()
 end
