@@ -30,6 +30,7 @@ function Bullet:init(startX, startY, angle)
 end
 
 function Bullet:update()
+    -- needs a global thing to check this
     if pd.getCrankChange() == 0 then
         return
     end

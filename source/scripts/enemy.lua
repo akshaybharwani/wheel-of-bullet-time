@@ -12,9 +12,10 @@ local minSpeed, maxSpeed = 2, 6
 local explosionDuration = 1000
 local hitDuration = 100
 
-function Enemy:init(enemyType)
+function Enemy:init(enemyType, debrisManager)
     Enemy.super.init(self)
 
+    self.debrisManager = debrisManager
     self.hp = enemyType.hp
     self.type = "enemy"
     self.speed = math.random(minSpeed, maxSpeed)
@@ -51,7 +52,7 @@ function Enemy:update()
 end
 
 function Enemy:move()
-    local nextX, nextY        = self.x, self.y + (pd.getFPS() * self.speed * deltaTime)
+    local nextX, nextY        = self.x, self.y + (self.speed * deltaTime)
     local _, _, collisions, _ = self:moveWithCollisions(nextX, nextY)
 
     for i = 1, #collisions do
@@ -81,7 +82,7 @@ end
 
 function Enemy:shatter()
     -- TODO: create debris objects
-    spawnDebris(self.x, self.y)
+    self.debrisManager:spawnDebris(self.x, self.y)
     self:remove()
 end
 

@@ -1,6 +1,12 @@
+import "CoreLibs/object"
+import "CoreLibs/graphics"
+import "CoreLibs/sprites"
 import "scripts/debris"
 
 local pd <const> = playdate
+local gfx <const> = pd.graphics
+
+class('DebrisManager').extends(gfx.sprite)
 
 local gridSize = 64
 local debrisSize = 16
@@ -36,11 +42,16 @@ local quadrants = {
     }
 }
 
-function spawnDebris(enemyX, enemyY)
+function DebrisManager:init()
+    DebrisManager.super.init(self)
+    self:add()
+end
+
+function DebrisManager:spawnDebris(enemyX, enemyY)
     local noOfDebrisToSpawn = math.random(minDebris, maxDebris)
     local debris = {}
 
-    local debrisSpawnPositions = getDebrisSpawnPositions(enemyX, enemyY, noOfDebrisToSpawn)
+    local debrisSpawnPositions = self:getDebrisSpawnPositions(enemyX, enemyY, noOfDebrisToSpawn)
     for i = 1, noOfDebrisToSpawn do
         table.insert(debris, Debris(debrisSpawnPositions[i][1], debrisSpawnPositions[i][2]))
     end
@@ -52,7 +63,7 @@ function spawnDebris(enemyX, enemyY)
     end
 end
 
-function getDebrisSpawnPositions(enemyX, enemyY, noOfDebrisToSpawn)
+function DebrisManager:getDebrisSpawnPositions(enemyX, enemyY, noOfDebrisToSpawn)
     local possibleDebrisPositions = {}
     for i = 1, #quadrants do
         possibleDebrisPositions[i] = {}

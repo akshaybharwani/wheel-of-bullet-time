@@ -5,41 +5,45 @@ import "scripts/bullet"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
+class("Gun").extends(gfx.sprite)
+
 -- gun
 local gunVacuumAnimationLoop = nil
 local gunShootingAnimationLoop = nil
-
-local gunCurrentRotationAngle = 0
-local gunMaxRotationAngle = 85
-local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
 
 local maxFiringCooldown = 0.5
 local currentFiringCooldown = maxFiringCooldown
 
 -- crank
 local lastCrankPosition = nil
+local angleAcuumulator = 0
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
-local crankChangeTimeDivisor = 10 -- this will be divided from the current FPS
+local crankCheckWaitDuration = 100
 
 -- vacuum
 local vacuumAreaWidth = 32
 local vacuumSprite = nil
 
-function setFiringCooldown()
+function Gun:init()
+    Gun.super.init(self)
+
+    local gunBaseImage = gfx.image.new("images/base")
+    self:setImage(gunBaseImage)
+    gunBaseX = maxScreenWidth / 2
+    gunBaseY = maxScreenHeight - (self.width / 2)
+    self:moveTo(gunBaseX, gunBaseY)
+    self:add()
+
+    self:setupVacuumArea()
+    self:setupCrankInputTimer()
+    self:setupGunAnimation()
+end
+
+function Gun:setFiringCooldown()
     currentFiringCooldown = math.max(0, currentFiringCooldown - deltaTime)
 end
 
-function drawGunBase()
-    local gunBaseImage = gfx.image.new("images/base")
-    assert(gunBaseImage)
-    local gunBaseSprite = gfx.sprite.new(gunBaseImage)
-    gunBaseX = maxScreenWidth / 2
-    gunBaseY = maxScreenHeight - (gunBaseSprite.width / 2)
-    gunBaseSprite:moveTo(gunBaseX, gunBaseY)
-    gunBaseSprite:add()
-end
-
-function setupVacuumArea()
+function Gun:setupVacuumArea()
     local vacuumImage = gfx.image.new(vacuumAreaWidth, 180)
     gfx.pushContext(vacuumImage)
         gfx.drawRect(0, 0, vacuumAreaWidth, 180)
@@ -48,7 +52,7 @@ function setupVacuumArea()
     vacuumSprite:moveTo(maxScreenWidth / 2, 120 - 32)
 end
 
-function setupGunAnimation()
+function Gun:setupGunAnimation()
     -- Gun Shooting Animation
     local animationImageTable = gfx.imagetable.new("images/gun_shooting")
     gunShootingAnimationLoop = gfx.animation.loop.new()
@@ -62,20 +66,8 @@ function setupGunAnimation()
     gunVacuumAnimationLoop:setImageTable(animationImageTable)
 end
 
-function readRotationInput()
-    if pd.buttonIsPressed("RIGHT") then
-        if (gunCurrentRotationAngle < gunMaxRotationAngle) then
-            gunCurrentRotationAngle += gunRotationSpeed
-        end
-    elseif pd.buttonIsPressed("LEFT") then
-        if (gunCurrentRotationAngle > -gunMaxRotationAngle) then
-            gunCurrentRotationAngle -= gunRotationSpeed
-        end
-    end
-end
-
 local function shootBullet(startX, startY, angle)
-    local bullet = Bullet(startX, startY, angle)
+    Bullet(startX, startY, angle)
 end
 
 local function vacuum()
@@ -125,8 +117,12 @@ local function readCrankInput(crankTimer)
     end
 end
 
-function setupCrankInputTimer()
-    local crankTimer = pd.frameTimer.new(pd.getFPS() / crankChangeTimeDivisor)
+function Gun:setupCrankInputTimer()
+    local crankTimer = pd.frameTimer.new(crankCheckWaitDuration)
     crankTimer.repeats = true
     crankTimer.updateCallback = readCrankInput
+end
+
+function Gun:update()
+    Gun:setFiringCooldown()
 end

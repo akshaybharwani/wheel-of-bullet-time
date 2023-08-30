@@ -2,22 +2,34 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "scripts/gun"
-import "scripts/recycler"
+import "scripts/recyclerManager"
 
--- gun
-local gunBaseSize = 64
+local pd <const> = playdate
+local gfx <const> = pd.graphics
+
+class('GunManager').extends(gfx.sprite)
+
+local gunMaxRotationAngle = 85
+local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
+
+-- TODO: should be a better way to maintain these variables
+gunBaseSize = 64
 gunBaseX, gunBaseY = 0, 0
+gunCurrentRotationAngle = 0
+recyclerSize = 32
 
--- recycler
-local maxRecyclerCount = 5
-local recyclerSize = 32
+function GunManager:init()
+    GunManager.super.init(self)
 
-local activeRecyclers = {}
+    Gun()
+    RecyclerManager()
+    self:add()
+end
 
-local function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
+function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
     -- logic to check if it doesn't overlap gun base
     if (x - recyclerSize / 2 <= gunEndX
-    and x + recyclerSize / 2 >= gunStartX) then
+            and x + recyclerSize / 2 >= gunStartX) then
         return true
     end
 
@@ -30,44 +42,18 @@ local function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
     return false
 end
 
-local function generateRecyclerPositions(numPairs, minX, maxX, maxY)
-    -- Why doesn't this work?
-    -- math.randomseed(os.time())
-    local gunStartX = gunBaseX - gunBaseSize / 2
-    local gunEndX = gunBaseX + gunBaseSize / 2
-    local pairs = {}
+function GunManager:update()
+    self:readRotationInput()
+end
 
-    while #pairs < numPairs do
-        local x = math.random(minX, maxX)
-        local y = maxY
-
-        if not isOverlappingGunElements(pairs, x, gunStartX, gunEndX) then
-            table.insert(pairs, { x = x, y = y })
+function GunManager:readRotationInput()
+    if pd.buttonIsPressed("RIGHT") then
+        if (gunCurrentRotationAngle < gunMaxRotationAngle) then
+            gunCurrentRotationAngle += gunRotationSpeed
+        end
+    elseif pd.buttonIsPressed("LEFT") then
+        if (gunCurrentRotationAngle > -gunMaxRotationAngle) then
+            gunCurrentRotationAngle -= gunRotationSpeed
         end
     end
-
-    return pairs
-end
-
-local function spawnRecyclers()
-    local recyclerCenterPos = recyclerSize / 2
-    local pairs = generateRecyclerPositions(maxRecyclerCount, recyclerCenterPos,
-        maxScreenWidth - recyclerCenterPos, maxScreenHeight - recyclerCenterPos)
-
-    for _, pair in ipairs(pairs) do
-        table.insert(activeRecyclers, Recycler(pair.x, pair.y))
-    end
-end
-
-function setupGun()
-    drawGunBase()
-    setupVacuumArea()
-    spawnRecyclers()
-    setupCrankInputTimer()
-    setupGunAnimation()
-end
-
-function updateGun()
-    setFiringCooldown()
-    readRotationInput()
 end

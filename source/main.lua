@@ -4,6 +4,7 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
+import "scripts/background"
 import "scripts/enemyManager"
 import "scripts/gunManager"
 
@@ -15,23 +16,15 @@ deltaTime = 0
 maxScreenWidth = pd.display.getWidth()
 maxScreenHeight = pd.display.getHeight()
 
-local function setupBackground()
-    local backgroundImage = gfx.image.new("images/background_01")
-    if assert(backgroundImage) then
-        gfx.sprite.setBackgroundDrawingCallback(
-            function(x, y, width, height)
-                backgroundImage:draw(0, 0)
-            end
-        )
-    end
-end
-
 local function setupGame()
+    pd.resetElapsedTime()
     pd.ui.crankIndicator:start()
 
-    setupBackground()
-    setupGun()
-    setupEnemySpawn()
+    Background()
+    GunManager()
+    local debrisManager = DebrisManager()
+    -- is this the best way to do this?
+    EnemyManager(debrisManager)
 end
 
 setupGame()
@@ -50,5 +43,4 @@ function pd.update()
     pd.timer.updateTimers()
     pd.frameTimer.updateTimers()
     pd.drawFPS(x, y)
-    updateGun()
 end
