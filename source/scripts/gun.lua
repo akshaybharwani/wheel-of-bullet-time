@@ -21,6 +21,10 @@ local lastCrankPosition = nil
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
 local crankChangeTimeDivisor = 10 -- this will be divided from the current FPS
 
+-- vacuum
+local vacuumAreaWidth = 32
+local vacuumSprite = nil
+
 function setFiringCooldown()
     currentFiringCooldown = math.max(0, currentFiringCooldown - deltaTime)
 end
@@ -33,6 +37,15 @@ function drawGunBase()
     gunBaseY = maxScreenHeight - (gunBaseSprite.width / 2)
     gunBaseSprite:moveTo(gunBaseX, gunBaseY)
     gunBaseSprite:add()
+end
+
+function setupVacuumArea()
+    local vacuumImage = gfx.image.new(vacuumAreaWidth, 180)
+    gfx.pushContext(vacuumImage)
+        gfx.drawRect(0, 0, vacuumAreaWidth, 180)
+    gfx.popContext()
+    vacuumSprite = gfx.sprite.new(vacuumImage)
+    vacuumSprite:moveTo(maxScreenWidth / 2, 120 - 32)
 end
 
 function setupGunAnimation()
@@ -65,6 +78,18 @@ local function shootBullet(startX, startY, angle)
     local bullet = Bullet(startX, startY, angle)
 end
 
+local function vacuum()
+    -- rotate vacuum with the gun
+    -- refactor gun and everything gun related to be easy to work with
+    vacuumSprite:setRotation(gunCurrentRotationAngle)
+    vacuumSprite:add()
+    -- calculate current vacuum area based on gun's rotation
+    -- show vacuum graphics
+        -- show additional vacuum animations
+    -- check for debris objects overlapping the area
+    -- show animation of debris collection
+end
+
 local function readCrankInput(crankTimer)
     local currentCrankPosition = pd.getCrankPosition()
     local crankChange = pd.getCrankChange()
@@ -74,6 +99,7 @@ local function readCrankInput(crankTimer)
 
     if (currentCrankPosition ~= lastCrankPosition) then
         if (crankChange > 0) then
+            vacuumSprite:remove()
             gunTopImage = gunShootingAnimationLoop:image()
             gunShootingAnimationLoop.paused = false
             gunVacuumAnimationLoop.paused = true
@@ -95,7 +121,7 @@ local function readCrankInput(crankTimer)
             currentFiringCooldown = maxFiringCooldown
         end
     elseif (currentCrankShootingTicks == -1) then
-        -- vacuum action
+        -- vacuum()
     end
 end
 

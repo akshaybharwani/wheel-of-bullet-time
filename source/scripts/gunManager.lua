@@ -61,6 +61,7 @@ end
 
 function setupGun()
     drawGunBase()
+    setupVacuumArea()
     spawnRecyclers()
     setupCrankInputTimer()
     setupGunAnimation()
