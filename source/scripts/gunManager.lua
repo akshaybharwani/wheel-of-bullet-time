@@ -1,7 +1,8 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "scripts/gun"
+import "scripts/shooter"
+import "scripts/vacuum"
 import "scripts/recyclerManager"
 
 local pd <const> = playdate
@@ -13,29 +14,49 @@ local gunMaxRotationAngle = 85
 local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
 
 -- TODO: should be a better way to maintain these variables
-gunBaseSize = 64
-gunBaseX, gunBaseY = 0, 0
-gunCurrentRotationAngle = 0
-recyclerSize = 32
+GUN_BASE_SIZE = 64
+GUN_BASE_X, GUN_BASE_Y = 0, 0
+GUN_CURRENT_ROTATION_ANGLE = 0
+RECYCLER_SIZE = 32
+
+GUN_NEUTRAL_STATE, GUN_SHOOTING_STATE, GUN_VACUUM_STATE = 0, 1, 2
+GUN_CURRENT_STATE = GUN_NEUTRAL_STATE
+
+CURRENT_CRANK_SHOOTING_TICKS = 0
+
+GUN_TOP_SPRITE = nil
+
+local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
 
 function GunManager:init()
     GunManager.super.init(self)
 
-    Gun()
-    RecyclerManager()
+    -- draw common gunBase Image
+    local gunBaseImage = gfx.image.new("images/base")
+    self:setImage(gunBaseImage)
+    GUN_BASE_X = MAX_SCREEN_WIDTH / 2
+    GUN_BASE_Y = MAX_SCREEN_HEIGHT - (self.width / 2)
+    self:moveTo(GUN_BASE_X, GUN_BASE_Y)
     self:add()
+
+    GUN_TOP_SPRITE = gfx.sprite.new()
+    GUN_TOP_SPRITE:moveTo(GUN_BASE_X, GUN_BASE_Y)
+
+    Shooter()
+    Vacuum()
+    RecyclerManager()
 end
 
 function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
     -- logic to check if it doesn't overlap gun base
-    if (x - recyclerSize / 2 <= gunEndX
-            and x + recyclerSize / 2 >= gunStartX) then
+    if (x - RECYCLER_SIZE / 2 <= gunEndX
+            and x + RECYCLER_SIZE / 2 >= gunStartX) then
         return true
     end
 
     for _, pair in ipairs(pairs) do
         local distanceBetweenX = math.abs(pair.x - x)
-        if distanceBetweenX < recyclerSize then
+        if distanceBetweenX < RECYCLER_SIZE then
             return true
         end
     end
@@ -44,16 +65,34 @@ end
 
 function GunManager:update()
     self:readRotationInput()
+
+    if IS_GAME_ACTIVE then
+        local crankChange = pd.getCrankChange()
+        CURRENT_CRANK_SHOOTING_TICKS = pd.getCrankTicks(crankShootingTicks)
+
+        if (crankChange > 0) then
+            GUN_CURRENT_STATE = GUN_SHOOTING_STATE
+        elseif (crankChange < 0) then
+            GUN_CURRENT_STATE = GUN_VACUUM_STATE
+        end
+    end
+
+    -- runtime rotation is very expensive
+    -- this will change when we have pre-rendered rotated sprites
+    if GUN_TOP_SPRITE then
+        GUN_TOP_SPRITE:add()
+        GUN_TOP_SPRITE:setRotation(GUN_CURRENT_ROTATION_ANGLE)
+    end
 end
 
 function GunManager:readRotationInput()
     if pd.buttonIsPressed("RIGHT") then
-        if (gunCurrentRotationAngle < gunMaxRotationAngle) then
-            gunCurrentRotationAngle += gunRotationSpeed
+        if (GUN_CURRENT_ROTATION_ANGLE < gunMaxRotationAngle) then
+            GUN_CURRENT_ROTATION_ANGLE += gunRotationSpeed
         end
     elseif pd.buttonIsPressed("LEFT") then
-        if (gunCurrentRotationAngle > -gunMaxRotationAngle) then
-            gunCurrentRotationAngle -= gunRotationSpeed
+        if (GUN_CURRENT_ROTATION_ANGLE > -gunMaxRotationAngle) then
+            GUN_CURRENT_ROTATION_ANGLE -= gunRotationSpeed
         end
     end
 end

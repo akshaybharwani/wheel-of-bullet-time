@@ -74,7 +74,7 @@ function EnemyManager:update()
     if pd.getCrankChange() == 0 then
         return
     end
-    enemySpawnTimer += deltaTime
+    enemySpawnTimer += DELTA_TIME
     if enemySpawnTimer >= enemySpawnWaitDuration then
         self:handleEnemyWave()
         self:spawnEnemies()

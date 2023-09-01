@@ -19,20 +19,18 @@ function RecyclerManager:init()
 end
 
 function RecyclerManager:spawnRecyclers()
-    local recyclerCenterPos = recyclerSize / 2
-    local pairs = generateRecyclerPositions(maxRecyclerCount, recyclerCenterPos,
-        maxScreenWidth - recyclerCenterPos, maxScreenHeight - recyclerCenterPos)
+    local recyclerCenterPos = RECYCLER_SIZE / 2
+    local pairs = self:generateRecyclerPositions(maxRecyclerCount, recyclerCenterPos,
+        MAX_SCREEN_WIDTH - recyclerCenterPos, MAX_SCREEN_HEIGHT - recyclerCenterPos)
 
     for _, pair in ipairs(pairs) do
         table.insert(activeRecyclers, Recycler(pair.x, pair.y))
     end
 end
 
-function generateRecyclerPositions(maxCount, minX, maxX, maxY)
-    -- Playdate Lua doesn't have an 'os' method. Use something else.
-    -- math.randomseed(os.time())
-    local gunStartX = gunBaseX - gunBaseSize / 2
-    local gunEndX = gunBaseX + gunBaseSize / 2
+function RecyclerManager:generateRecyclerPositions(maxCount, minX, maxX, maxY)
+    local gunStartX = GUN_BASE_X - GUN_BASE_SIZE / 2
+    local gunEndX = GUN_BASE_X + GUN_BASE_SIZE / 2
     local pairs = {}
 
     while #pairs < maxCount do

@@ -33,7 +33,7 @@ function Enemy:init(enemyType, debrisManager)
     self:setImage(self.enemyBaseImage)
     self:setCollideRect(0, 0, enemyType.shieldColliderSize, enemyType.shieldColliderSize)
 
-    local startX = math.random(self.width / 2, maxScreenWidth - self.width / 2)
+    local startX = math.random(self.width / 2, MAX_SCREEN_WIDTH - self.width / 2)
     local startY = self.height / 2
     self:moveTo(startX, startY)
     self:add()
@@ -44,7 +44,7 @@ function Enemy:update()
         return
     end
 
-    if pd.getCrankChange() == 0 then
+    if not IS_GAME_ACTIVE then
         return
     end
 
@@ -52,7 +52,7 @@ function Enemy:update()
 end
 
 function Enemy:move()
-    local nextX, nextY        = self.x, self.y + (self.speed * deltaTime)
+    local nextX, nextY        = self.x, self.y + (self.speed * DELTA_TIME * 10)
     local _, _, collisions, _ = self:moveWithCollisions(nextX, nextY)
 
     for i = 1, #collisions do
@@ -64,7 +64,7 @@ function Enemy:move()
         end
     end
 
-    if self.y > maxScreenHeight then
+    if self.y > MAX_SCREEN_HEIGHT then
         self:remove()
     end
 end
@@ -81,7 +81,6 @@ function Enemy:getHit()
 end
 
 function Enemy:shatter()
-    -- TODO: create debris objects
     self.debrisManager:spawnDebris(self.x, self.y)
     self:remove()
 end

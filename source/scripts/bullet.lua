@@ -30,8 +30,7 @@ function Bullet:init(startX, startY, angle)
 end
 
 function Bullet:update()
-    -- needs a global thing to check this
-    if pd.getCrankChange() == 0 then
+    if not IS_GAME_ACTIVE then
         return
     end
 

@@ -11,14 +11,36 @@ import "scripts/gunManager"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
-deltaTime = 0
+DELTA_TIME = 0
+IS_GAME_ACTIVE = false
 
-maxScreenWidth = pd.display.getWidth()
-maxScreenHeight = pd.display.getHeight()
+MAX_SCREEN_WIDTH = pd.display.getWidth()
+MAX_SCREEN_HEIGHT = pd.display.getHeight()
+
+local lastCrankPosition = nil
+local crankCheckWaitDuration = 100
+
+local function checkCrankInput()
+    local currentCrankPosition = pd.getCrankPosition()
+    if lastCrankPosition ~= currentCrankPosition then
+        IS_GAME_ACTIVE = true
+    end
+    lastCrankPosition = currentCrankPosition
+end
+
+local function setupCrankCheckTimer()
+    local crankTimer = pd.timer.new(crankCheckWaitDuration)
+    crankTimer.repeats = true
+    crankTimer.timerEndedCallback = function(timer)
+        checkCrankInput()
+    end
+end
 
 local function setupGame()
+    math.randomseed(pd.getSecondsSinceEpoch())
     pd.resetElapsedTime()
     pd.ui.crankIndicator:start()
+    setupCrankCheckTimer()
 
     Background()
     GunManager()
@@ -30,17 +52,22 @@ end
 setupGame()
 
 function pd.update()
-    deltaTime = pd.getElapsedTime()
+    DELTA_TIME = pd.getElapsedTime()
     pd.resetElapsedTime()
+
+    pd.timer.updateTimers()
+    gfx.sprite.update()
 
     -- gfx.clear()
     -- Update stuff every frame
-    gfx.sprite.update()
     -- This needs to be called after the sprites are updated
-    if pd.isCrankDocked() then
+    --[[ if pd.isCrankDocked() then
         pd.ui.crankIndicator:update()
+    end ]]
+    -- pd.drawFPS(x, y)
+
+    -- reset game state after updating everything
+    if IS_GAME_ACTIVE then
+        IS_GAME_ACTIVE = false
     end
-    pd.timer.updateTimers()
-    pd.frameTimer.updateTimers()
-    pd.drawFPS(x, y)
 end
