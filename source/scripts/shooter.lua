@@ -15,10 +15,10 @@ local currentFiringCooldown = maxFiringCooldown
 -- crank
 local angleAcuumulator = 0
 
-function Shooter:init()
+function Shooter:init(x, y)
     Shooter.super.init(self)
 
-    self:moveTo(GUN_BASE_X, GUN_BASE_Y)
+    self:moveTo(x, y)
     self:setupAnimation()
     self:add()
 end
@@ -47,6 +47,7 @@ function Shooter:checkGunState()
             if (currentFiringCooldown == 0) then
                 self:shootBullet(GUN_BASE_X, GUN_BASE_Y, GUN_CURRENT_ROTATION_ANGLE)
                 currentFiringCooldown = maxFiringCooldown
+            else
             end
         end
     end

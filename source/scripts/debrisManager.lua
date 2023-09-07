@@ -55,12 +55,13 @@ function DebrisManager:spawnDebris(enemyX, enemyY)
     for i = 1, noOfDebrisToSpawn do
         table.insert(debris, Debris(debrisSpawnPositions[i][1], debrisSpawnPositions[i][2]))
     end
-    local activeAnimator = pd.timer.new(debrisActiveDuration)
+    -- remove debtis after some time
+    --[[ local activeAnimator = pd.timer.new(debrisActiveDuration)
     activeAnimator.timerEndedCallback = function(timer)
         for i = 1, #debris do
             debris[i]:remove()
         end
-    end
+    end ]]
 end
 
 function DebrisManager:getDebrisSpawnPositions(enemyX, enemyY, noOfDebrisToSpawn)

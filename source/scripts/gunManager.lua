@@ -41,9 +41,10 @@ function GunManager:init()
 
     GUN_TOP_SPRITE = gfx.sprite.new()
     GUN_TOP_SPRITE:moveTo(GUN_BASE_X, GUN_BASE_Y)
+    GUN_TOP_SPRITE:add()
 
-    Shooter()
-    Vacuum()
+    Shooter(GUN_BASE_X, GUN_BASE_Y)
+    Vacuum(GUN_BASE_X, GUN_BASE_Y)
     RecyclerManager()
 end
 
@@ -68,6 +69,7 @@ function GunManager:update()
 
     if IS_GAME_ACTIVE then
         local crankChange = pd.getCrankChange()
+        -- should update this to us an angle accumulator for more accuracy
         CURRENT_CRANK_SHOOTING_TICKS = pd.getCrankTicks(crankShootingTicks)
 
         if (crankChange > 0) then
@@ -80,7 +82,6 @@ function GunManager:update()
     -- runtime rotation is very expensive
     -- this will change when we have pre-rendered rotated sprites
     if GUN_TOP_SPRITE then
-        GUN_TOP_SPRITE:add()
         GUN_TOP_SPRITE:setRotation(GUN_CURRENT_ROTATION_ANGLE)
     end
 end

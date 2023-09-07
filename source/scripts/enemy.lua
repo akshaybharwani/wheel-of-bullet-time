@@ -22,16 +22,12 @@ function Enemy:init(enemyType, debrisManager)
 
     self.explosionSprite = gfx.sprite.new(gfx.image.new(enemyType.explosionImagePath))
 
-    self.hitAnimator = pd.timer.new(hitDuration)
-    self.hitAnimator.discardOnCompletion = false
-    self.hitAnimator:pause()
-    self.hitAnimator.timerEndedCallback = function(timer)
-        self.enemyBaseImage:setInverted(false)
-    end
-
     self.enemyBaseImage = gfx.image.new(enemyType.baseImagePath)
     self:setImage(self.enemyBaseImage)
-    self:setCollideRect(0, 0, enemyType.shieldColliderSize, enemyType.shieldColliderSize)
+
+    self:setupShieldCollider()
+
+    self:setupHitAnimator()
 
     local startX = math.random(self.width / 2, MAX_SCREEN_WIDTH - self.width / 2)
     local startY = self.height / 2
@@ -64,9 +60,9 @@ function Enemy:move()
         end
     end
 
-    if self.y > MAX_SCREEN_HEIGHT then
+    --[[ if self.y > MAX_SCREEN_HEIGHT then
         self:remove()
-    end
+    end ]]
 end
 
 function Enemy:getHit()
@@ -74,9 +70,9 @@ function Enemy:getHit()
     if self.hp <= 0 then
         self:shatter()
     else
-        self.enemyBaseImage:setInverted(true)
+        self.hitAnimator:reset()
         self.hitAnimator:start()
-        self.isHit = true
+        self:setVisible(false)
     end
 end
 
@@ -87,7 +83,6 @@ end
 
 function Enemy:explode()
     self.explosionAnimator = pd.timer.new(explosionDuration)
-    self.explosionAnimator.discardOnCompletion = true
     self.explosionAnimator.timerEndedCallback = function(timer)
         self:remove()
         self.explosionSprite:remove()
@@ -95,4 +90,20 @@ function Enemy:explode()
     self.explosionSprite:moveTo(self.x, self.y)
     self.explosionSprite:add()
     self:setVisible(false)
+end
+
+function Enemy:setupShieldCollider()
+    local shieldColliderSize = self.enemyType.shieldColliderSize
+    local shieldColliderOrigin = self.width / 2 - shieldColliderSize / 2
+    self:setCollideRect(shieldColliderOrigin, shieldColliderOrigin, shieldColliderSize,
+        shieldColliderSize)
+end
+
+function Enemy:setupHitAnimator()
+    self.hitAnimator = pd.timer.new(hitDuration)
+    self.hitAnimator.discardOnCompletion = false
+    self.hitAnimator:pause()
+    self.hitAnimator.timerEndedCallback = function(timer)
+        self:setVisible(true)
+    end
 end

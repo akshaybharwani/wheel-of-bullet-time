@@ -11,11 +11,16 @@ import "scripts/gunManager"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
+-- globals
 DELTA_TIME = 0
 IS_GAME_ACTIVE = false
 
 MAX_SCREEN_WIDTH = pd.display.getWidth()
 MAX_SCREEN_HEIGHT = pd.display.getHeight()
+
+PLAYER_GROUP = 1
+ENEMY_GROUP = 2
+DEBRIS_GROUP = 3
 
 local lastCrankPosition = nil
 local crankCheckWaitDuration = 100
