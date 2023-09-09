@@ -19,6 +19,7 @@ function Enemy:init(enemyType, debrisManager)
     self.hp = enemyType.hp
     self.type = "enemy"
     self.speed = math.random(minSpeed, maxSpeed)
+    self.shieldColliderSize = enemyType.shieldColliderSize
 
     self.explosionSprite = gfx.sprite.new(gfx.image.new(enemyType.explosionImagePath))
 
@@ -93,7 +94,7 @@ function Enemy:explode()
 end
 
 function Enemy:setupShieldCollider()
-    local shieldColliderSize = self.enemyType.shieldColliderSize
+    local shieldColliderSize = self.shieldColliderSize
     local shieldColliderOrigin = self.width / 2 - shieldColliderSize / 2
     self:setCollideRect(shieldColliderOrigin, shieldColliderOrigin, shieldColliderSize,
         shieldColliderSize)

@@ -15,6 +15,8 @@ local debrisCenter = (gridSize / 4) - (debrisSize / 2)
 local minDebris, maxDebris = 3, 8
 local debrisActiveDuration = 1000
 
+ACTIVE_DEBRIS = {}
+
 local quadrants = {
     {
         { 1, 1 },
@@ -49,11 +51,10 @@ end
 
 function DebrisManager:spawnDebris(enemyX, enemyY)
     local noOfDebrisToSpawn = math.random(minDebris, maxDebris)
-    local debris = {}
 
     local debrisSpawnPositions = self:getDebrisSpawnPositions(enemyX, enemyY, noOfDebrisToSpawn)
     for i = 1, noOfDebrisToSpawn do
-        table.insert(debris, Debris(debrisSpawnPositions[i][1], debrisSpawnPositions[i][2]))
+        table.insert(ACTIVE_DEBRIS, Debris(debrisSpawnPositions[i][1], debrisSpawnPositions[i][2], self))
     end
     -- remove debtis after some time
     --[[ local activeAnimator = pd.timer.new(debrisActiveDuration)
@@ -92,6 +93,7 @@ function DebrisManager:getDebrisSpawnPositions(enemyX, enemyY, noOfDebrisToSpawn
             local spawnPositionIndex = math.random(1, #possibleDebrisPositions[i])
             local spawnPosition = possibleDebrisPositions[i][spawnPositionIndex]
             table.insert(spawnPositions, { spawnPosition[1], spawnPosition[2] })
+            -- TODO: removing an element while iterating over it, instead set the element to nil
             table.remove(possibleDebrisPositions[i], spawnPositionIndex)
         end
     end
@@ -102,4 +104,12 @@ function DebrisManager:getDebrisSpawnPositions(enemyX, enemyY, noOfDebrisToSpawn
     end ]]
 
     return spawnPositions
+end
+
+function DebrisManager:removeDebris(debris)
+    for i = 1, #ACTIVE_DEBRIS do
+        if ACTIVE_DEBRIS[i] == debris then
+            ACTIVE_DEBRIS[i] = nil
+        end
+    end
 end

@@ -11,10 +11,11 @@ local debrisImagePath = "images/debris"
 
 class("Debris").extends(gfx.sprite)
 
-function Debris:init(x, y)
+function Debris:init(x, y, debrisManager)
     Debris.super.init(self)
 
     self.type = "debris"
+    self.debrisManager = debrisManager
 
     self:setImage(gfx.image.new(debrisImagePath))
     local shouldRotate = math.random() < rotationChance
@@ -30,16 +31,17 @@ end
 
 function Debris:update()
     if self.recycleAnimator then
+        if self.recycleAnimator:ended() then
+            self:remove()
+            return
+        end
         self:moveTo(self.recycleAnimator:currentValue())
     end
 end
 
 function Debris:collect()
-    print("collecting")
     local debrisPoint = pd.geometry.point.new(self.x, self.y)
     local gunPoint = pd.geometry.point.new(GUN_BASE_X, GUN_BASE_Y)
     self.recycleAnimator = gfx.animator.new(300, debrisPoint, gunPoint)
-    --self:remove()
-    -- use primitive shape to show debris animation going to the recycler
-    -- remove debris
+    self.debrisManager:removeDebris(self)
 end

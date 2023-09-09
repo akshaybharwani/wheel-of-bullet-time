@@ -7,6 +7,7 @@ local gfx <const> = pd.graphics
 class("Vacuum").extends(gfx.sprite)
 
 local vacuumAreaWidth = 32
+local vacuumLength = 300
 
 local gunVacuumAnimationLoop = nil
 
@@ -35,17 +36,9 @@ function Vacuum:setupAnimation()
 end
 
 function Vacuum:collectDebris()
-    self:setVisible(true)
-    -- show additional vacuum animations
-    local collisions = self:overlappingSprites()
-    local angleRad = math.rad(GUN_CURRENT_ROTATION_ANGLE - 90)
-    local dx = math.cos(angleRad)
-    local dy = math.sin(angleRad)
 
-    -- local sprites = gfx.sprite.querySpritesAlongLine(GUN_BASE_X, GUN_BASE_Y, 200 + dx, 120 + dy)
-
-    for i = 1, #collisions do
-        local collidedObject = collisions[i]
+    for i = 1, #self.collidedSprites do
+        local collidedObject = self.collidedSprites[i]
         if collidedObject.type == "debris" then
 
             collidedObject:collect()
@@ -56,22 +49,43 @@ function Vacuum:collectDebris()
     -- show animation of debris collection
 end
 
+function Vacuum:checkForCollisions()
+    self:setVisible(true)
+    -- refer Examples/Single File Examples/crank.lua
+    local angleRad = math.rad(GUN_CURRENT_ROTATION_ANGLE)
+    local x2 = vacuumLength * math.sin(angleRad)
+    local y2 = -1 * vacuumLength * math.cos(angleRad)
+
+    x2 += GUN_BASE_X
+    y2 += GUN_BASE_Y
+
+    local vacuumLine = pd.geometry.lineSegment.new(GUN_BASE_X, GUN_BASE_Y, x2, y2)
+
+    for i = 1, #ACTIVE_DEBRIS do
+        local debris = ACTIVE_DEBRIS[i]
+        if debris ~= nil then
+            local debrisPoint = pd.geometry.point.new(debris:getPosition())
+            local linePoint = vacuumLine:closestPointOnLineToPoint(debrisPoint)
+            if debrisPoint:distanceToPoint(linePoint) <= vacuumAreaWidth / 2 then
+                debris:collect()
+            end
+        end
+    end
+end
+
 function Vacuum:checkGunState()
     if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
         gunVacuumAnimationLoop.paused = false
         GUN_TOP_SPRITE:setImage(gunVacuumAnimationLoop:image())
-
-        if (CURRENT_CRANK_SHOOTING_TICKS == -1) then
-            self:collectDebris()
-        end
+        -- does this require any timer like shooting a bullet every 36 degree rotation?
+        self:checkForCollisions()
     else
         self:setVisible(false)
     end
 end
 
 function Vacuum:update()
-    gfx.setLineWidth(20)
-    gfx.drawLine(0, 0, 400, 240)
+    self:setRotation(GUN_CURRENT_ROTATION_ANGLE)
     if not IS_GAME_ACTIVE then
         gunVacuumAnimationLoop.paused = true
         return
