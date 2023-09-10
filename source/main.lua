@@ -58,13 +58,11 @@ setupGame()
 
 function pd.update()
     gfx.clear()
-
     DELTA_TIME = pd.getElapsedTime()
     pd.resetElapsedTime()
 
     pd.timer.updateTimers()
     gfx.sprite.update()
-
     -- Update stuff every frame
     -- This needs to be called after the sprites are updated
     --[[ if pd.isCrankDocked() then

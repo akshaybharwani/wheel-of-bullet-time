@@ -4,6 +4,7 @@ import "CoreLibs/sprites"
 import "scripts/shooter"
 import "scripts/vacuum"
 import "scripts/recyclerManager"
+import "scripts/bulletDisplay"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -46,6 +47,7 @@ function GunManager:init()
     Shooter(GUN_BASE_X, GUN_BASE_Y)
     Vacuum(GUN_BASE_X, GUN_BASE_Y)
     RecyclerManager()
+    BulletDisplay()
 end
 
 function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
@@ -69,7 +71,7 @@ function GunManager:update()
 
     if IS_GAME_ACTIVE then
         local crankChange = pd.getCrankChange()
-        -- should update this to us an angle accumulator for more accuracy
+        -- should update this to use an angle accumulator for more accuracy
         CURRENT_CRANK_SHOOTING_TICKS = pd.getCrankTicks(crankShootingTicks)
 
         if (crankChange > 0) then

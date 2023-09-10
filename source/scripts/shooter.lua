@@ -12,6 +12,9 @@ local gunShootingAnimationLoop = nil
 local maxFiringCooldown = 0.5
 local currentFiringCooldown = maxFiringCooldown
 
+local startingBulletCount = 10
+CURRENT_BULLET_COUNT = startingBulletCount
+
 -- crank
 local angleAcuumulator = 0
 
@@ -44,10 +47,10 @@ function Shooter:checkGunState()
         GUN_TOP_SPRITE:setImage(gunShootingAnimationLoop:image())
 
         if (CURRENT_CRANK_SHOOTING_TICKS == 1) then
-            if (currentFiringCooldown == 0) then
+            if (currentFiringCooldown == 0 and CURRENT_BULLET_COUNT > 0) then
                 self:shootBullet(GUN_BASE_X, GUN_BASE_Y, GUN_CURRENT_ROTATION_ANGLE)
+                CURRENT_BULLET_COUNT -= 1
                 currentFiringCooldown = maxFiringCooldown
-            else
             end
         end
     end

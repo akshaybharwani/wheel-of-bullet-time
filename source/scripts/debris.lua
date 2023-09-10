@@ -6,6 +6,7 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 local rotationChance = 0.5
+local debrisToRecycleDuration = 1000
 
 local debrisImagePath = "images/debris"
 
@@ -42,6 +43,6 @@ end
 function Debris:collect()
     local debrisPoint = pd.geometry.point.new(self.x, self.y)
     local gunPoint = pd.geometry.point.new(GUN_BASE_X, GUN_BASE_Y)
-    self.recycleAnimator = gfx.animator.new(300, debrisPoint, gunPoint)
+    self.recycleAnimator = gfx.animator.new(debrisToRecycleDuration, debrisPoint, gunPoint)
     self.debrisManager:removeDebris(self)
 end
