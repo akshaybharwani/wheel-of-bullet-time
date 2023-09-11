@@ -8,7 +8,7 @@ local gfx <const> = pd.graphics
 
 class("Enemy").extends(gfx.sprite)
 
-local minSpeed, maxSpeed = 2, 6
+local minSpeed, maxSpeed = 10, 20
 local explosionDuration = 1000
 local hitDuration = 100
 

@@ -46,7 +46,6 @@ function GunManager:init()
 
     Shooter(GUN_BASE_X, GUN_BASE_Y)
     Vacuum(GUN_BASE_X, GUN_BASE_Y)
-    RecyclerManager()
     BulletDisplay()
 end
 

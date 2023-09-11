@@ -49,7 +49,8 @@ local function setupGame()
 
     Background()
     GunManager()
-    local debrisManager = DebrisManager()
+    local recyclerManager = RecyclerManager()
+    local debrisManager = DebrisManager(recyclerManager)
     -- is this the best way to do this?
     EnemyManager(debrisManager)
 end
@@ -57,7 +58,7 @@ end
 setupGame()
 
 function pd.update()
-    gfx.clear()
+    --gfx.clear()
     DELTA_TIME = pd.getElapsedTime()
     pd.resetElapsedTime()
 

@@ -39,9 +39,9 @@ function RecyclerConnector:init(x, y, connectorY)
     gfx.fillRect(0, 0, connectorLength + connectorWidth, connectorWidth)
     gfx.popContext()
 
-    local connectorSprite = gfx.sprite.new(connectorImage)
-    connectorSprite:setCenter(0, 0)
+    self:setImage(connectorImage)
+    self:setCenter(0,0)
     -- recycler image is specified 32x32 but there is whitespace, figure it out
-    connectorSprite:moveTo(connnectorX, MAX_SCREEN_HEIGHT - 22 - connectorY)
-    connectorSprite:add()
+    self:moveTo(connnectorX, MAX_SCREEN_HEIGHT - 22 - connectorY)
+    self:add()
 end

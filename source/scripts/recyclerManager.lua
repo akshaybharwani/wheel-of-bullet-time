@@ -70,3 +70,13 @@ function RecyclerManager:generateRecyclerPositions(maxCount, minX, maxX, maxY)
 
     return pairs
 end
+
+function RecyclerManager:assignDebris()
+    for i = 1, #activeRecyclers do
+        if activeRecyclers[i].debrisCount == 0 then
+            activeRecyclers[i]:generateAmmo()
+            print(i)
+            break
+        end
+    end
+end

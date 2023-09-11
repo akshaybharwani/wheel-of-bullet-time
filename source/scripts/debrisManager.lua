@@ -44,8 +44,9 @@ local quadrants = {
     }
 }
 
-function DebrisManager:init()
+function DebrisManager:init(recyclerManager)
     DebrisManager.super.init(self)
+    self.recyclerManager = recyclerManager
     self:add()
 end
 
@@ -109,6 +110,7 @@ end
 function DebrisManager:removeDebris(debris)
     for i = 1, #ACTIVE_DEBRIS do
         if ACTIVE_DEBRIS[i] == debris then
+            self.recyclerManager:assignDebris()
             ACTIVE_DEBRIS[i] = nil
         end
     end

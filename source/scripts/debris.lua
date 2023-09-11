@@ -31,18 +31,18 @@ function Debris:init(x, y, debrisManager)
 end
 
 function Debris:update()
-    if self.recycleAnimator then
-        if self.recycleAnimator:ended() then
+    if self.debrisToRecycleAnimator then
+        if self.debrisToRecycleAnimator:ended() then
+            self.debrisManager:removeDebris(self)
             self:remove()
             return
         end
-        self:moveTo(self.recycleAnimator:currentValue())
+        self:moveTo(self.debrisToRecycleAnimator:currentValue())
     end
 end
 
 function Debris:collect()
     local debrisPoint = pd.geometry.point.new(self.x, self.y)
     local gunPoint = pd.geometry.point.new(GUN_BASE_X, GUN_BASE_Y)
-    self.recycleAnimator = gfx.animator.new(debrisToRecycleDuration, debrisPoint, gunPoint)
-    self.debrisManager:removeDebris(self)
+    self.debrisToRecycleAnimator = gfx.animator.new(debrisToRecycleDuration, debrisPoint, gunPoint)
 end
