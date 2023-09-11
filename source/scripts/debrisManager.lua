@@ -13,7 +13,6 @@ local debrisSize = 16
 local debrisCenter = (gridSize / 4) - (debrisSize / 2)
 
 local minDebris, maxDebris = 3, 8
-local debrisActiveDuration = 1000
 
 ACTIVE_DEBRIS = {}
 

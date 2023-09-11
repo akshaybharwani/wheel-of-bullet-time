@@ -2,15 +2,20 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "scripts/debrisManager"
+import "scripts/crankTimer"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
+local geo <const> = pd.geometry
 
 class("Enemy").extends(gfx.sprite)
 
 local minSpeed, maxSpeed = 10, 20
 local explosionDuration = 1000
 local hitDuration = 100
+
+local minTotalPatrolDuration, maxTotalPatrolDuration = 2, 5
+local minPatrolSegmentDuration, maxPatrolSegmentDuration = 1, 2
 
 function Enemy:init(enemyType, debrisManager)
     Enemy.super.init(self)
@@ -30,10 +35,9 @@ function Enemy:init(enemyType, debrisManager)
 
     self:setupHitAnimator()
 
-    local startX = math.random(self.width / 2, MAX_SCREEN_WIDTH - self.width / 2)
-    local startY = self.height / 2
-    self:moveTo(startX, startY)
+    self:setStartingPosition()
     self:add()
+    self:setupPatroling()
 end
 
 function Enemy:update()
@@ -48,8 +52,34 @@ function Enemy:update()
     self:move()
 end
 
+function Enemy:setupPatroling()
+    self:setNewPatrolPoint()
+    self.segmentPatrolTimer = CrankTimer(math.random(minPatrolSegmentDuration, maxPatrolSegmentDuration), function()
+        self:setNewPatrolPoint()
+    end)
+    self.totalPatrolTimer = CrankTimer(math.random(minTotalPatrolDuration, maxTotalPatrolDuration), function()
+        self:setTarget()
+        self.segmentPatrolTimer:remove()
+        self.totalPatrolTimer:remove()
+    end)
+end
+
+function Enemy:setStartingPosition()
+    local halfWidth = self.width / 2
+    local halfHeight = self.height / 2
+    local startY = -halfHeight
+    local startXPositions = { -halfWidth, math.random(halfWidth, MAX_SCREEN_WIDTH - halfWidth),
+        MAX_SCREEN_WIDTH + halfWidth }
+    local startX = startXPositions[math.random(1, #startXPositions)]
+    if startX == -halfWidth or startX == MAX_SCREEN_WIDTH + halfWidth then
+        startY = math.random(-halfHeight, MAX_SCREEN_HEIGHT / 2 - halfHeight)
+    end
+
+    self:moveTo(startX, startY)
+end
+
 function Enemy:move()
-    local nextX, nextY        = self.x, self.y + (self.speed * DELTA_TIME * 10)
+    local nextX, nextY        = self.x + self.dx * DELTA_TIME * 10, self.y + self.dy * DELTA_TIME * 10
     local _, _, collisions, _ = self:moveWithCollisions(nextX, nextY)
 
     for i = 1, #collisions do
@@ -64,6 +94,25 @@ function Enemy:move()
     --[[ if self.y > MAX_SCREEN_HEIGHT then
         self:remove()
     end ]]
+end
+
+function Enemy:setNewPatrolPoint()
+    local nextX = math.random(16, MAX_SCREEN_WIDTH - 16)
+    local nextY = math.random(16, MAX_SCREEN_HEIGHT / 2)
+    self:setVelocity(nextX, nextY)
+end
+
+function Enemy:setTarget()
+    local target = ACTIVE_TARGETS[math.random(1, #ACTIVE_TARGETS)]
+    self:setVelocity(target.x, target.y)
+end
+
+function Enemy:setVelocity(x, y)
+    local distance = geo.distanceToPoint(self.x, self.y, x, y)
+    local nx = x - self.x
+    local ny = y - self.y
+    self.dx = nx / distance * self.speed
+    self.dy = ny / distance * self.speed
 end
 
 function Enemy:getHit()

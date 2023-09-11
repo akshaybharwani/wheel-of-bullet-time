@@ -43,13 +43,17 @@ function RecyclerManager:spawnRecyclers()
 
     local recyclerConnectorY = 0
     for i = 1, #leftToGunRecyclers do
-        table.insert(activeRecyclers, Recycler(leftToGunRecyclers[i].x, leftToGunRecyclers[i].y, recyclerConnectorY))
+        local recycler = Recycler(leftToGunRecyclers[i].x, leftToGunRecyclers[i].y, recyclerConnectorY)
+        table.insert(activeRecyclers, recycler)
+        table.insert(ACTIVE_TARGETS, recycler)
         recyclerConnectorY += 5
     end
 
     recyclerConnectorY = 0
     for i = 1, #rightToGunRecyclers do
-        table.insert(activeRecyclers, Recycler(rightToGunRecyclers[i].x, rightToGunRecyclers[i].y, recyclerConnectorY))
+        local recycler = Recycler(rightToGunRecyclers[i].x, rightToGunRecyclers[i].y, recyclerConnectorY)
+        table.insert(activeRecyclers, recycler)
+        table.insert(ACTIVE_TARGETS, recycler)
         recyclerConnectorY += 5
     end
 end
@@ -75,7 +79,6 @@ function RecyclerManager:assignDebris()
     for i = 1, #activeRecyclers do
         if activeRecyclers[i].debrisCount == 0 then
             activeRecyclers[i]:generateAmmo()
-            print(i)
             break
         end
     end

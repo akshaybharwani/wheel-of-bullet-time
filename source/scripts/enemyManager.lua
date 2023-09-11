@@ -2,13 +2,13 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "scripts/enemy"
+import "scripts/crankTimer"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 class('EnemyManager').extends(gfx.sprite)
 
-local enemySpawnTimer = 0
 local enemySpawnWaitDuration = 5 -- here this is number of seconds instead of miliseconds elsewhere
 local currentEnemyRate = 1
 local oneWaveDuration = 30000
@@ -45,6 +45,11 @@ function EnemyManager:init(debrisManager)
     EnemyManager.super.init(self)
 
     self.debrisManager = debrisManager
+    self.enemySpawnTimer = CrankTimer(enemySpawnWaitDuration, function()
+        print("but i spawn here")
+        self:handleEnemyWave()
+        self:spawnEnemies()
+    end)
     self:setupEnemySpawn()
     self:add()
 end
@@ -68,16 +73,4 @@ end
 
 function EnemyManager:setupEnemySpawn()
     self:spawnEnemies()
-end
-
-function EnemyManager:update()
-    if pd.getCrankChange() == 0 then
-        return
-    end
-    enemySpawnTimer += DELTA_TIME
-    if enemySpawnTimer >= enemySpawnWaitDuration then
-        self:handleEnemyWave()
-        self:spawnEnemies()
-        enemySpawnTimer = 0
-    end
 end

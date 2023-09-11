@@ -28,6 +28,7 @@ end
 function Recycler:getHit()
     -- show damaged states
     self.connector:remove()
+    -- should remove itself from the active targets and active recyclers
     self:remove()
 end
 

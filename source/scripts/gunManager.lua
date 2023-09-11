@@ -27,6 +27,8 @@ CURRENT_CRANK_SHOOTING_TICKS = 0
 
 GUN_TOP_SPRITE = nil
 
+ACTIVE_TARGETS = {}
+
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
 
 function GunManager:init()
@@ -43,6 +45,7 @@ function GunManager:init()
     GUN_TOP_SPRITE = gfx.sprite.new()
     GUN_TOP_SPRITE:moveTo(GUN_BASE_X, GUN_BASE_Y)
     GUN_TOP_SPRITE:add()
+    table.insert(ACTIVE_TARGETS, GUN_TOP_SPRITE)
 
     Shooter(GUN_BASE_X, GUN_BASE_Y)
     Vacuum(GUN_BASE_X, GUN_BASE_Y)
