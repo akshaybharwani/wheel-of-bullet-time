@@ -1,7 +1,6 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "scripts/recycler"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -11,6 +10,24 @@ class('Background').extends(gfx.sprite)
 function Background:init()
     Background.super.init(self)
 
+    local titleImage = gfx.image.new("images/Title")
+
+    self.titleSprite = gfx.sprite.new(titleImage)
+    self.titleSprite:moveTo(200, 120)
+    self.titleSprite:setZIndex(1000)
+
+    local backgroundTimer = pd.timer.new(2000)
+    backgroundTimer.timerEndedCallback = function(timer)
+        -- TODO: Need to enable input and everything else here
+        self:showBackground()
+        self.titleSprite:remove()
+    end
+
+    self:add()
+    self.titleSprite:add()
+end
+
+function Background:showBackground()
     local backgroundImage = gfx.image.new("images/background_01")
     if assert(backgroundImage) then
         gfx.sprite.setBackgroundDrawingCallback(
@@ -19,6 +36,4 @@ function Background:init()
             end
         )
     end
-
-    self:add()
 end
