@@ -11,8 +11,31 @@ class('RecyclerManager').extends(gfx.sprite)
 local maxRecyclerCount = 5
 local activeRecyclers = {}
 
+local debrisHoldTime = 300
+local collectedDebris = 0
+
 function RecyclerManager:init()
     RecyclerManager.super.init(self)
+
+    self.holdDebrisTimer = pd.timer.new(debrisHoldTime)
+    self.holdDebrisTimer:pause()
+    self.holdDebrisTimer.discardOnCompletion = false
+    self.holdDebrisTimer.repeats = true
+    self.holdDebrisTimer.timerEndedCallback = function(timer)
+        if collectedDebris > 0 then
+            print("assigning to recyler")
+            for i = 1, #activeRecyclers do
+                if activeRecyclers[i].available == true then
+                    activeRecyclers[i]:sendDebris()
+                    break
+                end
+            end
+            collectedDebris -= 1
+        else
+            print("no more debris, pause timer")
+            self.holdDebrisTimer:pause()
+        end
+    end
 
     self:spawnRecyclers()
     self:add()
@@ -76,10 +99,9 @@ function RecyclerManager:generateRecyclerPositions(maxCount, minX, maxX, maxY)
 end
 
 function RecyclerManager:assignDebris()
-    for i = 1, #activeRecyclers do
-        if activeRecyclers[i].debrisCount == 0 then
-            activeRecyclers[i]:generateAmmo()
-            break
-        end
+    collectedDebris += 1
+    if self.holdDebrisTimer.paused == true then
+        print("holding")
+        self.holdDebrisTimer:start()
     end
 end
