@@ -8,7 +8,7 @@ local gfx <const> = pd.graphics
 
 class('RecyclerManager').extends(gfx.sprite)
 
-local maxRecyclerCount = 5
+local maxRecyclerCount = 1
 local activeRecyclers = {}
 
 local debrisHoldTime = 300
@@ -23,16 +23,14 @@ function RecyclerManager:init()
     self.holdDebrisTimer.repeats = true
     self.holdDebrisTimer.timerEndedCallback = function(timer)
         if collectedDebris > 0 then
-            print("assigning to recyler")
             for i = 1, #activeRecyclers do
                 if activeRecyclers[i].available == true then
-                    activeRecyclers[i]:sendDebris()
+                    activeRecyclers[i]:sendDebrisToRecycler()
+                    collectedDebris -= 1
                     break
                 end
             end
-            collectedDebris -= 1
         else
-            print("no more debris, pause timer")
             self.holdDebrisTimer:pause()
         end
     end
@@ -64,17 +62,17 @@ function RecyclerManager:spawnRecyclers()
         return a.x < b.x
     end)
 
-    local recyclerConnectorY = 0
+    local recyclerConnectorY = 10
     for i = 1, #leftToGunRecyclers do
-        local recycler = Recycler(leftToGunRecyclers[i].x, leftToGunRecyclers[i].y, recyclerConnectorY)
+        local recycler = Recycler(leftToGunRecyclers[i].x, leftToGunRecyclers[i].y, recyclerConnectorY, true)
         table.insert(activeRecyclers, recycler)
         table.insert(ACTIVE_TARGETS, recycler)
         recyclerConnectorY += 5
     end
 
-    recyclerConnectorY = 0
+    recyclerConnectorY = 10
     for i = 1, #rightToGunRecyclers do
-        local recycler = Recycler(rightToGunRecyclers[i].x, rightToGunRecyclers[i].y, recyclerConnectorY)
+        local recycler = Recycler(rightToGunRecyclers[i].x, rightToGunRecyclers[i].y, recyclerConnectorY, false)
         table.insert(activeRecyclers, recycler)
         table.insert(ACTIVE_TARGETS, recycler)
         recyclerConnectorY += 5
@@ -101,7 +99,6 @@ end
 function RecyclerManager:assignDebris()
     collectedDebris += 1
     if self.holdDebrisTimer.paused == true then
-        print("holding")
         self.holdDebrisTimer:start()
     end
 end

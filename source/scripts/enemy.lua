@@ -10,7 +10,7 @@ local geo <const> = pd.geometry
 
 class("Enemy").extends(gfx.sprite)
 
-local minSpeed, maxSpeed = 10, 20
+local minSpeed, maxSpeed = 5, 10
 local explosionDuration = 1000
 local hitDuration = 100
 
