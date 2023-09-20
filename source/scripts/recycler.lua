@@ -51,9 +51,7 @@ function Recycler:getHit()
     self:remove()
 end
 
-function Recycler:sendDebrisToRecycler()
-    self.available = false
-    self.recyclingSprite:add()
+function Recycler:setupDebrisToRecyclerAnimation()
     local connector = self.connector
     local initialX, initialY = 0, 0
 
@@ -65,7 +63,7 @@ function Recycler:sendDebrisToRecycler()
             horizontalConnector = geo.lineSegment.new(x2, y2, x1, y1)
         end
         local connectorParts = { horizontalConnector, connector.verticalConnector }
-        self.connectorAnimation = Animator.new(debrisTravelTime, connectorParts, playdate.easingFunctions.linear)
+        self.debrisToRecyclerAnimator = Animator.new(debrisTravelTime, connectorParts, playdate.easingFunctions.linear)
     else
         local connectorLine = connector.horizontalConnector
         local x1, y1, x2, y2 = connector.horizontalConnector:unpack()
@@ -74,34 +72,83 @@ function Recycler:sendDebrisToRecycler()
             connectorLine = geo.lineSegment.new(x2, y2, x1, y1)
         end
 
-        self.connectorAnimation = Animator.new(debrisTravelTime, connectorLine,
+        self.debrisToRecyclerAnimator = Animator.new(debrisTravelTime, connectorLine,
             playdate.easingFunctions.linear)
     end
     self.collectedDebrisSprite:moveTo(initialX, initialY - self.collectedDebrisSprite:getSize())
+end
+
+function Recycler:setupAmmoToGunAnimation()
+    local connector = self.connector
+    local initialX, initialY = 0, 0
+
+    if connector.verticalConnector ~= nil then
+        local verticalConnector = connector.verticalConnector
+        local x1, y1, x2, y2 = connector.verticalConnector:unpack()
+        initialX, initialY = x2, y2
+        verticalConnector = geo.lineSegment.new(x2, y2, x1, y1)
+        local horizontalConnector = connector.horizontalConnector
+        if not self.isLeftToGun then
+            x1, y1, x2, y2 = connector.horizontalConnector:unpack()
+            horizontalConnector = geo.lineSegment.new(x2, y2, x1, y1)
+        end
+        local connectorParts = { verticalConnector, horizontalConnector }
+        self.ammoToGunAnimator = Animator.new(debrisTravelTime, connectorParts, playdate.easingFunctions.linear)
+    else
+        local connectorLine = connector.horizontalConnector
+        local x1, y1, x2, y2 = connector.horizontalConnector:unpack()
+        if not self.isLeftToGun then
+            initialX, initialY = x2, y2
+            connectorLine = geo.lineSegment.new(x2, y2, x1, y1)
+        end
+
+        self.ammoToGunAnimator = Animator.new(debrisTravelTime, connectorLine,
+            playdate.easingFunctions.linear)
+    end
+    self.collectedDebrisSprite:moveTo(initialX, initialY - self.collectedDebrisSprite:getSize())
+end
+
+function Recycler:sendDebrisToRecycler()
+    self.available = false
+    self.recyclingSprite:add()
+    if self.debrisToRecyclerAnimator == nil then
+        self:setupDebrisToRecyclerAnimation()
+    end
     self.collectedDebrisSprite:add()
 end
 
-function Recycler:reverseLineSegment(ls)
-    local x1, y1, x2, y2 = ls:unpack()
-    return geo.lineSegment.new(x2, y2, x1, y1)
+function Recycler:sendAmmoToGun()
+    if self.ammoToGunAnimator == nil then
+        self:setupAmmoToGunAnimation()
+    end
+    self.generatedAmmoSprite:add()
 end
 
 function Recycler:update()
-    if self.connectorAnimation ~= nil then
-        if self.connectorAnimation:ended() ~= true then
-            local p = self.connectorAnimation:currentValue()
+    if self.debrisToRecyclerAnimator ~= nil then
+        if self.debrisToRecyclerAnimator:ended() ~= true then
+            local p = self.debrisToRecyclerAnimator:currentValue()
             local x1, y1 = p:unpack()
             self.collectedDebrisSprite:moveTo(x1, y1 - self.collectedDebrisSprite:getSize())
         else
-            self.connectorAnimation = nil
+            self.debrisToRecyclerAnimator = nil
             self.collectedDebrisSprite:remove()
             local ammoTimer = pd.timer.new(ammoGenerationTime)
             ammoTimer.timerEndedCallback = function(timer)
-                -- TODO: Animate this
-                CURRENT_BULLET_COUNT += 1
-                self.available = true
-                self.recyclingSprite:remove()
+                self:sendAmmoToGun()
             end
+        end
+    elseif self.ammoToGunAnimator ~= nil then
+        if self.ammoToGunAnimator:ended() ~= true then
+            local p = self.ammoToGunAnimator:currentValue()
+            local x1, y1 = p:unpack()
+            self.generatedAmmoSprite:moveTo(x1, y1 - self.generatedAmmoSprite:getSize())
+        else
+            self.ammoToGunAnimator = nil
+            self.generatedAmmoSprite:remove()
+            CURRENT_BULLET_COUNT += 1
+            self.available = true
+            self.recyclingSprite:remove()
         end
     end
 end

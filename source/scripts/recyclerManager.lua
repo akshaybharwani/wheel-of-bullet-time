@@ -8,7 +8,7 @@ local gfx <const> = pd.graphics
 
 class('RecyclerManager').extends(gfx.sprite)
 
-local maxRecyclerCount = 1
+local maxRecyclerCount = 5
 local activeRecyclers = {}
 
 local debrisHoldTime = 300
@@ -62,7 +62,7 @@ function RecyclerManager:spawnRecyclers()
         return a.x < b.x
     end)
 
-    local recyclerConnectorY = 10
+    local recyclerConnectorY = 0
     for i = 1, #leftToGunRecyclers do
         local recycler = Recycler(leftToGunRecyclers[i].x, leftToGunRecyclers[i].y, recyclerConnectorY, true)
         table.insert(activeRecyclers, recycler)
@@ -70,7 +70,7 @@ function RecyclerManager:spawnRecyclers()
         recyclerConnectorY += 5
     end
 
-    recyclerConnectorY = 10
+    recyclerConnectorY = 0
     for i = 1, #rightToGunRecyclers do
         local recycler = Recycler(rightToGunRecyclers[i].x, rightToGunRecyclers[i].y, recyclerConnectorY, false)
         table.insert(activeRecyclers, recycler)
