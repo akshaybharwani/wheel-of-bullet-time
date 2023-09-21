@@ -36,7 +36,6 @@ function Opening:init(debrisManager)
 
     self.debrisSpawningTimer = pd.timer.new(debrisSpawnTime)
     self.debrisSpawningTimer:pause()
-    self.debrisSpawningTimer.delay = 500
     self.debrisSpawningTimer.discardOnCompletion = false
     self.debrisSpawningTimer.repeats = true
     self.debrisSpawningTimer.timerEndedCallback = function(timer)
