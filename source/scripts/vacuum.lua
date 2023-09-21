@@ -7,15 +7,15 @@ local gfx <const> = pd.graphics
 class("Vacuum").extends(gfx.sprite)
 
 local vacuumAreaWidth = 32
-local vacuumLength = 300
+local vacuumLength = 500
 
 local gunVacuumAnimationLoop = nil
 
 function Vacuum:init(x, y)
     Vacuum.super.init(self)
-    local vacuumImage = gfx.image.new(vacuumAreaWidth, MAX_SCREEN_HEIGHT)
+    local vacuumImage = gfx.image.new(vacuumAreaWidth, vacuumLength)
     gfx.pushContext(vacuumImage)
-        gfx.drawRect(0, 0, vacuumAreaWidth, MAX_SCREEN_HEIGHT)
+    gfx.drawRect(0, 0, vacuumAreaWidth, vacuumLength)
     gfx.popContext()
     self:setImage(vacuumImage)
     self:setCollideRect(0, 0, self:getSize())
@@ -36,7 +36,7 @@ function Vacuum:setupAnimation()
 end
 
 function Vacuum:collectDebris()
-
+    -- TODO: sometimes vacuum wont collect some debris and they stay hanging in game
     for i = 1, #self.collidedSprites do
         local collidedObject = self.collidedSprites[i]
         if collidedObject.type == "debris" then
@@ -45,8 +45,6 @@ function Vacuum:collectDebris()
             return
         end
     end
-
-    -- show animation of debris collection
 end
 
 function Vacuum:checkForCollisions()

@@ -78,6 +78,7 @@ function Recycler:setupDebrisToRecyclerAnimation()
     self.collectedDebrisSprite:moveTo(initialX, initialY - self.collectedDebrisSprite:getSize())
 end
 
+-- TODO: simplify animation methods
 function Recycler:setupAmmoToGunAnimation()
     local connector = self.connector
     local initialX, initialY = 0, 0
@@ -110,7 +111,6 @@ end
 
 function Recycler:sendDebrisToRecycler()
     self.available = false
-    self.recyclingSprite:add()
     if self.debrisToRecyclerAnimator == nil then
         self:setupDebrisToRecyclerAnimation()
     end
@@ -121,6 +121,7 @@ function Recycler:sendAmmoToGun()
     if self.ammoToGunAnimator == nil then
         self:setupAmmoToGunAnimation()
     end
+    self.recyclingSprite:remove()
     self.generatedAmmoSprite:add()
 end
 
@@ -132,6 +133,7 @@ function Recycler:update()
             self.collectedDebrisSprite:moveTo(x1, y1 - self.collectedDebrisSprite:getSize())
         else
             self.debrisToRecyclerAnimator = nil
+            self.recyclingSprite:add()
             self.collectedDebrisSprite:remove()
             local ammoTimer = pd.timer.new(ammoGenerationTime)
             ammoTimer.timerEndedCallback = function(timer)
@@ -148,7 +150,6 @@ function Recycler:update()
             self.generatedAmmoSprite:remove()
             CURRENT_BULLET_COUNT += 1
             self.available = true
-            self.recyclingSprite:remove()
         end
     end
 end

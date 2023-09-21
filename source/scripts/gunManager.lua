@@ -42,7 +42,8 @@ function GunManager:init()
     self:moveTo(GUN_BASE_X, GUN_BASE_Y)
     self:add()
 
-    GUN_TOP_SPRITE = gfx.sprite.new()
+    -- HACK: this should not be refering to a direct image
+    GUN_TOP_SPRITE = gfx.sprite.new(gfx.image.new("images/gun_top_default"))
     GUN_TOP_SPRITE:moveTo(GUN_BASE_X, GUN_BASE_Y)
     GUN_TOP_SPRITE:add()
     table.insert(ACTIVE_TARGETS, GUN_TOP_SPRITE)
