@@ -9,7 +9,7 @@ local gfx <const> = pd.graphics
 class('RecyclerManager').extends(gfx.sprite)
 
 local maxRecyclerCount = 5
-local activeRecyclers = {}
+ACTIVE_RECYCLERS = {}
 
 local debrisHoldTime = 300
 local collectedDebris = 0
@@ -23,9 +23,9 @@ function RecyclerManager:init()
     self.holdDebrisTimer.repeats = true
     self.holdDebrisTimer.timerEndedCallback = function(timer)
         if collectedDebris > 0 then
-            for i = 1, #activeRecyclers do
-                if activeRecyclers[i].available == true then
-                    activeRecyclers[i]:sendDebrisToRecycler()
+            for i = 1, #ACTIVE_RECYCLERS do
+                if ACTIVE_RECYCLERS[i].available == true then
+                    ACTIVE_RECYCLERS[i]:sendDebrisToRecycler()
                     collectedDebris -= 1
                     break
                 end
@@ -65,7 +65,7 @@ function RecyclerManager:spawnRecyclers()
     local recyclerConnectorY = 0
     for i = 1, #leftToGunRecyclers do
         local recycler = Recycler(leftToGunRecyclers[i].x, leftToGunRecyclers[i].y, recyclerConnectorY, true)
-        table.insert(activeRecyclers, recycler)
+        table.insert(ACTIVE_RECYCLERS, recycler)
         table.insert(ACTIVE_TARGETS, recycler)
         recyclerConnectorY += 5
     end
@@ -73,7 +73,7 @@ function RecyclerManager:spawnRecyclers()
     recyclerConnectorY = 0
     for i = 1, #rightToGunRecyclers do
         local recycler = Recycler(rightToGunRecyclers[i].x, rightToGunRecyclers[i].y, recyclerConnectorY, false)
-        table.insert(activeRecyclers, recycler)
+        table.insert(ACTIVE_RECYCLERS, recycler)
         table.insert(ACTIVE_TARGETS, recycler)
         recyclerConnectorY += 5
     end

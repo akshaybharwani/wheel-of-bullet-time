@@ -48,6 +48,12 @@ function Recycler:getHit()
             break
         end
     end
+    for i = 1, #ACTIVE_RECYCLERS do
+        if ACTIVE_RECYCLERS[i] == self then
+            table.remove(ACTIVE_RECYCLERS, i)
+            break
+        end
+    end
     self:remove()
 end
 

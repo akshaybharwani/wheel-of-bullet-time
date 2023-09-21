@@ -14,6 +14,8 @@ class('GunManager').extends(gfx.sprite)
 local gunMaxRotationAngle = 85
 local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
 
+local gunPadding = 20
+
 -- TODO: should be a better way to maintain these variables
 GUN_BASE_SIZE = 64
 GUN_BASE_X, GUN_BASE_Y = 0, 0
@@ -55,8 +57,8 @@ end
 
 function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
     -- logic to check if it doesn't overlap gun base
-    if (x - RECYCLER_SIZE / 2 <= gunEndX
-            and x + RECYCLER_SIZE / 2 >= gunStartX) then
+    if (x - RECYCLER_SIZE / 2 <= gunEndX + gunPadding
+            and x + RECYCLER_SIZE / 2 >= gunStartX - gunPadding) then
         return true
     end
 

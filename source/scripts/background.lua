@@ -7,7 +7,7 @@ local gfx <const> = pd.graphics
 
 class('Background').extends(gfx.sprite)
 
-local titleTime = 5000
+local titleTime = 0
 
 function Background:init()
     Background.super.init(self)

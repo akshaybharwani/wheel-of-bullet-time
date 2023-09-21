@@ -64,7 +64,8 @@ function Vacuum:checkForCollisions()
         if debris ~= nil then
             local debrisPoint = pd.geometry.point.new(debris:getPosition())
             local linePoint = vacuumLine:closestPointOnLineToPoint(debrisPoint)
-            if debrisPoint:distanceToPoint(linePoint) <= vacuumAreaWidth / 2 then
+            -- HACK: magic number 6 to give advantage to players (and temporary fix debris not collecting bug)
+            if debrisPoint:distanceToPoint(linePoint) <= vacuumAreaWidth / 2 + 6 then
                 debris:moveTowardsGun()
             end
         end

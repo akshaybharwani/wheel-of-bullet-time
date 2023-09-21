@@ -10,6 +10,8 @@ local debrisToRecycleDuration = 1000
 
 local debrisImagePath = "images/debris"
 
+local debrisDetectionPadding = 20
+
 class("Debris").extends(gfx.sprite)
 
 function Debris:init(x, y, debrisManager)
@@ -32,8 +34,8 @@ function Debris:init(x, y, debrisManager)
 end
 
 function Debris:moveTowardsGun()
-    if self.x < GUN_BASE_X and self.x > GUN_BASE_X - 10
-        and self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - 10 then
+    if self.x < GUN_BASE_X and self.x > GUN_BASE_X - debrisDetectionPadding
+        and self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - debrisDetectionPadding then
         self.debrisManager:removeDebris(self)
         self:remove()
     else
