@@ -7,6 +7,7 @@ import "CoreLibs/frameTimer"
 import "scripts/background"
 import "scripts/enemyManager"
 import "scripts/gunManager"
+import "scripts/opening"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -21,6 +22,8 @@ MAX_SCREEN_HEIGHT = pd.display.getHeight()
 PLAYER_GROUP = 1
 ENEMY_GROUP = 2
 DEBRIS_GROUP = 3
+
+TITLE_TIME = 5000
 
 local lastCrankPosition = nil
 local crankCheckWaitDuration = 100
@@ -53,6 +56,11 @@ local function setupGame()
     local debrisManager = DebrisManager(recyclerManager)
     -- is this the best way to do this?
     EnemyManager(debrisManager)
+
+    -- HACK?
+    pd.timer.performAfterDelay(TITLE_TIME, function()
+        Opening(debrisManager)
+    end)
 end
 
 setupGame()

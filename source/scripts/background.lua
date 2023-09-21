@@ -7,8 +7,6 @@ local gfx <const> = pd.graphics
 
 class('Background').extends(gfx.sprite)
 
-local titleTime = 0
-
 function Background:init()
     Background.super.init(self)
 
@@ -18,7 +16,7 @@ function Background:init()
     self.titleSprite:moveTo(200, 120)
     self.titleSprite:setZIndex(1000)
 
-    local backgroundTimer = pd.timer.new(titleTime)
+    local backgroundTimer = pd.timer.new(TITLE_TIME)
     backgroundTimer.timerEndedCallback = function(timer)
         -- TODO: Need to enable input and everything else here
         self:showBackground()

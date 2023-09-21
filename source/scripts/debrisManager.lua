@@ -13,7 +13,6 @@ local debrisSize = 16
 local debrisCenter = (gridSize / 4) - (debrisSize / 2)
 
 local minDebris, maxDebris = 3, 5
-local debrisGroupAtStartCount = 4
 
 ACTIVE_DEBRIS = {}
 
@@ -47,11 +46,6 @@ local quadrants = {
 function DebrisManager:init(recyclerManager)
     DebrisManager.super.init(self)
     self.recyclerManager = recyclerManager
-    for i = 1, debrisGroupAtStartCount do
-        local spawnX = math.random(16, MAX_SCREEN_WIDTH - 16)
-        local spawnY = math.random(16, MAX_SCREEN_HEIGHT / 2)
-        self:spawnDebris(spawnX, spawnY)
-    end
     self:add()
 end
 

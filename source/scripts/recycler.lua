@@ -34,8 +34,11 @@ function Recycler:init(x, y, connectorY, isLeftToGun)
     self:setImage(gfx.image.new(recyclerImagePath))
     self:setCollideRect(0, 0, self:getSize())
     self.connector = RecyclerConnector(self, connectorY)
+end
 
+function Recycler:addSprite()
     self:add()
+    self.connector:addSprite()
 end
 
 function Recycler:getHit()

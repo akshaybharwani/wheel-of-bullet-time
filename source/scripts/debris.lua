@@ -34,8 +34,7 @@ function Debris:init(x, y, debrisManager)
 end
 
 function Debris:moveTowardsGun()
-    if self.x < GUN_BASE_X and self.x > GUN_BASE_X - debrisDetectionPadding
-        and self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - debrisDetectionPadding then
+    if self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - debrisDetectionPadding then
         self.debrisManager:removeDebris(self)
         self:remove()
     else
