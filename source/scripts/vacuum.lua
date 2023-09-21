@@ -65,7 +65,7 @@ function Vacuum:checkForCollisions()
             local debrisPoint = pd.geometry.point.new(debris:getPosition())
             local linePoint = vacuumLine:closestPointOnLineToPoint(debrisPoint)
             if debrisPoint:distanceToPoint(linePoint) <= vacuumAreaWidth / 2 then
-                debris:collect()
+                debris:moveTowardsGun()
             end
         end
     end

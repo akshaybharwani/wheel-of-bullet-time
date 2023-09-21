@@ -27,22 +27,26 @@ function Debris:init(x, y, debrisManager)
         self:setRotation(90)
     end
     self:moveTo(x, y)
+    self:setVelocity(GUN_BASE_X, GUN_BASE_Y)
     self:add()
 end
 
-function Debris:update()
-    if self.debrisToRecycleAnimator then
-        if self.debrisToRecycleAnimator:ended() then
-            self.debrisManager:removeDebris(self)
-            self:remove()
-            return
-        end
-        self:moveTo(self.debrisToRecycleAnimator:currentValue())
+function Debris:moveTowardsGun()
+    if self.x < GUN_BASE_X and self.x > GUN_BASE_X - 10
+        and self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - 10 then
+        self.debrisManager:removeDebris(self)
+        self:remove()
+    else
+        local nextX, nextY = self.x + self.dx * DELTA_TIME, self.y + self.dy * DELTA_TIME
+        self:moveTo(nextX, nextY)
     end
 end
 
-function Debris:collect()
-    local debrisPoint = pd.geometry.point.new(self.x, self.y)
-    local gunPoint = pd.geometry.point.new(GUN_BASE_X, GUN_BASE_Y)
-    self.debrisToRecycleAnimator = gfx.animator.new(debrisToRecycleDuration, debrisPoint, gunPoint)
+function Debris:setVelocity(x, y)
+    local distance = pd.geometry.distanceToPoint(self.x, self.y, x, y)
+    self.speed = distance / (debrisToRecycleDuration / 1000)
+    local nx = x - self.x
+    local ny = y - self.y
+    self.dx = (nx / distance) * self.speed
+    self.dy = (ny / distance) * self.speed
 end

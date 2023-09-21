@@ -7,7 +7,7 @@ local gfx <const> = pd.graphics
 
 class("RecyclerConnector").extends(gfx.sprite)
 
-local connectorWidth = 4
+local connectorWidth = 3
 
 function RecyclerConnector:init(recycler, connectorY)
     -- TODO: very complicated to look at. Revisit to improve
@@ -24,7 +24,7 @@ function RecyclerConnector:init(recycler, connectorY)
         connnectorX = GUN_BASE_X + GUN_BASE_SIZE / 2
         connectorLength = math.abs(connnectorX - (recycler.x - RECYCLER_SIZE / 2))
     end
-    local connectorImage = gfx.image.new(connectorLength * 2, connectorY + connectorWidth * 2)
+    local connectorImage = gfx.image.new(connectorLength * 2, (connectorY + connectorWidth) * 2)
     -- this is to create a connector upwards from the recycler so that it doesn't overlap with others
     if connectorY ~= 0 then
         gfx.pushContext(connectorImage)

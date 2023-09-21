@@ -12,7 +12,8 @@ local gridSize = 64
 local debrisSize = 16
 local debrisCenter = (gridSize / 4) - (debrisSize / 2)
 
-local minDebris, maxDebris = 3, 8
+local minDebris, maxDebris = 3, 5
+local debrisGroupAtStartCount = 4
 
 ACTIVE_DEBRIS = {}
 
@@ -46,14 +47,19 @@ local quadrants = {
 function DebrisManager:init(recyclerManager)
     DebrisManager.super.init(self)
     self.recyclerManager = recyclerManager
+    for i = 1, debrisGroupAtStartCount do
+        local spawnX = math.random(16, MAX_SCREEN_WIDTH - 16)
+        local spawnY = math.random(16, MAX_SCREEN_HEIGHT / 2)
+        self:spawnDebris(spawnX, spawnY)
+    end
     self:add()
 end
 
-function DebrisManager:spawnDebris(enemyX, enemyY)
-    local noOfDebrisToSpawn = math.random(minDebris, maxDebris)
+function DebrisManager:spawnDebris(spawnX, spawnY)
+    local debrisSpawnCount = math.random(minDebris, maxDebris)
 
-    local debrisSpawnPositions = self:getDebrisSpawnPositions(enemyX, enemyY, noOfDebrisToSpawn)
-    for i = 1, noOfDebrisToSpawn do
+    local debrisSpawnPositions = self:getDebrisSpawnPositions(spawnX, spawnY, debrisSpawnCount)
+    for i = 1, debrisSpawnCount do
         table.insert(ACTIVE_DEBRIS, Debris(debrisSpawnPositions[i][1], debrisSpawnPositions[i][2], self))
     end
     -- remove debtis after some time
@@ -111,6 +117,7 @@ function DebrisManager:removeDebris(debris)
         if ACTIVE_DEBRIS[i] == debris then
             self.recyclerManager:assignDebris()
             ACTIVE_DEBRIS[i] = nil
+            break
         end
     end
 end

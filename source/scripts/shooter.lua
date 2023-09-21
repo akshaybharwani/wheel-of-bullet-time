@@ -12,7 +12,7 @@ local gunShootingAnimationLoop = nil
 local maxFiringCooldown = 0.5
 local currentFiringCooldown = maxFiringCooldown
 
-local startingBulletCount = 10
+local startingBulletCount = 0
 CURRENT_BULLET_COUNT = startingBulletCount
 
 -- crank
