@@ -1,15 +1,26 @@
+import "CoreLibs/object"
+import "CoreLibs/graphics"
+import "CoreLibs/sprites"
 import "CoreLibs/crank"
 import "CoreLibs/animation"
+import "scripts/recycler/vacuumVapor"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 class("Vacuum").extends(gfx.sprite)
 
+local vacuumVaporFlipStates = { gfx.kImageUnflipped, gfx.kImageFlippedX, gfx.kImageFlippedY, gfx.kImageFlippedXY}
+
 local vacuumAreaWidth = 32
 local vacuumLength = 500
 
+local vacuumVaporDistance = 32
+local vacuumVaporCount = 10
+
 local gunVacuumAnimationLoop = nil
+
+TOP_VACUUM_VAPOR_POSITION = nil
 
 function Vacuum:init(x, y)
     Vacuum.super.init(self)
@@ -19,6 +30,7 @@ function Vacuum:init(x, y)
     gfx.popContext()
     self:setImage(vacuumImage)
     self:setCollideRect(0, 0, self:getSize())
+    self:setupVacuumVapor()
     self:setGroups(DEBRIS_GROUP)
     self:setCollidesWithGroups({ DEBRIS_GROUP })
     self:moveTo(MAX_SCREEN_WIDTH / 2, GUN_BASE_Y)
@@ -28,8 +40,19 @@ function Vacuum:init(x, y)
     self:setVisible(false)
 end
 
+function Vacuum:setupVacuumVapor()
+    self.vacuumVapors = {}
+    for i = 1, vacuumVaporCount, 1 do
+        local vacuumVaporFlipStateIndex = math.random(1, #vacuumVaporFlipStates)
+        table.insert(self.vacuumVapors, VacuumVapor(GUN_BASE_X, GUN_BASE_Y - i * vacuumVaporDistance, vacuumVaporFlipStates[vacuumVaporFlipStateIndex]))
+    end
+    local topVacuumVapor = self.vacuumVapors[vacuumVaporCount]
+    TOP_VACUUM_VAPOR_POSITION = { x = topVacuumVapor.x, y = topVacuumVapor.y}
+    print(TOP_VACUUM_VAPOR_POSITION.x .. " " .. TOP_VACUUM_VAPOR_POSITION.y)
+end
+
 function Vacuum:setupAnimation()
-    local animationImageTable = gfx.imagetable.new("images/gun_vacuum")
+    local animationImageTable = gfx.imagetable.new("images/recycler/gun_vacuum")
     gunVacuumAnimationLoop = gfx.animation.loop.new()
     gunVacuumAnimationLoop.paused = true
     gunVacuumAnimationLoop:setImageTable(animationImageTable)
@@ -40,7 +63,6 @@ function Vacuum:collectDebris()
     for i = 1, #self.collidedSprites do
         local collidedObject = self.collidedSprites[i]
         if collidedObject.type == "debris" then
-
             collidedObject:collect()
             return
         end

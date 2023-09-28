@@ -1,7 +1,7 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "scripts/recyclerConnector"
+import "scripts/recycler/recyclerConnector"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -28,7 +28,7 @@ function Recycler:init(x, y, connectorY, isLeftToGun)
     self.generatedAmmoSprite = gfx.sprite.new(gfx.image.new(generatedAmmoImagePath))
     self.recyclingSprite = gfx.sprite.new(gfx.image.new(recyclingImagePath))
     self.recyclingSprite:moveTo(x, y)
-    self.recyclingSprite:setZIndex(101)
+    self.recyclingSprite:setZIndex(GUN_Z_INDEX)
 
     self:moveTo(x, y)
     self:setImage(gfx.image.new(recyclerImagePath))

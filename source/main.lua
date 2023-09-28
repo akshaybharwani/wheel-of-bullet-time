@@ -13,7 +13,9 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 -- globals
+
 DELTA_TIME = 0
+-- if crank was moved this frame based on crankCheckWaitDuration, this is true
 IS_GAME_ACTIVE = false
 
 MAX_SCREEN_WIDTH = pd.display.getWidth()
@@ -23,7 +25,9 @@ PLAYER_GROUP = 1
 ENEMY_GROUP = 2
 DEBRIS_GROUP = 3
 
-TITLE_TIME = 5000
+TITLE_TIME = 0
+
+GUN_Z_INDEX = 101
 
 local lastCrankPosition = nil
 local crankCheckWaitDuration = 100
@@ -67,6 +71,7 @@ setupGame()
 
 function pd.update()
     --gfx.clear()
+
     DELTA_TIME = pd.getElapsedTime()
     pd.resetElapsedTime()
 

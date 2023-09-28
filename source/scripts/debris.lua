@@ -45,6 +45,7 @@ end
 
 function Debris:setVelocity(x, y)
     local distance = pd.geometry.distanceToPoint(self.x, self.y, x, y)
+    -- why divide by 1000?
     self.speed = distance / (debrisToRecycleDuration / 1000)
     local nx = x - self.x
     local ny = y - self.y

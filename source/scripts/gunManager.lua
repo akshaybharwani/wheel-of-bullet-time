@@ -2,8 +2,8 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "scripts/shooter"
-import "scripts/vacuum"
-import "scripts/recyclerManager"
+import "scripts/recycler/vacuum"
+import "scripts/recycler/recyclerManager"
 import "scripts/bulletDisplay"
 
 local pd <const> = playdate
@@ -42,12 +42,14 @@ function GunManager:init()
     GUN_BASE_X = MAX_SCREEN_WIDTH / 2
     GUN_BASE_Y = MAX_SCREEN_HEIGHT - (self.width / 2)
     self:moveTo(GUN_BASE_X, GUN_BASE_Y)
+    self:setZIndex(GUN_Z_INDEX)
     self:add()
 
     -- HACK: this should not be refering to a direct image
     GUN_TOP_SPRITE = gfx.sprite.new(gfx.image.new("images/gun_top_default"))
     GUN_TOP_SPRITE:moveTo(GUN_BASE_X, GUN_BASE_Y)
     GUN_TOP_SPRITE:add()
+    GUN_TOP_SPRITE:setZIndex(GUN_Z_INDEX)
     table.insert(ACTIVE_TARGETS, GUN_TOP_SPRITE)
 
     Shooter(GUN_BASE_X, GUN_BASE_Y)
