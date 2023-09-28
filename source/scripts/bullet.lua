@@ -20,6 +20,8 @@ function Bullet:init(startX, startY, angle)
 
     self:setImage(gfx.image.new("images/bullet_body"))
     self:setCollideRect(0, 0, self:getSize())
+    self:setGroups(BULLET_GROUP)
+    self:setCollidesWithGroups({ ENEMY_GROUP })
     self:moveTo(startX, startY)
     self:add()
 

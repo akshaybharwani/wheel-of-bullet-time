@@ -12,7 +12,7 @@ function BulletDisplay:init()
     -- Important, so you don't have it moving in
     -- the world space
     --self:setIgnoresDrawOffset(true)
-    self:setZIndex(100)
+    self:setZIndex(UI_Z_INDEX)
     self:add()
 end
 

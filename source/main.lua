@@ -24,10 +24,13 @@ MAX_SCREEN_HEIGHT = pd.display.getHeight()
 PLAYER_GROUP = 1
 ENEMY_GROUP = 2
 DEBRIS_GROUP = 3
+BULLET_GROUP = 4
+GUN_GROUP = 5
 
 TITLE_TIME = 0
 
-GUN_Z_INDEX = 101
+GUN_Z_INDEX = 100
+UI_Z_INDEX = 101
 
 local lastCrankPosition = nil
 local crankCheckWaitDuration = 100

@@ -147,6 +147,8 @@ function Enemy:setupShieldCollider()
     local shieldColliderOrigin = self.width / 2 - shieldColliderSize / 2
     self:setCollideRect(shieldColliderOrigin, shieldColliderOrigin, shieldColliderSize,
         shieldColliderSize)
+    self:setGroups(ENEMY_GROUP)
+    self:setCollidesWithGroups({ BULLET_GROUP, GUN_GROUP })
 end
 
 function Enemy:setupHitAnimator()

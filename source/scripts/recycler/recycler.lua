@@ -33,6 +33,8 @@ function Recycler:init(x, y, connectorY, isLeftToGun)
     self:moveTo(x, y)
     self:setImage(gfx.image.new(recyclerImagePath))
     self:setCollideRect(0, 0, self:getSize())
+    self:setGroups(GUN_GROUP)
+    self:setCollidesWithGroups({ ENEMY_GROUP })
     self.connector = RecyclerConnector(self, connectorY)
 end
 

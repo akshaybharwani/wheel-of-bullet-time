@@ -13,6 +13,8 @@ local animationFPS = 20
 local vacuumVaporImagePath = "images/recycler/vacuum-table-32-32"
 local vacuumVaporImageTable = gfx.imagetable.new(vacuumVaporImagePath)
 
+local vacuumVaporPadding = 20
+
 function VacuumVapor:init(x, y, flip)
     VacuumVapor.super.init(self, vacuumVaporImageTable)
     self:moveTo(x, y - vacuumVaporImageTable:getImage(1):getSize() / 2)
@@ -29,16 +31,7 @@ function VacuumVapor:update()
         if IS_GAME_ACTIVE then
             self:resumeAnimation()
             self:setVisible(true)
-            if self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - 20 then
-                if (TOP_VACUUM_VAPOR_POSITION) then
-                    self:moveTo(TOP_VACUUM_VAPOR_POSITION.x, TOP_VACUUM_VAPOR_POSITION.y)
-                else
-                    self:remove()
-                end
-            else
-                local nextX, nextY = self.x + self.dx * DELTA_TIME, self.y + self.dy * DELTA_TIME
-                self:moveTo(nextX, nextY)
-            end
+            self:updatePosition()
         else
             self:pauseAnimation()
         end
@@ -48,6 +41,19 @@ function VacuumVapor:update()
     end
 
     self:updateAnimation()
+end
+
+function VacuumVapor:updatePosition()
+    if self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - vacuumVaporPadding then
+        if (TOP_VACUUM_VAPOR_POSITION) then
+            self:moveTo(TOP_VACUUM_VAPOR_POSITION.x, TOP_VACUUM_VAPOR_POSITION.y)
+        else
+            self:remove()
+        end
+    else
+        local nextX, nextY = self.x + self.dx * DELTA_TIME, self.y + self.dy * DELTA_TIME
+        self:moveTo(nextX, nextY)
+    end
 end
 
 function VacuumVapor:setVelocity(x, y)
