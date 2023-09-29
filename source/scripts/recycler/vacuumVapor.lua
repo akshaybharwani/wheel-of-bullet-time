@@ -31,7 +31,7 @@ function VacuumVapor:update()
         if IS_GAME_ACTIVE then
             self:resumeAnimation()
             self:setVisible(true)
-            self:updatePosition()
+            self:moveTowardsGun()
         else
             self:pauseAnimation()
         end
@@ -43,7 +43,14 @@ function VacuumVapor:update()
     self:updateAnimation()
 end
 
-function VacuumVapor:updatePosition()
+function VacuumVapor:updatePosition(vacuumLine)
+    local vacuumVaporPoint = pd.geometry.point.new(self:getPosition())
+    local linePoint = vacuumLine:closestPointOnLineToPoint(vacuumVaporPoint)
+    self:moveTo(linePoint.x, linePoint.y)
+    self:setVelocity(GUN_BASE_X, GUN_BASE_Y)
+end
+
+function VacuumVapor:moveTowardsGun()
     if self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - vacuumVaporPadding then
         if (TOP_VACUUM_VAPOR_POSITION) then
             self:moveTo(TOP_VACUUM_VAPOR_POSITION.x, TOP_VACUUM_VAPOR_POSITION.y)

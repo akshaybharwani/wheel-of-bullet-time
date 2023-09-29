@@ -22,22 +22,24 @@ local gunVacuumAnimationLoop = nil
 
 TOP_VACUUM_VAPOR_POSITION = nil
 
+local vacuumLine = nil
+
 function Vacuum:init(x, y)
     Vacuum.super.init(self)
-    local vacuumImage = gfx.image.new(vacuumAreaWidth, vacuumLength)
+    -- switched to using vacuum vapors, so remove this
+    --[[ local vacuumImage = gfx.image.new(vacuumAreaWidth, vacuumLength)
     gfx.pushContext(vacuumImage)
     gfx.drawRect(0, 0, vacuumAreaWidth, vacuumLength)
     gfx.popContext()
     self:setImage(vacuumImage)
     self:setCollideRect(0, 0, self:getSize())
-    self:setupVacuumVapor()
     self:setGroups(DEBRIS_GROUP)
-    self:setCollidesWithGroups({ DEBRIS_GROUP })
+    self:setCollidesWithGroups({ DEBRIS_GROUP }) 
     self:moveTo(MAX_SCREEN_WIDTH / 2, GUN_BASE_Y)
-    self:setCenter(0.5, 1)
+    self:setCenter(0.5, 1) ]]
+    self:setupVacuumVapor()
     self:setupAnimation()
     self:add()
-    self:setVisible(false)
 end
 
 function Vacuum:setupVacuumVapor()
@@ -48,7 +50,6 @@ function Vacuum:setupVacuumVapor()
     end
     local topVacuumVapor = self.vacuumVapors[vacuumVaporCount]
     TOP_VACUUM_VAPOR_POSITION = { x = topVacuumVapor.x, y = topVacuumVapor.y}
-    print(TOP_VACUUM_VAPOR_POSITION.x .. " " .. TOP_VACUUM_VAPOR_POSITION.y)
 end
 
 function Vacuum:setupAnimation()
@@ -70,17 +71,6 @@ function Vacuum:collectDebris()
 end
 
 function Vacuum:checkForCollisions()
-    self:setVisible(true)
-    -- refer Examples/Single File Examples/crank.lua
-    local angleRad = math.rad(GUN_CURRENT_ROTATION_ANGLE)
-    local x2 = vacuumLength * math.sin(angleRad)
-    local y2 = -1 * vacuumLength * math.cos(angleRad)
-
-    x2 += GUN_BASE_X
-    y2 += GUN_BASE_Y
-
-    local vacuumLine = pd.geometry.lineSegment.new(GUN_BASE_X, GUN_BASE_Y, x2, y2)
-
     for i = 1, #ACTIVE_DEBRIS do
         local debris = ACTIVE_DEBRIS[i]
         if debris ~= nil then
@@ -94,11 +84,22 @@ function Vacuum:checkForCollisions()
     end
 end
 
+function Vacuum:setVacuumLine()
+    -- refer Examples/Single File Examples/crank.lua
+    local angleRad = math.rad(GUN_CURRENT_ROTATION_ANGLE)
+    local x2 = vacuumLength * math.sin(angleRad)
+    local y2 = -1 * vacuumLength * math.cos(angleRad)
+
+    x2 += GUN_BASE_X
+    y2 += GUN_BASE_Y
+
+    vacuumLine = pd.geometry.lineSegment.new(GUN_BASE_X, GUN_BASE_Y, x2, y2)
+end
+
 function Vacuum:checkGunState()
     if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
         gunVacuumAnimationLoop.paused = false
         GUN_TOP_SPRITE:setImage(gunVacuumAnimationLoop:image())
-        -- does this require any timer like shooting a bullet every 36 degree rotation?
         self:checkForCollisions()
     else
         self:setVisible(false)
@@ -106,7 +107,15 @@ function Vacuum:checkGunState()
 end
 
 function Vacuum:update()
-    self:setRotation(GUN_CURRENT_ROTATION_ANGLE)
+    if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
+        self:setVacuumLine()
+        -- this is so that vacuumVapors only update positions after creation of vacuumLine
+        -- maybe there is a better way
+        for i = 1, #self.vacuumVapors, 1 do
+            self.vacuumVapors[i]:updatePosition(vacuumLine)
+        end
+    end
+    
     if not IS_GAME_ACTIVE then
         gunVacuumAnimationLoop.paused = true
         return
