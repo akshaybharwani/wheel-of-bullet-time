@@ -26,17 +26,6 @@ local vacuumLine = nil
 
 function Vacuum:init(x, y)
     Vacuum.super.init(self)
-    -- switched to using vacuum vapors, so remove this
-    --[[ local vacuumImage = gfx.image.new(vacuumAreaWidth, vacuumLength)
-    gfx.pushContext(vacuumImage)
-    gfx.drawRect(0, 0, vacuumAreaWidth, vacuumLength)
-    gfx.popContext()
-    self:setImage(vacuumImage)
-    self:setCollideRect(0, 0, self:getSize())
-    self:setGroups(DEBRIS_GROUP)
-    self:setCollidesWithGroups({ DEBRIS_GROUP }) 
-    self:moveTo(MAX_SCREEN_WIDTH / 2, GUN_BASE_Y)
-    self:setCenter(0.5, 1) ]]
     self:setupVacuumVapor()
     self:setupAnimation()
     self:add()
@@ -53,6 +42,7 @@ function Vacuum:setupVacuumVapor()
 end
 
 function Vacuum:setupAnimation()
+    -- TODO: change to use AnimatedSprite
     local animationImageTable = gfx.imagetable.new("images/recycler/gun_vacuum")
     gunVacuumAnimationLoop = gfx.animation.loop.new()
     gunVacuumAnimationLoop.paused = true

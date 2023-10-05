@@ -11,8 +11,9 @@ local geo <const> = pd.geometry
 class("Enemy").extends(gfx.sprite)
 
 local minSpeed, maxSpeed = 5, 10
-local explosionDuration = 1000
 local hitDuration = 100
+local explosionLoopCount = 3
+local explosionAnimationFPS = 6
 
 local minTotalPatrolDuration, maxTotalPatrolDuration = 2, 5
 local minPatrolSegmentDuration, maxPatrolSegmentDuration = 1, 2
@@ -20,13 +21,14 @@ local minPatrolSegmentDuration, maxPatrolSegmentDuration = 1, 2
 function Enemy:init(enemyType, debrisManager)
     Enemy.super.init(self)
 
+    self.enemyType = enemyType
     self.debrisManager = debrisManager
     self.hp = enemyType.hp
     self.type = "enemy"
     self.speed = math.random(minSpeed, maxSpeed)
     self.shieldColliderSize = enemyType.shieldColliderSize
 
-    self.explosionSprite = gfx.sprite.new(gfx.image.new(enemyType.explosionImagePath))
+    self:setupExplosionAnimation()
 
     self.enemyBaseImage = gfx.image.new(enemyType.baseImagePath)
     self:setImage(self.enemyBaseImage)
@@ -41,7 +43,7 @@ function Enemy:init(enemyType, debrisManager)
 end
 
 function Enemy:update()
-    if self.explosionAnimator then
+    if self.exploding then
         return
     end
 
@@ -50,6 +52,18 @@ function Enemy:update()
     end
 
     self:move()
+end
+
+function Enemy:setupExplosionAnimation()
+    local imageTable = self.enemyType.explosionImageTable
+    self.explosionSprite = AnimatedSprite.new(imageTable)
+    self.explosionSpriteHeight = imageTable:getImage(1).height
+    self.explosionSprite:addState("exploding", nil, nil, {tickStep = explosionAnimationFPS})
+    self.explosionSprite.states.exploding.loop = explosionLoopCount
+    self.exploding = false
+    self.explosionSprite.states.exploding.onAnimationEndEvent = function (self)
+        self:remove()
+    end
 end
 
 function Enemy:setupPatroling()
@@ -83,10 +97,10 @@ function Enemy:move()
     local _, _, collisions, _ = self:moveWithCollisions(nextX, nextY)
 
     for i = 1, #collisions do
-        local other = collisions[i].other
-        if other.type == "gun-element" then
-            other:getHit()
-            self:explode()
+        local target = collisions[i].other
+        if target.type == "gun-element" then
+            target:getHit()
+            self:explode(target)
             return
         end
     end
@@ -131,15 +145,13 @@ function Enemy:shatter()
     self:remove()
 end
 
-function Enemy:explode()
-    self.explosionAnimator = pd.timer.new(explosionDuration)
-    self.explosionAnimator.timerEndedCallback = function(timer)
-        self:remove()
-        self.explosionSprite:remove()
-    end
-    self.explosionSprite:moveTo(self.x, self.y)
-    self.explosionSprite:add()
+function Enemy:explode(target)
     self:setVisible(false)
+
+    -- magic number 220, might want to revisit
+    self.explosionSprite:moveTo(target.x, 220 - self.explosionSpriteHeight / 2)
+    self.explosionSprite:playAnimation()
+    self.exploding = true
 end
 
 function Enemy:setupShieldCollider()

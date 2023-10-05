@@ -15,28 +15,30 @@ local oneWaveDuration = 30000
 local currentWaveDuration = 0
 local maxEnemyRate = 6
 
+local explosionImagePath = "images/enemies/enemy_explosion-table-64-64"
+
 local enemyA = {
     hp = 1,
     attackColliderSize = 22,
     shieldColliderSize = 26,
-    baseImagePath = "images/enemy_a",
-    explosionImagePath = "images/enemy_explosionattack_a"
+    baseImagePath = "images/enemies/enemy_a",
+    explosionImageTable = gfx.imagetable.new(explosionImagePath)
 }
 
 local enemyB = {
     hp = 3,
     attackColliderSize = 26,
     shieldColliderSize = 30,
-    baseImagePath = "images/enemy_b",
-    explosionImagePath = "images/enemy_explosionattack_bc"
+    baseImagePath = "images/enemies/enemy_b",
+    explosionImageTable = gfx.imagetable.new(explosionImagePath)
 }
 
 local enemyC = {
     hp = 5,
     attackColliderSize = 40,
     shieldColliderSize = 46,
-    baseImagePath = "images/enemy_c",
-    explosionImagePath = "images/enemy_explosionattack_bc"
+    baseImagePath = "images/enemies/enemy_c",
+    explosionImageTable = gfx.imagetable.new(explosionImagePath)
 }
 
 local enemies = { enemyA, enemyB, enemyC }
