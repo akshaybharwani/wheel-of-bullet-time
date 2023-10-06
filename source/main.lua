@@ -14,6 +14,8 @@ local gfx <const> = pd.graphics
 
 -- globals
 
+-- TODO: assuming FPS is constant 30, majorly used by AnimatedSprite
+CONSTANT_FPS = 30
 DELTA_TIME = 0
 -- if crank was moved this frame based on crankCheckWaitDuration, this is true
 IS_GAME_ACTIVE = false

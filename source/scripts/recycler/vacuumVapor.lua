@@ -19,8 +19,7 @@ function VacuumVapor:init(x, y, flip)
     VacuumVapor.super.init(self, vacuumVaporImageTable)
     self:moveTo(x, y - vacuumVaporImageTable:getImage(1):getSize() / 2)
     self:setVelocity(GUN_BASE_X, GUN_BASE_Y)
-    -- TODO: assuming FPS is constant 30 
-    local tickStep = 30 - animationFPS
+    local tickStep = animationFPS
     self:addState("shrink", 1, 5, {tickStep = tickStep})
     self.states.shrink.flip = flip
     self:playAnimation()
