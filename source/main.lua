@@ -19,6 +19,9 @@ CONSTANT_FPS = 30
 DELTA_TIME = 0
 -- if crank was moved this frame based on crankCheckWaitDuration, this is true
 IS_GAME_ACTIVE = false
+-- as the crankCheckWaitDuration is non-zero, the animation relying on IS_GAME_ACTIVE will
+-- continously won't work properly, this can be used to help with that
+WAS_GAME_ACTIVE_LAST_CHECK = false
 
 MAX_SCREEN_WIDTH = pd.display.getWidth()
 MAX_SCREEN_HEIGHT = pd.display.getHeight()
@@ -41,6 +44,9 @@ local function checkCrankInput()
     local currentCrankPosition = pd.getCrankPosition()
     if lastCrankPosition ~= currentCrankPosition then
         IS_GAME_ACTIVE = true
+        WAS_GAME_ACTIVE_LAST_CHECK = true
+    elseif WAS_GAME_ACTIVE_LAST_CHECK then
+        WAS_GAME_ACTIVE_LAST_CHECK = false
     end
     lastCrankPosition = currentCrankPosition
 end

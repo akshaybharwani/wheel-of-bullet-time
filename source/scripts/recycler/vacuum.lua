@@ -86,29 +86,21 @@ function Vacuum:setVacuumLine()
     vacuumLine = pd.geometry.lineSegment.new(GUN_BASE_X, GUN_BASE_Y, x2, y2)
 end
 
-function Vacuum:checkGunState()
-    if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
-        gunVacuumAnimationLoop.paused = false
-        GUN_TOP_SPRITE:setImage(gunVacuumAnimationLoop:image())
-        self:checkForCollisions()
+function Vacuum:update()
+    if IS_GAME_ACTIVE then
+        if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
+            self:setVacuumLine()
+            -- this is so that vacuumVapors only update positions after creation of vacuumLine
+            -- maybe there is a better way
+            for i = 1, #self.vacuumVapors, 1 do
+                self.vacuumVapors[i]:updatePosition(vacuumLine)
+            end
+            gunVacuumAnimationLoop.paused = false
+            GUN_TOP_SPRITE:setImage(gunVacuumAnimationLoop:image())
+            self:checkForCollisions()
+        end
     else
+        gunVacuumAnimationLoop.paused = true
         self:setVisible(false)
     end
-end
-
-function Vacuum:update()
-    if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
-        self:setVacuumLine()
-        -- this is so that vacuumVapors only update positions after creation of vacuumLine
-        -- maybe there is a better way
-        for i = 1, #self.vacuumVapors, 1 do
-            self.vacuumVapors[i]:updatePosition(vacuumLine)
-        end
-    end
-    
-    if not IS_GAME_ACTIVE then
-        gunVacuumAnimationLoop.paused = true
-        return
-    end
-    self:checkGunState()
 end

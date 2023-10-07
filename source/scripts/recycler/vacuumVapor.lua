@@ -26,14 +26,10 @@ function VacuumVapor:init(x, y, flip)
 end
 
 function VacuumVapor:update()
-    if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
-        if IS_GAME_ACTIVE then
-            self:resumeAnimation()
-            self:setVisible(true)
-            self:moveTowardsGun()
-        else
-            self:pauseAnimation()
-        end
+    if WAS_GAME_ACTIVE_LAST_CHECK and (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
+        self:resumeAnimation()
+        self:setVisible(true)
+        self:moveTowardsGun()
     else
         self:pauseAnimation()
         self:setVisible(false)
