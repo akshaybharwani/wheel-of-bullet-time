@@ -31,6 +31,8 @@ GUN_TOP_SPRITE = nil
 
 ACTIVE_TARGETS = {}
 
+WAS_GUN_ROTATED = false
+
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
 
 function GunManager:init()
@@ -53,7 +55,7 @@ function GunManager:init()
     table.insert(ACTIVE_TARGETS, GUN_TOP_SPRITE)
 
     Shooter(GUN_BASE_X, GUN_BASE_Y)
-    Vacuum(GUN_BASE_X, GUN_BASE_Y)
+    Vacuum(self)
     BulletDisplay()
 end
 
@@ -90,18 +92,21 @@ function GunManager:update()
 
     -- runtime rotation is very expensive
     -- this will change when we have pre-rendered rotated sprites
-    if GUN_TOP_SPRITE then
+    if WAS_GUN_ROTATED then
         GUN_TOP_SPRITE:setRotation(GUN_CURRENT_ROTATION_ANGLE)
     end
 end
 
 function GunManager:readRotationInput()
+    WAS_GUN_ROTATED = false
     if pd.buttonIsPressed("RIGHT") then
         if (GUN_CURRENT_ROTATION_ANGLE < gunMaxRotationAngle) then
+            WAS_GUN_ROTATED = true
             GUN_CURRENT_ROTATION_ANGLE += gunRotationSpeed
         end
     elseif pd.buttonIsPressed("LEFT") then
         if (GUN_CURRENT_ROTATION_ANGLE > -gunMaxRotationAngle) then
+            WAS_GUN_ROTATED = true
             GUN_CURRENT_ROTATION_ANGLE -= gunRotationSpeed
         end
     end

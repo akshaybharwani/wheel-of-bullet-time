@@ -13,21 +13,24 @@ class("Vacuum").extends(gfx.sprite)
 local vacuumVaporFlipStates = { gfx.kImageUnflipped, gfx.kImageFlippedX, gfx.kImageFlippedY, gfx.kImageFlippedXY}
 
 local vacuumAreaWidth = 32
-local vacuumLength = 500
+local vacuumLength = 1000
 
 local vacuumVaporDistance = 32
 local vacuumVaporCount = 10
 
 local gunVacuumAnimationLoop = nil
 
+local vacuumLine = nil
+
 TOP_VACUUM_VAPOR_POSITION = nil
 
-local vacuumLine = nil
+local vacuumVapors = nil
 
 function Vacuum:init(x, y)
     Vacuum.super.init(self)
     self:setupVacuumVapor()
     self:setupAnimation()
+    self:setVacuumLine()
     self:add()
 end
 
@@ -35,10 +38,12 @@ function Vacuum:setupVacuumVapor()
     self.vacuumVapors = {}
     for i = 1, vacuumVaporCount, 1 do
         local vacuumVaporFlipStateIndex = math.random(1, #vacuumVaporFlipStates)
-        table.insert(self.vacuumVapors, VacuumVapor(GUN_BASE_X, GUN_BASE_Y - i * vacuumVaporDistance, vacuumVaporFlipStates[vacuumVaporFlipStateIndex]))
+        local distanceFromGun = i * vacuumVaporDistance
+        table.insert(self.vacuumVapors, VacuumVapor(GUN_BASE_X, GUN_BASE_Y - distanceFromGun, vacuumVaporFlipStates[vacuumVaporFlipStateIndex], distanceFromGun))
     end
-    local topVacuumVapor = self.vacuumVapors[vacuumVaporCount]
-    TOP_VACUUM_VAPOR_POSITION = { x = topVacuumVapor.x, y = topVacuumVapor.y}
+    vacuumVapors = self.vacuumVapors
+    local vacuumVapors = self.vacuumVapors
+    TOP_VACUUM_VAPOR_POSITION = { x = vacuumVapors[#vacuumVapors].x, y = vacuumVapors[#vacuumVapors].y }
 end
 
 function Vacuum:setupAnimation()
@@ -87,14 +92,25 @@ function Vacuum:setVacuumLine()
 end
 
 function Vacuum:update()
-    if IS_GAME_ACTIVE then
-        if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
-            self:setVacuumLine()
-            -- this is so that vacuumVapors only update positions after creation of vacuumLine
-            -- maybe there is a better way
-            for i = 1, #self.vacuumVapors, 1 do
-                self.vacuumVapors[i]:updatePosition(vacuumLine)
+    if WAS_GUN_ROTATED then
+        self:setVacuumLine()
+        -- this is so that vacuumVapors only update positions after creation of vacuumLine
+        -- maybe there is a better way
+        for i = 1, #self.vacuumVapors, 1 do
+            self.vacuumVapors[i]:updatePosition(vacuumLine)
+        end
+
+        for i = 2, #self.vacuumVapors, 1 do
+            if self.vacuumVapors[i].y < self.vacuumVapors[i - 1].y then
+                TOP_VACUUM_VAPOR_POSITION = { x = self.vacuumVapors[i].x, y = self.vacuumVapors[i].y }
+            else
+                TOP_VACUUM_VAPOR_POSITION = { x = self.vacuumVapors[i - 1].x, y = self.vacuumVapors[i - 1].y }
             end
+        end
+    end
+
+    if WAS_GAME_ACTIVE_LAST_CHECK then
+        if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
             gunVacuumAnimationLoop.paused = false
             GUN_TOP_SPRITE:setImage(gunVacuumAnimationLoop:image())
             self:checkForCollisions()
@@ -102,5 +118,11 @@ function Vacuum:update()
     else
         gunVacuumAnimationLoop.paused = true
         self:setVisible(false)
+    end
+end
+
+function playdate.AButtonUp()
+	for i = 1, #vacuumVapors, 1 do
+        print(vacuumVapors[i].x .. ", " .. vacuumVapors[i].y)
     end
 end
