@@ -1,6 +1,7 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
+import "scripts/background/cloud"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -14,13 +15,24 @@ local currentDebrisCount = 0
 
 local debrisGroupAtStartCount = 4
 
+local cloudAtStartCount = 7
+
+local satelliteImagePath = "images/background/satellite-table0-64-64"
+
 function Opening:init(debrisManager)
     Opening.super.init(self)
 
     self.debrisManager = debrisManager
 
+    self:spawnClouds()
+    self:spawnRecyclers()
+    self:spawnDebris()
+    self:add()
+end
+
+function Opening:spawnRecyclers()
     self.recyclerSpawningTimer = pd.timer.new(recyclerSpawnTime)
-    self.recyclerSpawningTimer.delay = 500
+    --self.recyclerSpawningTimer.delay = 500
     self.recyclerSpawningTimer.discardOnCompletion = false
     self.recyclerSpawningTimer.repeats = true
     self.recyclerSpawningTimer.timerEndedCallback = function(timer)
@@ -33,7 +45,9 @@ function Opening:init(debrisManager)
             self.debrisSpawningTimer:start()
         end
     end
+end
 
+function Opening:spawnDebris()
     self.debrisSpawningTimer = pd.timer.new(debrisSpawnTime)
     self.debrisSpawningTimer:pause()
     self.debrisSpawningTimer.discardOnCompletion = false
@@ -46,9 +60,19 @@ function Opening:init(debrisManager)
             self.debrisManager:spawnDebris(spawnX, spawnY)
         else
             self.debrisSpawningTimer:remove()
-            self:remove()
+            --self:spawnClouds()
         end
     end
+end
 
-    self:add()
+function Opening:spawnClouds()
+    self.clouds = {}
+    local cloudX = 0
+    for i = 1, cloudAtStartCount, 1 do
+        table.insert(self.clouds, Cloud(cloudX))
+        cloudX = i * CLOUD_WIDTH + i * CLOUD_SEPARATION_DISTANCE
+        print(cloudX)
+    end
+    print(#self.clouds)
+    -- TODO: when to remove Opening?
 end

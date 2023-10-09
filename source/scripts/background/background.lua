@@ -10,7 +10,7 @@ class('Background').extends(gfx.sprite)
 function Background:init()
     Background.super.init(self)
 
-    local titleImage = gfx.image.new("images/Title")
+    local titleImage = gfx.image.new("images/background/Title")
 
     self.titleSprite = gfx.sprite.new(titleImage)
     self.titleSprite:moveTo(200, 120)
@@ -28,7 +28,7 @@ function Background:init()
 end
 
 function Background:showBackground()
-    local backgroundImage = gfx.image.new("images/background_01")
+    local backgroundImage = gfx.image.new("images/background/background_01")
     if assert(backgroundImage) then
         gfx.sprite.setBackgroundDrawingCallback(
             function(x, y, width, height)

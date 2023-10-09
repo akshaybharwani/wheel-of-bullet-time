@@ -4,10 +4,10 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
-import "scripts/background"
+import "scripts/background/background"
 import "scripts/enemyManager"
 import "scripts/gunManager"
-import "scripts/opening"
+import "scripts/background/opening"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -16,6 +16,7 @@ local gfx <const> = pd.graphics
 
 -- TODO: assuming FPS is constant 30, majorly used by AnimatedSprite
 CONSTANT_FPS = 30
+
 DELTA_TIME = 0
 -- if crank was moved this frame based on crankCheckWaitDuration, this is true
 IS_GAME_ACTIVE = false

@@ -3,7 +3,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "scripts/debrisManager"
 import "scripts/crankTimer"
-import "scripts/plugins/AnimatedSprite"
+import "scripts/libraries/AnimatedSprite"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
