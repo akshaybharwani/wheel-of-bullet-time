@@ -16,6 +16,7 @@ local speed = 40
 local rotationChance = 0.5
 CLOUD_SEPARATION_DISTANCE = 3
 
+-- TODO: shouldn't be a magic number
 CLOUD_WIDTH = 64
 
 function Cloud:init(x)
@@ -23,7 +24,7 @@ function Cloud:init(x)
 
     self.imageTable = gfx.imagetable.new(cloudImagePath)
     self:setSpriteImage(x)
-    self:setZIndex(-100)
+    self:setZIndex(BACKGROUND_Z_INDEX)
     self:add()
 end
 

@@ -69,10 +69,10 @@ end
 
 function Enemy:setupPatroling()
     self:setNewPatrolPoint()
-    self.segmentPatrolTimer = CrankTimer(math.random(minPatrolSegmentDuration, maxPatrolSegmentDuration), function()
+    self.segmentPatrolTimer = CrankTimer(math.random(minPatrolSegmentDuration, maxPatrolSegmentDuration), true, function()
         self:setNewPatrolPoint()
-    end)
-    self.totalPatrolTimer = CrankTimer(math.random(minTotalPatrolDuration, maxTotalPatrolDuration), function()
+    end, true)
+    self.totalPatrolTimer = CrankTimer(math.random(minTotalPatrolDuration, maxTotalPatrolDuration), true, function()
         self:setTarget()
         self.segmentPatrolTimer:remove()
         self.totalPatrolTimer:remove()

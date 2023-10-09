@@ -21,23 +21,20 @@ function VacuumVapor:init(x, y, flip, distanceFromGun)
     self.distanceFromGun = distanceFromGun
     self:moveTo(x, y - vacuumVaporImageTable:getImage(1):getSize() / 2)
     self:setVelocity(GUN_BASE_X, GUN_BASE_Y)
-    local tickStep = animationFPS
-    self:addState("shrink", 1, 5, {tickStep = tickStep})
+    self:addState("shrink", 1, 5, {tickStep = animationFPS})
     self.states.shrink.flip = flip
+    self:setZIndex(-101)
     self:playAnimation()
 end
 
 function VacuumVapor:update()
     if WAS_GAME_ACTIVE_LAST_CHECK and (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
-        self:resumeAnimation()
+        self:updateAnimation()
         self:setVisible(true)
         self:moveTowardsGun()
     else
-        self:pauseAnimation()
         self:setVisible(false)
     end
-
-    self:updateAnimation()
 end
 
 function VacuumVapor:updatePosition(vacuumLine)

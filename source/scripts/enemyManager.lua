@@ -47,7 +47,7 @@ function EnemyManager:init(debrisManager)
     EnemyManager.super.init(self)
 
     self.debrisManager = debrisManager
-    self.enemySpawnTimer = CrankTimer(enemySpawnWaitDuration, function()
+    self.enemySpawnTimer = CrankTimer(enemySpawnWaitDuration, true, function()
         self:handleEnemyWave()
         self:spawnEnemies()
     end)

@@ -2,6 +2,7 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "scripts/background/cloud"
+import "scripts/background/satellite"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -17,14 +18,13 @@ local debrisGroupAtStartCount = 4
 
 local cloudAtStartCount = 7
 
-local satelliteImagePath = "images/background/satellite-table0-64-64"
-
 function Opening:init(debrisManager)
     Opening.super.init(self)
 
     self.debrisManager = debrisManager
 
     self:spawnClouds()
+    self:spawnSatellite()
     self:spawnRecyclers()
     self:spawnDebris()
     self:add()
@@ -67,12 +67,14 @@ end
 
 function Opening:spawnClouds()
     self.clouds = {}
-    local cloudX = 0
+    local cloudX = CLOUD_WIDTH / 2
     for i = 1, cloudAtStartCount, 1 do
         table.insert(self.clouds, Cloud(cloudX))
-        cloudX = i * CLOUD_WIDTH + i * CLOUD_SEPARATION_DISTANCE
-        print(cloudX)
+        cloudX = i * CLOUD_WIDTH + i * CLOUD_SEPARATION_DISTANCE + CLOUD_WIDTH / 2
     end
-    print(#self.clouds)
     -- TODO: when to remove Opening?
+end
+
+function Opening:spawnSatellite()
+    self.satellite = Satellite()
 end
