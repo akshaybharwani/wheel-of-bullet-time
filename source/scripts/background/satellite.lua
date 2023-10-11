@@ -39,7 +39,6 @@ function Satellite:update()
             local nextX = self.x - speed * DELTA_TIME
             self:moveTo(nextX, self.y)
             self:updateAnimation()
-            print(self.x .. ", " .. self.y)
         end
     end
 end
@@ -50,7 +49,6 @@ function Satellite:setupPosition(spawnX)
     end
     local spawnY = math.random(16, MAX_SCREEN_HEIGHT / 2)
     self:moveTo(spawnX, spawnY)
-    print(self.x .. ", " .. self.y)
 end
 
 function Satellite:setupRespawnTimer()

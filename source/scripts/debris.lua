@@ -2,18 +2,18 @@ import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "scripts/libraries/AnimatedSprite"
+import "scripts/globals"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
-local rotationChance = 0.5
-local debrisToRecycleDuration = 1000
-
 local debrisImagePath = "images/enemies/debris"
 local debrisSpawnImagePath = "images/enemies/debris_spawn-table-16-16"
-local spawnAnimationFPS = 8
 
+local rotationChance = 0.5
 local debrisDetectionPadding = 20
+
+local dc = DEBRIS_CONSTANTS
 
 class("Debris").extends(gfx.sprite)
 
@@ -56,7 +56,7 @@ end
 function Debris:setVelocity(x, y)
     local distance = pd.geometry.distanceToPoint(self.x, self.y, x, y)
     -- why divide by 1000?
-    self.speed = distance / (debrisToRecycleDuration / 1000)
+    self.speed = distance / (dc.toRecycleDuration / 1000)
     local nx = x - self.x
     local ny = y - self.y
     self.dx = (nx / distance) * self.speed
@@ -66,7 +66,7 @@ end
 function Debris:setupSpawnAnimation(x, y)
     local imageTable = gfx.imagetable.new(debrisSpawnImagePath)
     self.spawnSprite = AnimatedSprite.new(imageTable)
-    self.spawnSprite:addState("spawning", 1, 11, {tickStep = spawnAnimationFPS})
+    self.spawnSprite:addState("spawning", 1, 11, {tickStep = dc.spawnAnimationFPS})
     self.spawnSprite.states.spawning.loop = false
     if self.shouldRotate then
         self.spawnSprite:setRotation(90)

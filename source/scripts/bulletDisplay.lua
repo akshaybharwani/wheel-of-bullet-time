@@ -7,7 +7,8 @@ local bulletImagePath = "images/ui/UI_bullet_8x16"
 local numbersImagePath = "images/ui/UI_numbers-table-8-16"
 
 local totalBulletDisplayWidth = 34
-local numberPadding = 1
+
+local bdc = BULLET_DISPLAY_CONSTANTS
 
 function BulletDisplay:init()
     self.numbersImageTable = gfx.imagetable.new(numbersImagePath)
@@ -27,23 +28,31 @@ function BulletDisplay:init()
     self.firstNumber = self:getNumberSprite(firstNumber, self.bulletSpriteX + self.bulletSprite.width)
 
     local secondNumber = string.sub(self.bulletCountString, 2, 2)
-    self.secondNumber = self:getNumberSprite(secondNumber, self.bulletSpriteX + self.bulletSprite.width * 2 + numberPadding)
+    self.secondNumber = self:getNumberSprite(secondNumber, self.bulletSpriteX + self.bulletSprite.width * 2 + bdc.numberPadding)
 
     local thirdNumber = string.sub(self.bulletCountString, 3, 3)
-    self.thirdNumber = self:getNumberSprite(thirdNumber, self.bulletSpriteX + self.bulletSprite.width * 3 + numberPadding * 2)
+    self.thirdNumber = self:getNumberSprite(thirdNumber, self.bulletSpriteX + self.bulletSprite.width * 3 + bdc.numberPadding * 2)
     self:add()
 end
 
 function BulletDisplay:update()
     self.bulletCountString = string.format("%03d", CURRENT_BULLET_COUNT)
+
     local firstNumber = string.sub(self.bulletCountString, 1, 1)
-    self.firstNumber:setImage(self.numbersImageTable:getImage(firstNumber + 1))
+    if firstNumber ~= 0 then
+        --self.timer
+        self.firstNumber:setImage(self.numbersImageTable:getImage(firstNumber + 1))
+    end
 
     local secondNumber = string.sub(self.bulletCountString, 2, 2)
-    self.secondNumber:setImage(self.numbersImageTable:getImage(secondNumber + 1))
+    if secondNumber ~= 0 then
+        self.secondNumber:setImage(self.numbersImageTable:getImage(secondNumber + 1))
+    end
 
     local thirdNumber = string.sub(self.bulletCountString, 3, 3)
-    self.thirdNumber:setImage(self.numbersImageTable:getImage(thirdNumber + 1))
+    if thirdNumber ~= 0 then
+        self.thirdNumber:setImage(self.numbersImageTable:getImage(thirdNumber + 1))
+    end
 end
 
 function BulletDisplay:getNumberSprite(number, positionX)

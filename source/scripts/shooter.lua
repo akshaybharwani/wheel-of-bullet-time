@@ -31,6 +31,7 @@ function Shooter:setFiringCooldown()
 end
 
 function Shooter:setupAnimation()
+    -- TODO: update to use AnimatedSprite
     local animationImageTable = gfx.imagetable.new("images/gun_shooting")
     gunShootingAnimationLoop = gfx.animation.loop.new()
     gunShootingAnimationLoop.paused = true
@@ -59,7 +60,7 @@ end
 function Shooter:update()
     self:setFiringCooldown()
 
-    if not IS_GAME_ACTIVE then
+    if not WAS_GAME_ACTIVE_LAST_CHECK then
         gunShootingAnimationLoop.paused = true
         return
     end

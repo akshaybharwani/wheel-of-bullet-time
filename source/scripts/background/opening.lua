@@ -9,14 +9,10 @@ local gfx <const> = pd.graphics
 
 class("Opening").extends(gfx.sprite)
 
-local recyclerSpawnTime = 2000
-local debrisSpawnTime = 1000
 local currentRecyclerIndex = 0
 local currentDebrisCount = 0
 
-local debrisGroupAtStartCount = 4
-
-local cloudAtStartCount = 7
+local oa = OPENING_ANIMATION
 
 function Opening:init(debrisManager)
     Opening.super.init(self)
@@ -31,7 +27,7 @@ function Opening:init(debrisManager)
 end
 
 function Opening:spawnRecyclers()
-    self.recyclerSpawningTimer = pd.timer.new(recyclerSpawnTime)
+    self.recyclerSpawningTimer = pd.timer.new(oa.recyclerSpawnDuration)
     --self.recyclerSpawningTimer.delay = 500
     self.recyclerSpawningTimer.discardOnCompletion = false
     self.recyclerSpawningTimer.repeats = true
@@ -48,12 +44,12 @@ function Opening:spawnRecyclers()
 end
 
 function Opening:spawnDebris()
-    self.debrisSpawningTimer = pd.timer.new(debrisSpawnTime)
+    self.debrisSpawningTimer = pd.timer.new(oa.debrisSpawnDuration)
     self.debrisSpawningTimer:pause()
     self.debrisSpawningTimer.discardOnCompletion = false
     self.debrisSpawningTimer.repeats = true
     self.debrisSpawningTimer.timerEndedCallback = function(timer)
-        if currentDebrisCount < debrisGroupAtStartCount then
+        if currentDebrisCount < oa.debrisGroupAtStartCount then
             currentDebrisCount += 1
             local spawnX = math.random(16, MAX_SCREEN_WIDTH - 16)
             local spawnY = math.random(16, MAX_SCREEN_HEIGHT / 2)
@@ -68,11 +64,10 @@ end
 function Opening:spawnClouds()
     self.clouds = {}
     local cloudX = CLOUD_WIDTH / 2
-    for i = 1, cloudAtStartCount, 1 do
+    for i = 1, oa.cloudAtStartCount, 1 do
         table.insert(self.clouds, Cloud(cloudX))
         cloudX = i * CLOUD_WIDTH + i * CLOUD_SEPARATION_DISTANCE + CLOUD_WIDTH / 2
     end
-    -- TODO: when to remove Opening?
 end
 
 function Opening:spawnSatellite()
