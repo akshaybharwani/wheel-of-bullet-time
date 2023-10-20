@@ -14,7 +14,7 @@ class("Enemy").extends(gfx.sprite)
 local minSpeed, maxSpeed = 5, 10
 local hitDuration = 100
 local explosionLoopCount = 3
-local explosionAnimationFPS = 6
+local explosionAnimationFPS = 5
 
 local minTotalPatrolDuration, maxTotalPatrolDuration = 2, 5
 local minPatrolSegmentDuration, maxPatrolSegmentDuration = 1, 2
