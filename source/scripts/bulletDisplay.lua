@@ -8,8 +8,6 @@ local numbersImagePath = "images/ui/UI_numbers-table-8-16"
 
 local totalBulletDisplayWidth = 34
 
-local bdc = BULLET_DISPLAY_CONSTANTS
-
 function BulletDisplay:init()
     self.numbersImageTable = gfx.imagetable.new(numbersImagePath)
 
@@ -28,10 +26,10 @@ function BulletDisplay:init()
     self.firstNumber = self:getNumberSprite(firstNumber, self.bulletSpriteX + self.bulletSprite.width)
 
     local secondNumber = string.sub(self.bulletCountString, 2, 2)
-    self.secondNumber = self:getNumberSprite(secondNumber, self.bulletSpriteX + self.bulletSprite.width * 2 + bdc.numberPadding)
+    self.secondNumber = self:getNumberSprite(secondNumber, self.bulletSpriteX + self.bulletSprite.width * 2 + BULLET_DISPLAY_CONSTANTS.numberPadding)
 
     local thirdNumber = string.sub(self.bulletCountString, 3, 3)
-    self.thirdNumber = self:getNumberSprite(thirdNumber, self.bulletSpriteX + self.bulletSprite.width * 3 + bdc.numberPadding * 2)
+    self.thirdNumber = self:getNumberSprite(thirdNumber, self.bulletSpriteX + self.bulletSprite.width * 3 + BULLET_DISPLAY_CONSTANTS.numberPadding * 2)
     self:add()
 end
 

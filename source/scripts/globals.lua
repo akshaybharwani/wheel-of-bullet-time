@@ -19,3 +19,9 @@ DEBRIS_CONSTANTS.toRecycleDuration = 1000
 -- bulletDisplay
 BULLET_DISPLAY_CONSTANTS = {}
 BULLET_DISPLAY_CONSTANTS.numberPadding = 1
+
+-- recycler
+RECYCLER_CONSTANTS = {}
+RECYCLER_CONSTANTS.ammoGenerationTime = 500
+RECYCLER_CONSTANTS.debrisTravelDuration = 1000
+RECYCLER_CONSTANTS.maxHP = 4

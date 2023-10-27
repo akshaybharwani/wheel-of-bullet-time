@@ -10,28 +10,29 @@ local Animator = gfx.animator
 
 class("Recycler").extends(gfx.sprite)
 
-local recyclerImagePath = "images/recycler/recycler"
+local recyclerImageTablePath = "images/recycler/recycler-table-32-32"
 local collectedDebrisImagePath = "images/recycler/debris_mini"
 local generatedAmmoImagePath = "images/recycler/bullet_mini"
-local recyclingImagePath = "images/recycler/UI_recycling"
+local recyclingUIImagePath = "images/recycler/UI_recycling"
 
-local ammoGenerationTime = 500
-local debrisTravelTime = 1000
+local maxHP = RECYCLER_CONSTANTS.maxHP
 
 function Recycler:init(x, y, connectorY, isLeftToGun)
     Recycler.super.init(self)
     self.type = "gun-element"
     self.available = true
     self.isLeftToGun = isLeftToGun
+    self.hp = maxHP
 
+    self.recyclerImageTable = gfx.imagetable.new(recyclerImageTablePath)
     self.collectedDebrisSprite = gfx.sprite.new(gfx.image.new(collectedDebrisImagePath))
     self.generatedAmmoSprite = gfx.sprite.new(gfx.image.new(generatedAmmoImagePath))
-    self.recyclingSprite = gfx.sprite.new(gfx.image.new(recyclingImagePath))
+    self.recyclingSprite = gfx.sprite.new(gfx.image.new(recyclingUIImagePath))
     self.recyclingSprite:moveTo(x, y)
     self.recyclingSprite:setZIndex(GUN_Z_INDEX)
 
     self:moveTo(x, y)
-    self:setImage(gfx.image.new(recyclerImagePath))
+    self:setImage(self.recyclerImageTable:getImage(1))
     self:setCollideRect(0, 0, self:getSize())
     self:setGroups(GUN_GROUP)
     self:setCollidesWithGroups({ ENEMY_GROUP })
@@ -44,22 +45,28 @@ function Recycler:addSprite()
 end
 
 function Recycler:getHit()
-    -- show damaged states
-    self.connector:remove()
-    -- should remove itself from the active targets and active recyclers
-    for i = 1, #ACTIVE_TARGETS do
-        if ACTIVE_TARGETS[i] == self then
-            table.remove(ACTIVE_TARGETS, i)
-            break
+    if self.hp > 0 then
+        self.hp -= 1
+    end
+    if self.hp <= 0 then
+        -- TODO: could animate this retracting
+        self.connector:remove()
+
+        -- should remove itself from the active targets and active recyclers
+        for i = 1, #ACTIVE_TARGETS do
+            if ACTIVE_TARGETS[i] == self then
+                table.remove(ACTIVE_TARGETS, i)
+                break
+            end
+        end
+        for i = 1, #ACTIVE_RECYCLERS do
+            if ACTIVE_RECYCLERS[i] == self then
+                table.remove(ACTIVE_RECYCLERS, i)
+                break
+            end
         end
     end
-    for i = 1, #ACTIVE_RECYCLERS do
-        if ACTIVE_RECYCLERS[i] == self then
-            table.remove(ACTIVE_RECYCLERS, i)
-            break
-        end
-    end
-    self:remove()
+    self:setImage(self.recyclerImageTable:getImage(maxHP + 1 - self.hp))
 end
 
 function Recycler:setupDebrisToRecyclerAnimation()
@@ -74,7 +81,7 @@ function Recycler:setupDebrisToRecyclerAnimation()
             horizontalConnector = geo.lineSegment.new(x2, y2, x1, y1)
         end
         local connectorParts = { horizontalConnector, connector.verticalConnector }
-        self.debrisToRecyclerAnimator = Animator.new(debrisTravelTime, connectorParts, playdate.easingFunctions.linear)
+        self.debrisToRecyclerAnimator = Animator.new(RECYCLER_CONSTANTS.debrisTravelDuration, connectorParts, playdate.easingFunctions.linear)
     else
         local connectorLine = connector.horizontalConnector
         local x1, y1, x2, y2 = connector.horizontalConnector:unpack()
@@ -83,7 +90,7 @@ function Recycler:setupDebrisToRecyclerAnimation()
             connectorLine = geo.lineSegment.new(x2, y2, x1, y1)
         end
 
-        self.debrisToRecyclerAnimator = Animator.new(debrisTravelTime, connectorLine,
+        self.debrisToRecyclerAnimator = Animator.new(RECYCLER_CONSTANTS.debrisTravelDuration, connectorLine,
             playdate.easingFunctions.linear)
     end
     self.collectedDebrisSprite:moveTo(initialX, initialY - self.collectedDebrisSprite:getSize())
@@ -105,7 +112,7 @@ function Recycler:setupAmmoToGunAnimation()
             horizontalConnector = geo.lineSegment.new(x2, y2, x1, y1)
         end
         local connectorParts = { verticalConnector, horizontalConnector }
-        self.ammoToGunAnimator = Animator.new(debrisTravelTime, connectorParts, playdate.easingFunctions.linear)
+        self.ammoToGunAnimator = Animator.new(RECYCLER_CONSTANTS.debrisTravelDuration, connectorParts, playdate.easingFunctions.linear)
     else
         local connectorLine = connector.horizontalConnector
         local x1, y1, x2, y2 = connector.horizontalConnector:unpack()
@@ -114,7 +121,7 @@ function Recycler:setupAmmoToGunAnimation()
             connectorLine = geo.lineSegment.new(x2, y2, x1, y1)
         end
 
-        self.ammoToGunAnimator = Animator.new(debrisTravelTime, connectorLine,
+        self.ammoToGunAnimator = Animator.new(RECYCLER_CONSTANTS.debrisTravelDuration, connectorLine,
             playdate.easingFunctions.linear)
     end
     self.collectedDebrisSprite:moveTo(initialX, initialY - self.collectedDebrisSprite:getSize())
@@ -146,7 +153,7 @@ function Recycler:update()
             self.debrisToRecyclerAnimator = nil
             self.recyclingSprite:add()
             self.collectedDebrisSprite:remove()
-            local ammoTimer = pd.timer.new(ammoGenerationTime)
+            local ammoTimer = pd.timer.new(RECYCLER_CONSTANTS.ammoGenerationTime)
             ammoTimer.timerEndedCallback = function(timer)
                 self:sendAmmoToGun()
             end
