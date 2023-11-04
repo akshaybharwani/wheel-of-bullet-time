@@ -19,7 +19,7 @@ local maxHP = RECYCLER_CONSTANTS.maxHP
 
 function Recycler:init(x, y, connectorY, isLeftToGun)
     Recycler.super.init(self)
-    self.type = "gun-element"
+    self.type = GUN_TYPE_NAME
     self.available = true
     self.isLeftToGun = isLeftToGun
     self.hp = maxHP

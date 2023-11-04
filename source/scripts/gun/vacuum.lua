@@ -28,7 +28,7 @@ local vacuumVapors = nil
 
 local gunVacuumImageTablePath = "images/gun/gun_vacuum"
 
-function Vacuum:init(x, y)
+function Vacuum:init(gun)
     Vacuum.super.init(self)
     self:setupVacuumVapor()
     self:setupAnimation()
@@ -60,7 +60,7 @@ function Vacuum:collectDebris()
     -- TODO: sometimes vacuum wont collect some debris and they stay hanging in game
     for i = 1, #self.collidedSprites do
         local collidedObject = self.collidedSprites[i]
-        if collidedObject.type == "debris" then
+        if collidedObject.type == DEBRIS_TYPE_NAME then
             collidedObject:collect()
             return
         end

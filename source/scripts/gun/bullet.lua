@@ -45,7 +45,7 @@ function Bullet:update()
 
     for i = 1, #collisions do
         local other = collisions[i].other
-        if other.type == "enemy" then
+        if other.type == ENEMY_TYPE_NAME then
             other:getHit()
             self:removeBullet()
             return

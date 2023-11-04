@@ -33,6 +33,12 @@ DEBRIS_GROUP = 3
 BULLET_GROUP = 4
 GUN_GROUP = 5
 
+-- TODO: do we need types _and_ groups? Revisit
+
+GUN_TYPE_NAME = "gun-element"
+ENEMY_TYPE_NAME = "enemy"
+DEBRIS_TYPE_NAME = "debris"
+
 TITLE_TIME = 0
 
 BACKGROUND_Z_INDEX = -100

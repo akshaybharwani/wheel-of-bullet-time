@@ -18,7 +18,7 @@ class("Debris").extends(gfx.sprite)
 function Debris:init(x, y, debrisManager)
     Debris.super.init(self)
 
-    self.type = "debris"
+    self.type = DEBRIS_TYPE_NAME
     self.debrisManager = debrisManager
 
     self:setImage(gfx.image.new(debrisImagePath))

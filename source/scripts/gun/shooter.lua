@@ -21,10 +21,10 @@ local currentFiringCooldown = maxFiringCooldown
 
 local gunShootingImagetablePath = "images/gun/gun_shooting"
 
-function Shooter:init(x, y)
+function Shooter:init(gun)
     Shooter.super.init(self)
 
-    self:moveTo(x, y)
+    self:moveTo(gun.x, gun.y)
     self:setupAnimation()
     self:add()
 end

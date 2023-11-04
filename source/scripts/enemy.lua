@@ -25,7 +25,7 @@ function Enemy:init(enemyType, debrisManager)
     self.enemyType = enemyType
     self.debrisManager = debrisManager
     self.hp = enemyType.hp
-    self.type = "enemy"
+    self.type = ENEMY_TYPE_NAME
     self.speed = math.random(minSpeed, maxSpeed)
     self.shieldColliderSize = enemyType.shieldColliderSize
 
@@ -99,7 +99,7 @@ function Enemy:move()
 
     for i = 1, #collisions do
         local target = collisions[i].other
-        if target.type == "gun-element" then
+        if target.type == GUN_TYPE_NAME then
             target:getHit()
             self:explode(target)
             return

@@ -43,6 +43,7 @@ local gunBaseImagePath = "images/gun/base"
 function GunManager:init()
     GunManager.super.init(self)
 
+    self.type = GUN_TYPE_NAME
     self.hp = maxHP
 
     -- draw common gunBase Image
@@ -61,7 +62,7 @@ function GunManager:init()
     GUN_TOP_SPRITE:setZIndex(GUN_Z_INDEX)
     table.insert(ACTIVE_TARGETS, GUN_TOP_SPRITE)
 
-    Shooter(GUN_BASE_X, GUN_BASE_Y)
+    Shooter(self)
     Vacuum(self)
     BulletDisplay()
 end
@@ -116,5 +117,16 @@ function GunManager:readRotationInput()
             WAS_GUN_ROTATED = true
             GUN_CURRENT_ROTATION_ANGLE -= gunRotationSpeed
         end
+    end
+end
+
+-- TODO: could consolidate methods like getHit for 'gun-element's in a base class
+
+function GunManager:getHit()
+    if self.hp > 0 then
+        self.hp -= 1
+    end
+    if self.hp <= 0 then
+        -- what to do when gun's hp is 0?
     end
 end
