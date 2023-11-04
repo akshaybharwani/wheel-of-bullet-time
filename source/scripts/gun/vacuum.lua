@@ -3,7 +3,7 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/crank"
 import "CoreLibs/animation"
-import "scripts/recycler/vacuumVapor"
+import "scripts/gun/vacuumVapor"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -25,6 +25,8 @@ local vacuumLine = nil
 TOP_VACUUM_VAPOR_POSITION = nil
 
 local vacuumVapors = nil
+
+local gunVacuumImageTablePath = "images/gun/gun_vacuum"
 
 function Vacuum:init(x, y)
     Vacuum.super.init(self)
@@ -48,7 +50,7 @@ end
 
 function Vacuum:setupAnimation()
     -- TODO: change to use AnimatedSprite
-    local animationImageTable = gfx.imagetable.new("images/recycler/gun_vacuum")
+    local animationImageTable = gfx.imagetable.new(gunVacuumImageTablePath)
     gunVacuumAnimationLoop = gfx.animation.loop.new()
     gunVacuumAnimationLoop.paused = true
     gunVacuumAnimationLoop:setImageTable(animationImageTable)

@@ -16,8 +16,14 @@ DEBRIS_CONSTANTS = {}
 DEBRIS_CONSTANTS.spawnAnimationFPS = 1.2
 DEBRIS_CONSTANTS.toRecycleDuration = 1000
 
+-- bullet
+BULLET_CONSTANTS = {}
+BULLET_CONSTANTS.bulletSpeed = 16
+BULLET_CONSTANTS.bulletTrailDistance = 8
+
 -- bulletDisplay
 BULLET_DISPLAY_CONSTANTS = {}
+-- space between each number 
 BULLET_DISPLAY_CONSTANTS.numberPadding = 1
 
 -- recycler
@@ -25,3 +31,11 @@ RECYCLER_CONSTANTS = {}
 RECYCLER_CONSTANTS.ammoGenerationTime = 500
 RECYCLER_CONSTANTS.debrisTravelDuration = 1000
 RECYCLER_CONSTANTS.maxHP = 4
+
+-- gun
+GUN_CONSTANTS = {}
+GUN_CONSTANTS.maxHP = 4
+
+-- gun shooter
+GUN_SHOOTER_CONSTANTS = {}
+GUN_SHOOTER_CONSTANTS.maxFiringCooldown = 0.5

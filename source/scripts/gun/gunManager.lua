@@ -1,10 +1,10 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "scripts/shooter"
-import "scripts/recycler/vacuum"
+import "scripts/gun/shooter"
+import "scripts/gun/vacuum"
 import "scripts/recycler/recyclerManager"
-import "scripts/bulletDisplay"
+import "scripts/gun/bulletDisplay"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -35,11 +35,18 @@ WAS_GUN_ROTATED = false
 
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
 
+local maxHP = GUN_CONSTANTS.maxHP
+
+local gunTopDefaultImagePath = "images/gun/gun_top_default"
+local gunBaseImagePath = "images/gun/base"
+
 function GunManager:init()
     GunManager.super.init(self)
 
+    self.hp = maxHP
+
     -- draw common gunBase Image
-    local gunBaseImage = gfx.image.new("images/base")
+    local gunBaseImage = gfx.image.new(gunBaseImagePath)
     self:setImage(gunBaseImage)
     GUN_BASE_X = MAX_SCREEN_WIDTH / 2
     GUN_BASE_Y = MAX_SCREEN_HEIGHT - (self.width / 2)
@@ -48,7 +55,7 @@ function GunManager:init()
     self:add()
 
     -- HACK: this should not be refering to a direct image
-    GUN_TOP_SPRITE = gfx.sprite.new(gfx.image.new("images/gun_top_default"))
+    GUN_TOP_SPRITE = gfx.sprite.new(gfx.image.new(gunTopDefaultImagePath))
     GUN_TOP_SPRITE:moveTo(GUN_BASE_X, GUN_BASE_Y)
     GUN_TOP_SPRITE:add()
     GUN_TOP_SPRITE:setZIndex(GUN_Z_INDEX)

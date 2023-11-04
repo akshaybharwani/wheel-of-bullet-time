@@ -11,7 +11,7 @@ class("VacuumVapor").extends(AnimatedSprite)
 
 local vacuumVaporSpeed = 32
 local animationFPS = 20
-local vacuumVaporImagePath = "images/recycler/vacuum-table-32-32"
+local vacuumVaporImagePath = "images/gun/vacuum-table-32-32"
 local vacuumVaporImageTable = gfx.imagetable.new(vacuumVaporImagePath)
 
 local vacuumVaporPadding = 10

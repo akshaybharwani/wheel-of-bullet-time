@@ -1,6 +1,6 @@
 import "CoreLibs/crank"
 import "CoreLibs/animation"
-import "scripts/bullet"
+import "scripts/gun/bullet"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -9,14 +9,17 @@ class("Shooter").extends(gfx.sprite)
 
 local gunShootingAnimationLoop = nil
 
-local maxFiringCooldown = 0.5
-local currentFiringCooldown = maxFiringCooldown
-
 local startingBulletCount = 0
 CURRENT_BULLET_COUNT = startingBulletCount
 
 -- crank
 local angleAcuumulator = 0
+
+local gunShooterConstants = GUN_SHOOTER_CONSTANTS
+local maxFiringCooldown = gunShooterConstants.maxFiringCooldown
+local currentFiringCooldown = maxFiringCooldown
+
+local gunShootingImagetablePath = "images/gun/gun_shooting"
 
 function Shooter:init(x, y)
     Shooter.super.init(self)
@@ -32,7 +35,7 @@ end
 
 function Shooter:setupAnimation()
     -- TODO: update to use AnimatedSprite
-    local animationImageTable = gfx.imagetable.new("images/gun_shooting")
+    local animationImageTable = gfx.imagetable.new(gunShootingImagetablePath)
     gunShootingAnimationLoop = gfx.animation.loop.new()
     gunShootingAnimationLoop.paused = true
     gunShootingAnimationLoop:setImageTable(animationImageTable)

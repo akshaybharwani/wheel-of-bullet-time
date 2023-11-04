@@ -6,7 +6,7 @@ import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
 import "scripts/background/background"
 import "scripts/enemyManager"
-import "scripts/gunManager"
+import "scripts/gun/gunManager"
 import "scripts/background/opening"
 
 local pd <const> = playdate
