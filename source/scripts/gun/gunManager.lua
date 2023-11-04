@@ -27,8 +27,6 @@ GUN_CURRENT_STATE = GUN_NEUTRAL_STATE
 
 CURRENT_CRANK_SHOOTING_TICKS = 0
 
-GUN_TOP_SPRITE = nil
-
 ACTIVE_TARGETS = {}
 
 WAS_GUN_ROTATED = false
@@ -48,19 +46,26 @@ function GunManager:init()
 
     -- draw common gunBase Image
     local gunBaseImage = gfx.image.new(gunBaseImagePath)
-    self:setImage(gunBaseImage)
+    self.gunBaseSprite = gfx.sprite.new(gunBaseImage)
+
     GUN_BASE_X = MAX_SCREEN_WIDTH / 2
-    GUN_BASE_Y = MAX_SCREEN_HEIGHT - (self.width / 2)
-    self:moveTo(GUN_BASE_X, GUN_BASE_Y)
-    self:setZIndex(GUN_Z_INDEX)
-    self:add()
+    GUN_BASE_Y = MAX_SCREEN_HEIGHT - (self.gunBaseSprite.width / 2)
+
+    self.gunBaseSprite:moveTo(GUN_BASE_X, GUN_BASE_Y)
+    self.gunBaseSprite:setZIndex(GUN_Z_INDEX)
 
     -- HACK: this should not be refering to a direct image
-    GUN_TOP_SPRITE = gfx.sprite.new(gfx.image.new(gunTopDefaultImagePath))
-    GUN_TOP_SPRITE:moveTo(GUN_BASE_X, GUN_BASE_Y)
-    GUN_TOP_SPRITE:add()
-    GUN_TOP_SPRITE:setZIndex(GUN_Z_INDEX)
-    table.insert(ACTIVE_TARGETS, GUN_TOP_SPRITE)
+    local gunTopDefaultImage = gfx.image.new(gunTopDefaultImagePath)
+    self:setImage(gunTopDefaultImage)
+    self:setCollideRect(0, 0, self:getSize())
+    self:setGroups(GUN_GROUP)
+    self:setCollidesWithGroups({ ENEMY_GROUP })
+    table.insert(ACTIVE_TARGETS, self)
+    self:moveTo(GUN_BASE_X, GUN_BASE_Y)
+    self:setZIndex(GUN_Z_INDEX)
+
+    self:add()
+    self.gunBaseSprite:add()
 
     Shooter(self)
     Vacuum(self)
@@ -101,7 +106,7 @@ function GunManager:update()
     -- runtime rotation is very expensive
     -- this will change when we have pre-rendered rotated sprites
     if WAS_GUN_ROTATED then
-        GUN_TOP_SPRITE:setRotation(GUN_CURRENT_ROTATION_ANGLE)
+        self:setRotation(GUN_CURRENT_ROTATION_ANGLE)
     end
 end
 
@@ -120,6 +125,10 @@ function GunManager:readRotationInput()
     end
 end
 
+function GunManager:setTopSprite(sprite)
+    self:setImage(sprite)
+end
+
 -- TODO: could consolidate methods like getHit for 'gun-element's in a base class
 
 function GunManager:getHit()
@@ -127,6 +136,13 @@ function GunManager:getHit()
         self.hp -= 1
     end
     if self.hp <= 0 then
-        -- what to do when gun's hp is 0?
+        for i = 1, #ACTIVE_TARGETS do
+            if ACTIVE_TARGETS[i] == self then
+                table.remove(ACTIVE_TARGETS, i)
+                break
+            end
+        end
     end
+
+    print(self.hp)
 end

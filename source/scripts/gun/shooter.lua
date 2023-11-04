@@ -7,10 +7,9 @@ local gfx <const> = pd.graphics
 
 class("Shooter").extends(gfx.sprite)
 
-local gunShootingAnimationLoop = nil
+CURRENT_BULLET_COUNT = 0
 
-local startingBulletCount = 0
-CURRENT_BULLET_COUNT = startingBulletCount
+local gunShootingAnimationLoop = nil
 
 -- crank
 local angleAcuumulator = 0
@@ -24,6 +23,9 @@ local gunShootingImagetablePath = "images/gun/gun_shooting"
 function Shooter:init(gun)
     Shooter.super.init(self)
 
+    self.gun = gun
+
+    self.imageTable = gfx.imagetable.new(gunShootingImagetablePath)
     self:moveTo(gun.x, gun.y)
     self:setupAnimation()
     self:add()
@@ -35,10 +37,9 @@ end
 
 function Shooter:setupAnimation()
     -- TODO: update to use AnimatedSprite
-    local animationImageTable = gfx.imagetable.new(gunShootingImagetablePath)
     gunShootingAnimationLoop = gfx.animation.loop.new()
     gunShootingAnimationLoop.paused = true
-    gunShootingAnimationLoop:setImageTable(animationImageTable)
+    gunShootingAnimationLoop:setImageTable(self.imageTable)
 end
 
 function Shooter:shootBullet(startX, startY, angle)
@@ -48,7 +49,8 @@ end
 function Shooter:checkGunState()
     if (GUN_CURRENT_STATE == GUN_SHOOTING_STATE) then
         gunShootingAnimationLoop.paused = false
-        GUN_TOP_SPRITE:setImage(gunShootingAnimationLoop:image())
+        
+        self.gun:setTopSprite(gunShootingAnimationLoop:image())
 
         if (CURRENT_CRANK_SHOOTING_TICKS == 1) then
             if (currentFiringCooldown == 0 and CURRENT_BULLET_COUNT > 0) then
