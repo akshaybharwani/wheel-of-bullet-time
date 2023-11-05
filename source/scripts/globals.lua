@@ -25,6 +25,7 @@ RECYCLER_CONSTANTS.maxHP = 4
 -- gun
 GUN_CONSTANTS = {}
 GUN_CONSTANTS.maxHP = 4
+GUN_CONSTANTS.animationFPS = 2
 
 -- gun shooter
 GUN_SHOOTER_CONSTANTS = {}

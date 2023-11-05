@@ -1,6 +1,7 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
+import "CoreLibs/crank"
 import "scripts/gun/shooter"
 import "scripts/gun/vacuum"
 import "scripts/recycler/recyclerManager"
@@ -143,6 +144,4 @@ function GunManager:getHit()
             end
         end
     end
-
-    print(self.hp)
 end

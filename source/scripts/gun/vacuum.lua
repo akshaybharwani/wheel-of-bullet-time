@@ -1,35 +1,43 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "CoreLibs/crank"
-import "CoreLibs/animation"
+import "scripts/libraries/AnimatedSprite"
 import "scripts/gun/vacuumVapor"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
-class("Vacuum").extends(gfx.sprite)
+-- TODO: Shooter and Vacuum can base the same script
+
+class("Vacuum").extends(AnimatedSprite)
 
 TOP_VACUUM_VAPOR_POSITION = nil
 
 local vacuumVaporFlipStates = { gfx.kImageUnflipped, gfx.kImageFlippedX, gfx.kImageFlippedY, gfx.kImageFlippedXY}
 
-local gunVacuumAnimationLoop = nil
 local vacuumLine = nil
 local vacuumVapors = nil
 
 local gunVacuumConstants = GUN_VACUUM_CONSTANTS
+local gunConstants = GUN_CONSTANTS
 
-local gunVacuumImageTablePath = "images/gun/gun_vacuum"
+local imagetablePath = "images/gun/gun_vacuum-table-64-64"
+local imagetable = gfx.imagetable.new(imagetablePath)
 
 function Vacuum:init(gun)
-    Vacuum.super.init(self)
+    Vacuum.super.init(self, imagetable)
+
+    self.imagetable = imagetable
     self.gun = gun
-    self.imageTable = gfx.imagetable.new(gunVacuumImageTablePath)
+
     self:setupVacuumVapor()
-    self:setupAnimation()
     self:setVacuumLine()
-    self:add()
+
+    self:addState("maxHPState", 1, 3, {tickStep = gunConstants.animationFPS})
+    self:moveTo(gun.x, gun.y)
+    self:setZIndex(GUN_Z_INDEX)
+    self:playAnimation()
+    self:setVisible(false)
 end
 
 function Vacuum:setupVacuumVapor()
@@ -42,13 +50,6 @@ function Vacuum:setupVacuumVapor()
     end
     vacuumVapors = self.vacuumVapors
     TOP_VACUUM_VAPOR_POSITION = { x = vacuumVapors[#vacuumVapors].x, y = vacuumVapors[#vacuumVapors].y }
-end
-
-function Vacuum:setupAnimation()
-    -- TODO: change to use AnimatedSprite
-    gunVacuumAnimationLoop = gfx.animation.loop.new()
-    gunVacuumAnimationLoop.paused = true
-    gunVacuumAnimationLoop:setImageTable(self.imageTable)
 end
 
 function Vacuum:collectDebris()
@@ -89,6 +90,16 @@ function Vacuum:setVacuumLine()
 end
 
 function Vacuum:update()
+    if WAS_GAME_ACTIVE_LAST_CHECK then
+        if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
+            self:updateAnimation()
+            self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
+            self:checkForCollisions()
+        else
+            self:setVisible(false)
+        end
+    end
+
     if WAS_GUN_ROTATED then
         self:setVacuumLine()
         -- this is so that vacuumVapors only update positions after creation of vacuumLine
@@ -104,16 +115,5 @@ function Vacuum:update()
                 TOP_VACUUM_VAPOR_POSITION = { x = self.vacuumVapors[i - 1].x, y = self.vacuumVapors[i - 1].y }
             end
         end
-    end
-
-    if WAS_GAME_ACTIVE_LAST_CHECK then
-        if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
-            gunVacuumAnimationLoop.paused = false
-            self.gun:setTopSprite(gunVacuumAnimationLoop:image())
-            self:checkForCollisions()
-        end
-    else
-        gunVacuumAnimationLoop.paused = true
-        self:setVisible(false)
     end
 end
