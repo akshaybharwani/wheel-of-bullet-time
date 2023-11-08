@@ -45,6 +45,7 @@ function GunManager:init()
     GunManager.super.init(self)
 
     self.type = GUN_TYPE_NAME
+    self.available = true
     self.currentHP = maxHP
 
     -- draw common gunBase Image
@@ -54,21 +55,23 @@ function GunManager:init()
     GUN_BASE_X = MAX_SCREEN_WIDTH / 2
     GUN_BASE_Y = MAX_SCREEN_HEIGHT - (self.gunBaseSprite.width / 2)
 
+    -- HACK: this should not be refering to a direct image
+    local gunTopDefaultImage = gfx.image.new(gunTopDefaultImagePath)
+
     self.gunBaseSprite:moveTo(GUN_BASE_X, GUN_BASE_Y)
     self.gunBaseSprite:setZIndex(GUN_Z_INDEX)
 
-    -- HACK: this should not be refering to a direct image
-    local gunTopDefaultImage = gfx.image.new(gunTopDefaultImagePath)
     self:setImage(gunTopDefaultImage)
     self:setCollideRect(0, 0, self:getSize())
     self:setGroups(GUN_GROUP)
     self:setCollidesWithGroups({ ENEMY_GROUP })
-    table.insert(ACTIVE_TARGETS, self)
     self:moveTo(GUN_BASE_X, GUN_BASE_Y)
     self:setZIndex(GUN_Z_INDEX)
 
     self:add()
     self.gunBaseSprite:add()
+
+    table.insert(ACTIVE_TARGETS, self)
 
     Shooter(self)
     Vacuum(self)
@@ -140,6 +143,7 @@ function GunManager:getHit()
         WAS_GUN_HIT = true
     end
     if self.currentHP <= 0 then
+        self.available = false
         self:clearCollideRect()
         for i = 1, #ACTIVE_TARGETS do
             if ACTIVE_TARGETS[i] == self then

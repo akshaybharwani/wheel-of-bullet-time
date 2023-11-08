@@ -23,9 +23,8 @@ local imagetable = gfx.imagetable.new(imagetablePath)
 function Shooter:init(gun)
     Shooter.super.init(self, imagetable)
 
-    self.gun = gun
-
     self.imagetable = imagetable
+    self.gun = gun
 
     for i = 0, maxHP do
         local stateName = tostring(maxHP - i)
@@ -49,28 +48,33 @@ function Shooter:shootBullet(startX, startY, angle)
 end
 
 function Shooter:update()
+    if WAS_GAME_ACTIVE_LAST_CHECK then
+        if GUN_CURRENT_STATE == GUN_SHOOTING_STATE then
+            self:updateAnimation()
+            -- TODO: this seems resource intensive?
+            self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
+        else
+            self:setVisible(false)
+        end
+    end
+
     if WAS_GUN_HIT then
         self:changeState(tostring(self.gun.currentHP))
     end
 
+    if not self.gun.available then
+        return
+    end
+
     self:setFiringCooldown()
 
-    if WAS_GAME_ACTIVE_LAST_CHECK then
-        if GUN_CURRENT_STATE == GUN_SHOOTING_STATE then
-            self:updateAnimation()
-
-            -- TODO: this seems resource intensive?
-            self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
-
-            if (CURRENT_CRANK_SHOOTING_TICKS == 1) then
-                if (currentFiringCooldown == 0 and CURRENT_BULLET_COUNT > 0) then
-                    self:shootBullet(GUN_BASE_X, GUN_BASE_Y, GUN_CURRENT_ROTATION_ANGLE)
-                    CURRENT_BULLET_COUNT -= 1
-                    currentFiringCooldown = maxFiringCooldown
-                end
+    if WAS_GAME_ACTIVE_LAST_CHECK and (GUN_CURRENT_STATE == GUN_SHOOTING_STATE) then
+        if (CURRENT_CRANK_SHOOTING_TICKS == 1) then
+            if (currentFiringCooldown == 0 and CURRENT_BULLET_COUNT > 0) then
+                self:shootBullet(GUN_BASE_X, GUN_BASE_Y, GUN_CURRENT_ROTATION_ANGLE)
+                CURRENT_BULLET_COUNT -= 1
+                currentFiringCooldown = maxFiringCooldown
             end
-        else
-            self:setVisible(false)
         end
     end
 end

@@ -20,6 +20,7 @@ local vacuumVapors = nil
 
 local gunVacuumConstants = GUN_VACUUM_CONSTANTS
 local gunConstants = GUN_CONSTANTS
+local maxHP = gunConstants.maxHP
 
 local imagetablePath = "images/gun/gun_vacuum-table-64-64"
 local imagetable = gfx.imagetable.new(imagetablePath)
@@ -30,14 +31,20 @@ function Vacuum:init(gun)
     self.imagetable = imagetable
     self.gun = gun
 
-    self:setupVacuumVapor()
-    self:setVacuumLine()
+    for i = 0, maxHP do
+        local stateName = tostring(maxHP - i)
+        local firstFrameIndex = i * 3 + 1
+        self:addState(stateName, firstFrameIndex, firstFrameIndex + 2,
+        {tickStep = gunConstants.animationFPS})
+    end
 
-    self:addState("maxHPState", 1, 3, {tickStep = gunConstants.animationFPS})
     self:moveTo(gun.x, gun.y)
     self:setZIndex(GUN_Z_INDEX)
     self:playAnimation()
     self:setVisible(false)
+
+    self:setupVacuumVapor()
+    self:setVacuumLine()
 end
 
 function Vacuum:setupVacuumVapor()
@@ -52,17 +59,8 @@ function Vacuum:setupVacuumVapor()
     TOP_VACUUM_VAPOR_POSITION = { x = vacuumVapors[#vacuumVapors].x, y = vacuumVapors[#vacuumVapors].y }
 end
 
-function Vacuum:collectDebris()
-    -- TODO: sometimes vacuum wont collect some debris and they stay hanging in game
-    for i = 1, #self.collidedSprites do
-        local collidedObject = self.collidedSprites[i]
-        if collidedObject.type == DEBRIS_TYPE_NAME then
-            collidedObject:collect()
-            return
-        end
-    end
-end
-
+-- TODO: sometimes vacuum wont collect some debris and they stay hanging in game
+-- change to use vacuumVapor sprites collision instead of line
 function Vacuum:checkForCollisions()
     for i = 1, #ACTIVE_DEBRIS do
         local debris = ACTIVE_DEBRIS[i]
@@ -94,10 +92,26 @@ function Vacuum:update()
         if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
             self:updateAnimation()
             self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
-            self:checkForCollisions()
         else
             self:setVisible(false)
         end
+    end
+
+    if WAS_GUN_HIT then
+        self:changeState(tostring(self.gun.currentHP))
+    end
+
+    if not self.gun.available then
+        if #self.vacuumVapors > 0 then
+            for i = 1, #self.vacuumVapors do
+                self.vacuumVapors[i]:remove()
+            end
+        end
+        return
+    end
+
+    if WAS_GAME_ACTIVE_LAST_CHECK and (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
+        self:checkForCollisions()
     end
 
     if WAS_GUN_ROTATED then

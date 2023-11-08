@@ -19,23 +19,28 @@ local maxHP = RECYCLER_CONSTANTS.maxHP
 
 function Recycler:init(x, y, connectorY, isLeftToGun)
     Recycler.super.init(self)
+
     self.type = GUN_TYPE_NAME
     self.available = true
+    self.currentHP = maxHP
+
     self.isLeftToGun = isLeftToGun
-    self.hp = maxHP
 
     self.recyclerImageTable = gfx.imagetable.new(recyclerImageTablePath)
     self.collectedDebrisSprite = gfx.sprite.new(gfx.image.new(collectedDebrisImagePath))
     self.generatedAmmoSprite = gfx.sprite.new(gfx.image.new(generatedAmmoImagePath))
     self.recyclingSprite = gfx.sprite.new(gfx.image.new(recyclingUIImagePath))
+
     self.recyclingSprite:moveTo(x, y)
     self.recyclingSprite:setZIndex(GUN_Z_INDEX)
 
-    self:moveTo(x, y)
     self:setImage(self.recyclerImageTable:getImage(1))
     self:setCollideRect(0, 0, self:getSize())
     self:setGroups(GUN_GROUP)
     self:setCollidesWithGroups({ ENEMY_GROUP })
+    self:moveTo(x, y)
+    self:setZIndex(GUN_Z_INDEX)
+
     self.connector = RecyclerConnector(self, connectorY)
 end
 
@@ -45,10 +50,10 @@ function Recycler:addSprite()
 end
 
 function Recycler:getHit()
-    if self.hp > 0 then
-        self.hp -= 1
+    if self.currentHP > 0 then
+        self.currentHP -= 1
     end
-    if self.hp <= 0 then
+    if self.currentHP <= 0 then
         -- TODO: could animate this retracting
         self:clearCollideRect()
         self.connector:remove()
@@ -67,8 +72,10 @@ function Recycler:getHit()
             end
         end
     end
-    self:setImage(self.recyclerImageTable:getImage(maxHP + 1 - self.hp))
+    self:setImage(self.recyclerImageTable:getImage(maxHP + 1 - self.currentHP))
 end
+
+-- TODO: change all this animation to AnimatedSprite
 
 function Recycler:setupDebrisToRecyclerAnimation()
     local connector = self.connector
