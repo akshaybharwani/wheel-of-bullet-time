@@ -13,6 +13,7 @@ CURRENT_BULLET_COUNT = 0
 
 local gunShooterConstants = GUN_SHOOTER_CONSTANTS
 local gunConstants = GUN_CONSTANTS
+local maxHP = gunConstants.maxHP
 local maxFiringCooldown = gunShooterConstants.maxFiringCooldown
 local currentFiringCooldown = maxFiringCooldown
 
@@ -22,12 +23,19 @@ local imagetable = gfx.imagetable.new(imagetablePath)
 function Shooter:init(gun)
     Shooter.super.init(self, imagetable)
 
-    self.imagetable = imagetable
     self.gun = gun
+
+    self.imagetable = imagetable
+
+    for i = 0, maxHP do
+        local stateName = tostring(maxHP - i)
+        local firstFrameIndex = i * 3 + 1
+        self:addState(stateName, firstFrameIndex, firstFrameIndex + 2,
+        {tickStep = gunConstants.animationFPS})
+    end
 
     self:moveTo(gun.x, gun.y)
     self:setZIndex(GUN_Z_INDEX)
-    self:addState("maxHPState", 1, 3, {tickStep = gunConstants.animationFPS})
     self:playAnimation()
     self:setVisible(false)
 end
@@ -41,12 +49,17 @@ function Shooter:shootBullet(startX, startY, angle)
 end
 
 function Shooter:update()
+    if WAS_GUN_HIT then
+        self:changeState(tostring(self.gun.currentHP))
+    end
+
     self:setFiringCooldown()
 
     if WAS_GAME_ACTIVE_LAST_CHECK then
         if GUN_CURRENT_STATE == GUN_SHOOTING_STATE then
             self:updateAnimation()
 
+            -- TODO: this seems resource intensive?
             self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
 
             if (CURRENT_CRANK_SHOOTING_TICKS == 1) then

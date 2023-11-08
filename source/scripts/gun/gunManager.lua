@@ -30,6 +30,8 @@ CURRENT_CRANK_SHOOTING_TICKS = 0
 
 ACTIVE_TARGETS = {}
 
+-- TODO: make shift events. Should be a better way
+
 WAS_GUN_ROTATED = false
 
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
@@ -43,7 +45,7 @@ function GunManager:init()
     GunManager.super.init(self)
 
     self.type = GUN_TYPE_NAME
-    self.hp = maxHP
+    self.currentHP = maxHP
 
     -- draw common gunBase Image
     local gunBaseImage = gfx.image.new(gunBaseImagePath)
@@ -133,10 +135,12 @@ end
 -- TODO: could consolidate methods like getHit for 'gun-element's in a base class
 
 function GunManager:getHit()
-    if self.hp > 0 then
-        self.hp -= 1
+    if self.currentHP > 0 then
+        self.currentHP -= 1
+        WAS_GUN_HIT = true
     end
-    if self.hp <= 0 then
+    if self.currentHP <= 0 then
+        self:clearCollideRect()
         for i = 1, #ACTIVE_TARGETS do
             if ACTIVE_TARGETS[i] == self then
                 table.remove(ACTIVE_TARGETS, i)

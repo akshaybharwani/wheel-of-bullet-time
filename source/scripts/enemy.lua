@@ -73,7 +73,12 @@ function Enemy:setupPatroling()
         self:setNewPatrolPoint()
     end, true)
     self.totalPatrolTimer = CrankTimer(math.random(minTotalPatrolDuration, maxTotalPatrolDuration), true, function()
-        self:setTarget()
+        -- TODO: go to Game Over instead of this
+        if #ACTIVE_TARGETS > 0 then
+            self:setTarget()
+        else
+            self:setVelocity(self.x, 440)
+        end
         self.segmentPatrolTimer:remove()
         self.totalPatrolTimer:remove()
     end)

@@ -45,6 +45,10 @@ BACKGROUND_Z_INDEX = -100
 GUN_Z_INDEX = 100
 UI_Z_INDEX = 101
 
+-- TODO: make shift events. Should be a better way
+
+WAS_GUN_HIT = false
+
 local lastCrankPosition = nil
 local crankCheckWaitDuration = 100
 
@@ -106,5 +110,10 @@ function pd.update()
     -- reset game state after updating everything
     if IS_GAME_ACTIVE then
         IS_GAME_ACTIVE = false
+    end
+
+    -- TODO: find a better place for this
+    if WAS_GUN_HIT then
+        WAS_GUN_HIT = false
     end
 end

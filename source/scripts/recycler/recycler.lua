@@ -50,6 +50,7 @@ function Recycler:getHit()
     end
     if self.hp <= 0 then
         -- TODO: could animate this retracting
+        self:clearCollideRect()
         self.connector:remove()
 
         -- should remove itself from the active targets and active recyclers
