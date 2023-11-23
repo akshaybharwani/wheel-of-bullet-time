@@ -16,14 +16,18 @@ local vacuumVaporImageTable = gfx.imagetable.new(vacuumVaporImagePath)
 
 local vacuumVaporPadding = 10
 
-function VacuumVapor:init(x, y, flip, distanceFromGun)
+function VacuumVapor:init(x, y, distanceFromGun)
     VacuumVapor.super.init(self, vacuumVaporImageTable)
     self.distanceFromGun = distanceFromGun
-    self:moveTo(x, y - vacuumVaporImageTable:getImage(1):getSize() / 2)
+    local vaporSize = vacuumVaporImageTable:getImage(1):getSize()
+    self:moveTo(x, y - vaporSize / 2)
     self:setVelocity(GUN_BASE_X, GUN_BASE_Y)
+    -- TODO: Add random rotation to this based on rules
     self:addState("shrink", 1, 5, {tickStep = animationFPS})
-    self.states.shrink.flip = flip
     self:setZIndex(-101)
+    self:setCollideRect(0, 0, vaporSize, vaporSize)
+    self:setGroups(VACUUM_GROUP)
+    self:setCollidesWithGroups({ DEBRIS_GROUP })
     self:playAnimation()
 end
 

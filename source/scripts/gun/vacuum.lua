@@ -13,8 +13,6 @@ class("Vacuum").extends(AnimatedSprite)
 
 TOP_VACUUM_VAPOR_POSITION = nil
 
-local vacuumVaporFlipStates = { gfx.kImageUnflipped, gfx.kImageFlippedX, gfx.kImageFlippedY, gfx.kImageFlippedXY}
-
 local vacuumLine = nil
 local vacuumVapors = nil
 
@@ -50,26 +48,24 @@ end
 function Vacuum:setupVacuumVapor()
     self.vacuumVapors = {}
     for i = 1, gunVacuumConstants.vacuumVaporCount, 1 do
-        -- TODO: this is not actually rotating the sprites. Fix it.
-        local vacuumVaporFlipStateIndex = math.random(1, #vacuumVaporFlipStates)
         local distanceFromGun = i * gunVacuumConstants.vacuumVaporDistance
-        table.insert(self.vacuumVapors, VacuumVapor(GUN_BASE_X, GUN_BASE_Y - distanceFromGun, vacuumVaporFlipStates[vacuumVaporFlipStateIndex], distanceFromGun))
+        table.insert(self.vacuumVapors, VacuumVapor(GUN_BASE_X, GUN_BASE_Y - distanceFromGun, distanceFromGun))
     end
     vacuumVapors = self.vacuumVapors
     TOP_VACUUM_VAPOR_POSITION = { x = vacuumVapors[#vacuumVapors].x, y = vacuumVapors[#vacuumVapors].y }
 end
 
--- TODO: sometimes vacuum wont collect some debris and they stay hanging in game
--- change to use vacuumVapor sprites collision instead of line
 function Vacuum:checkForCollisions()
-    for i = 1, #ACTIVE_DEBRIS do
-        local debris = ACTIVE_DEBRIS[i]
-        if debris ~= nil then
-            local debrisPoint = pd.geometry.point.new(debris:getPosition())
-            local linePoint = vacuumLine:closestPointOnLineToPoint(debrisPoint)
-            -- HACK: magic number 6 to give advantage to players (and temporary fix debris not collecting bug)
-            if debrisPoint:distanceToPoint(linePoint) <= gunVacuumConstants.vacuumAreaWidth / 2 + 6 then
-                debris:moveTowardsGun()
+
+    for i = 1, #self.vacuumVapors do
+        local vacuumVapor = self.vacuumVapors[i]
+        if vacuumVapor ~= nil then
+            local collisions = vacuumVapor:overlappingSprites()
+            for i = 1, #collisions do
+                local other = collisions[i]
+                if other.type == DEBRIS_TYPE_NAME then
+                    other:moveTowardsGun()
+                end
             end
         end
     end

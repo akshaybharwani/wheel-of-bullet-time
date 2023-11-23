@@ -32,6 +32,7 @@ ENEMY_GROUP = 2
 DEBRIS_GROUP = 3
 BULLET_GROUP = 4
 GUN_GROUP = 5
+VACUUM_GROUP = 6
 
 -- TODO: do we need types _and_ groups? Revisit
 

@@ -26,7 +26,7 @@ function Debris:init(x, y, debrisManager)
 
     self:setCollideRect(0, 0, self:getSize())
     self:setGroups(DEBRIS_GROUP)
-    self:setCollidesWithGroups({ DEBRIS_GROUP })
+    self:setCollidesWithGroups({ VACUUM_GROUP })
     if self.shouldRotate then
         self:setRotation(90)
     end
