@@ -7,24 +7,16 @@ local gfx <const> = pd.graphics
 
 class('Background').extends(gfx.sprite)
 
-function Background:init()
+function Background:init(delay)
     Background.super.init(self)
 
-    local titleImage = gfx.image.new("images/background/Title")
-
-    self.titleSprite = gfx.sprite.new(titleImage)
-    self.titleSprite:moveTo(200, 120)
-    self.titleSprite:setZIndex(1000)
-
-    local backgroundTimer = pd.timer.new(TITLE_TIME)
+    local backgroundTimer = pd.timer.new(delay)
     backgroundTimer.timerEndedCallback = function(timer)
         -- TODO: Need to enable input and everything else here
         self:showBackground()
-        self.titleSprite:remove()
     end
 
     self:add()
-    self.titleSprite:add()
 end
 
 function Background:showBackground()

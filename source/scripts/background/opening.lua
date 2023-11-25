@@ -12,15 +12,27 @@ class("Opening").extends(gfx.sprite)
 local currentRecyclerIndex = 0
 local currentDebrisCount = 0
 
-function Opening:init(debrisManager)
+function Opening:init(delay, debrisManager)
     Opening.super.init(self)
 
     self.debrisManager = debrisManager
 
-    self:spawnClouds()
-    self:spawnSatellite()
-    self:spawnRecyclers()
-    self:spawnDebris()
+    local titleImage = gfx.image.new("images/background/Title")
+
+    self.titleSprite = gfx.sprite.new(titleImage)
+    self.titleSprite:moveTo(200, 120)
+    self.titleSprite:setZIndex(1000)
+    self.titleSprite:add()
+
+    local titleTimer = pd.timer.new(delay)
+    titleTimer.timerEndedCallback = function(timer)
+        self.titleSprite:remove()
+        self:spawnClouds()
+        self:spawnSatellite()
+        self:spawnRecyclers()
+        self:spawnDebris()
+    end
+
     self:add()
 end
 

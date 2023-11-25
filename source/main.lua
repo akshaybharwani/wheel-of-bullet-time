@@ -40,11 +40,12 @@ GUN_TYPE_NAME = "gun-element"
 ENEMY_TYPE_NAME = "enemy"
 DEBRIS_TYPE_NAME = "debris"
 
-TITLE_TIME = 0
-
 BACKGROUND_Z_INDEX = -100
 GUN_Z_INDEX = 100
 UI_Z_INDEX = 101
+
+local titleConstants = TITLE_CONSTANTS
+local titleDuration = titleConstants.titleDuration
 
 -- TODO: make shift events. Should be a better way
 
@@ -78,17 +79,13 @@ local function setupGame()
     pd.ui.crankIndicator:start()
     setupCrankCheckTimer()
 
-    Background()
     GunManager()
     local recyclerManager = RecyclerManager()
     local debrisManager = DebrisManager(recyclerManager)
     -- is this the best way to do this?
     EnemyManager(debrisManager)
-
-    -- HACK?
-    pd.timer.performAfterDelay(TITLE_TIME, function()
-        Opening(debrisManager)
-    end)
+    Opening(titleDuration, debrisManager)
+    Background(titleDuration)
 end
 
 setupGame()
