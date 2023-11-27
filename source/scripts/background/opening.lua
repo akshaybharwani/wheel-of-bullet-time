@@ -12,6 +12,8 @@ class("Opening").extends(gfx.sprite)
 local currentRecyclerIndex = 0
 local currentDebrisCount = 0
 
+local openingDebrisSpawned = false
+
 function Opening:init(delay, debrisManager)
     Opening.super.init(self)
 
@@ -34,6 +36,15 @@ function Opening:init(delay, debrisManager)
     end
 
     self:add()
+end
+
+function Opening:update() 
+    if openingDebrisSpawned then
+        if #ACTIVE_DEBRIS <= 0 then
+            NOTIFICATION_CENTER:notify(NOTIFY_INITIAL_DEBRIS_COLLECTED)
+            openingDebrisSpawned = false
+        end
+    end
 end
 
 function Opening:spawnRecyclers()
@@ -66,7 +77,7 @@ function Opening:spawnDebris()
             self.debrisManager:spawnDebris(spawnX, spawnY)
         else
             self.debrisSpawningTimer:remove()
-            --self:spawnClouds()
+            openingDebrisSpawned = true
         end
     end
 end

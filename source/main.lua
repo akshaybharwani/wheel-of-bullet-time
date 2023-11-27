@@ -8,11 +8,14 @@ import "scripts/background/background"
 import "scripts/enemyManager"
 import "scripts/gun/gunManager"
 import "scripts/background/opening"
+import "scripts/libraries/Signal"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 -- globals
+
+NOTIFICATION_CENTER = Signal()
 
 -- TODO: assuming FPS is constant 30, majorly used by AnimatedSprite
 CONSTANT_FPS = 30
@@ -43,6 +46,8 @@ DEBRIS_TYPE_NAME = "debris"
 BACKGROUND_Z_INDEX = -100
 GUN_Z_INDEX = 100
 UI_Z_INDEX = 101
+
+NOTIFY_INITIAL_DEBRIS_COLLECTED = "notifyInitialDebris"
 
 local titleConstants = TITLE_CONSTANTS
 local titleDuration = titleConstants.titleDuration
@@ -82,8 +87,10 @@ local function setupGame()
     GunManager()
     local recyclerManager = RecyclerManager()
     local debrisManager = DebrisManager(recyclerManager)
-    -- is this the best way to do this?
-    EnemyManager(debrisManager)
+    NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
+        -- TODO: is assigning a manager to initialization of another manager a good idea?
+        EnemyManager(debrisManager)
+    end)
     Opening(titleDuration, debrisManager)
     Background(titleDuration)
 end
