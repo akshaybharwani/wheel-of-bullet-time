@@ -52,7 +52,7 @@ NOTIFY_INITIAL_DEBRIS_COLLECTED = "notifyInitialDebris"
 local titleConstants = TITLE_CONSTANTS
 local titleDuration = titleConstants.titleDuration
 
--- TODO: make shift events. Should be a better way
+-- TODO: change to use Signal event
 
 WAS_GUN_HIT = false
 
@@ -117,7 +117,7 @@ function pd.update()
         IS_GAME_ACTIVE = false
     end
 
-    -- TODO: find a better place for this
+    -- TODO: change to use Signal event
     if WAS_GUN_HIT then
         WAS_GUN_HIT = false
     end
