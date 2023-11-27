@@ -30,7 +30,9 @@ CURRENT_CRANK_SHOOTING_TICKS = 0
 
 ACTIVE_TARGETS = {}
 
--- TODO: make shift events. Should be a better way
+CURRENT_BULLET_COUNT = 0
+
+-- TODO: change to Signal events
 
 WAS_GUN_ROTATED = false
 

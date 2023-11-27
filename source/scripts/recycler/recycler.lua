@@ -175,6 +175,7 @@ function Recycler:update()
             self.ammoToGunAnimator = nil
             self.generatedAmmoSprite:remove()
             CURRENT_BULLET_COUNT += 1
+            NOTIFICATION_CENTER:notify(NOTIFY_BULLET_COUNT_UPDATED)
             self.available = true
         end
     end

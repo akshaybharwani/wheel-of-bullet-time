@@ -73,6 +73,7 @@ function Shooter:update()
             if (currentFiringCooldown == 0 and CURRENT_BULLET_COUNT > 0) then
                 self:shootBullet(GUN_BASE_X, GUN_BASE_Y, GUN_CURRENT_ROTATION_ANGLE)
                 CURRENT_BULLET_COUNT -= 1
+                NOTIFICATION_CENTER:notify(NOTIFY_BULLET_COUNT_UPDATED)
                 currentFiringCooldown = maxFiringCooldown
             end
         end

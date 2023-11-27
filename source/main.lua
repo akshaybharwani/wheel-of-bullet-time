@@ -27,6 +27,8 @@ IS_GAME_ACTIVE = false
 -- continously won't work properly, this can be used to help with that
 WAS_GAME_ACTIVE_LAST_CHECK = false
 
+CURRENT_BULLET_COUNT = 0
+
 MAX_SCREEN_WIDTH = pd.display.getWidth()
 MAX_SCREEN_HEIGHT = pd.display.getHeight()
 
@@ -47,7 +49,8 @@ BACKGROUND_Z_INDEX = -100
 GUN_Z_INDEX = 100
 UI_Z_INDEX = 101
 
-NOTIFY_INITIAL_DEBRIS_COLLECTED = "notifyInitialDebris"
+NOTIFY_INITIAL_DEBRIS_COLLECTED = "initialDebrisCollected"
+NOTIFY_BULLET_COUNT_UPDATED = "bulletCountUpdate"
 
 local titleConstants = TITLE_CONSTANTS
 local titleDuration = titleConstants.titleDuration
@@ -84,8 +87,8 @@ local function setupGame()
     pd.ui.crankIndicator:start()
     setupCrankCheckTimer()
 
-    GunManager()
-    local recyclerManager = RecyclerManager()
+    local gunManager = GunManager()
+    local recyclerManager = RecyclerManager(gunManager)
     local debrisManager = DebrisManager(recyclerManager)
     NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
         -- TODO: is assigning a manager to initialization of another manager a good idea?

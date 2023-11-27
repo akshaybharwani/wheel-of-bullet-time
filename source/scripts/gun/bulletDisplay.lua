@@ -31,9 +31,13 @@ function BulletDisplay:init()
     local thirdNumber = string.sub(self.bulletCountString, 3, 3)
     self.thirdNumber = self:getNumberSprite(thirdNumber, self.bulletSpriteX + self.bulletSprite.width * 3 + BULLET_DISPLAY_CONSTANTS.numberPadding * 2)
     self:add()
+
+    NOTIFICATION_CENTER:subscribe(NOTIFY_BULLET_COUNT_UPDATED, self, function()
+        self:updateCount()
+    end)
 end
 
-function BulletDisplay:update()
+function BulletDisplay:updateCount()
     self.bulletCountString = string.format("%03d", CURRENT_BULLET_COUNT)
 
     local firstNumber = string.sub(self.bulletCountString, 1, 1)
