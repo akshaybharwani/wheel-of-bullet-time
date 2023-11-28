@@ -1,5 +1,12 @@
+import "CoreLibs/object"
+import "CoreLibs/graphics"
+import "CoreLibs/sprites"
+import "CoreLibs/animator"
+
 local pd <const> = playdate
 local gfx <const> = pd.graphics
+local geo <const> = pd.geometry
+local Animator = gfx.animator
 
 class('BulletDisplay').extends(gfx.sprite)
 
@@ -7,6 +14,11 @@ local bulletImagePath = "images/ui/UI_bullet_8x16"
 local numbersImagePath = "images/ui/UI_numbers-table-8-16"
 
 local totalBulletDisplayWidth = 34
+
+local bulletDisplayConstants = BULLET_DISPLAY_CONSTANTS
+local numberPadding = bulletDisplayConstants.numberPadding
+local bounceTotalDuration = bulletDisplayConstants.bounceTotalDuration
+local bounceHeight = bulletDisplayConstants.bounceHeight
 
 function BulletDisplay:init()
     self.numbersImageTable = gfx.imagetable.new(numbersImagePath)
@@ -23,13 +35,13 @@ function BulletDisplay:init()
     self.bulletCountString = string.format("%03d", CURRENT_BULLET_COUNT)
 
     local firstNumber = string.sub(self.bulletCountString, 1, 1)
-    self.firstNumber = self:getNumberSprite(firstNumber, self.bulletSpriteX + self.bulletSprite.width)
+    self.firstNumberSprite = self:getNumberSprite(firstNumber, self.bulletSpriteX + self.bulletSprite.width)
 
     local secondNumber = string.sub(self.bulletCountString, 2, 2)
-    self.secondNumber = self:getNumberSprite(secondNumber, self.bulletSpriteX + self.bulletSprite.width * 2 + BULLET_DISPLAY_CONSTANTS.numberPadding)
+    self.secondNumberSprite = self:getNumberSprite(secondNumber, self.bulletSpriteX + self.bulletSprite.width * 2 + numberPadding)
 
     local thirdNumber = string.sub(self.bulletCountString, 3, 3)
-    self.thirdNumber = self:getNumberSprite(thirdNumber, self.bulletSpriteX + self.bulletSprite.width * 3 + BULLET_DISPLAY_CONSTANTS.numberPadding * 2)
+    self.thirdNumberSprite = self:getNumberSprite(thirdNumber, self.bulletSpriteX + self.bulletSprite.width * 3 + numberPadding * 2)
     self:add()
 
     NOTIFICATION_CENTER:subscribe(NOTIFY_BULLET_COUNT_UPDATED, self, function()
@@ -42,19 +54,39 @@ function BulletDisplay:updateCount()
 
     local firstNumber = string.sub(self.bulletCountString, 1, 1)
     if firstNumber ~= 0 then
-        --self.timer
-        self.firstNumber:setImage(self.numbersImageTable:getImage(firstNumber + 1))
+        self:updateNumber(self.firstNumberSprite, firstNumber)
     end
 
     local secondNumber = string.sub(self.bulletCountString, 2, 2)
     if secondNumber ~= 0 then
-        self.secondNumber:setImage(self.numbersImageTable:getImage(secondNumber + 1))
+        self:updateNumber(self.secondNumberSprite, secondNumber)
     end
 
     local thirdNumber = string.sub(self.bulletCountString, 3, 3)
     if thirdNumber ~= 0 then
-        self.thirdNumber:setImage(self.numbersImageTable:getImage(thirdNumber + 1))
+        self:updateNumber(self.thirdNumberSprite, thirdNumber)
     end
+end
+
+function BulletDisplay:updateNumber(numberSprite, number)
+    numberSprite:setImage(self.numbersImageTable:getImage(number + 1))
+    if (numberSprite.bounceAnimator) then
+        if (numberSprite.bounceAnimator:progress() == 1) then
+            numberSprite.bounceAnimator = self:getBounceAnimator(numberSprite.x, numberSprite.y)
+            numberSprite:setAnimator(numberSprite.bounceAnimator)
+        end
+    else
+        numberSprite.bounceAnimator = self:getBounceAnimator(numberSprite.x, numberSprite.y)
+        numberSprite:setAnimator(numberSprite.bounceAnimator)
+    end
+end
+
+function BulletDisplay:getBounceAnimator(x, y)
+    local startPoint = geo.point.new(x, y)
+    local endPoint = geo.point.new(x, y - bounceHeight)
+    local bounceAnimator = Animator.new(bounceTotalDuration, startPoint, endPoint, pd.easingFunctions.inCubic)
+    bounceAnimator.reverses = true
+    return bounceAnimator
 end
 
 function BulletDisplay:getNumberSprite(number, positionX)

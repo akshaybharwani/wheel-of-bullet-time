@@ -51,3 +51,5 @@ BULLET_CONSTANTS.bulletTrailDistance = 8
 BULLET_DISPLAY_CONSTANTS = {}
 -- space between each number 
 BULLET_DISPLAY_CONSTANTS.numberPadding = 1
+BULLET_DISPLAY_CONSTANTS.bounceTotalDuration = 100
+BULLET_DISPLAY_CONSTANTS.bounceHeight = 2
