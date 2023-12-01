@@ -13,6 +13,7 @@ local currentRecyclerIndex = 0
 local currentDebrisCount = 0
 
 local openingDebrisSpawned = false
+local initialDebrisCollected = false
 
 function Opening:init(delay, debrisManager)
     Opening.super.init(self)
@@ -38,11 +39,11 @@ function Opening:init(delay, debrisManager)
     self:add()
 end
 
-function Opening:update() 
-    if openingDebrisSpawned then
+function Opening:update()
+    if openingDebrisSpawned and not initialDebrisCollected then
         if #ACTIVE_DEBRIS <= 0 then
             NOTIFICATION_CENTER:notify(NOTIFY_INITIAL_DEBRIS_COLLECTED)
-            openingDebrisSpawned = false
+            initialDebrisCollected = true
         end
     end
 end

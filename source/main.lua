@@ -51,16 +51,15 @@ UI_Z_INDEX = 101
 
 NOTIFY_INITIAL_DEBRIS_COLLECTED = "initialDebrisCollected"
 NOTIFY_BULLET_COUNT_UPDATED = "bulletCountUpdate"
+NOTIFY_GUN_WAS_HIT = "gunWasHit"
 
 local titleConstants = TITLE_CONSTANTS
 local titleDuration = titleConstants.titleDuration
 
--- TODO: change to use Signal event
-
-WAS_GUN_HIT = false
-
 local lastCrankPosition = nil
 local crankCheckWaitDuration = 100
+
+local isGameSetupDone = false
 
 local function checkCrankInput()
     local currentCrankPosition = pd.getCrankPosition()
@@ -90,12 +89,14 @@ local function setupGame()
     local gunManager = GunManager()
     local recyclerManager = RecyclerManager(gunManager)
     local debrisManager = DebrisManager(recyclerManager)
+    Opening(titleDuration, debrisManager)
+    Background(titleDuration)
     NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
         -- TODO: is assigning a manager to initialization of another manager a good idea?
         EnemyManager(debrisManager)
+        print("intial Debris collected")
+        isGameSetupDone = true
     end)
-    Opening(titleDuration, debrisManager)
-    Background(titleDuration)
 end
 
 setupGame()
@@ -120,8 +121,10 @@ function pd.update()
         IS_GAME_ACTIVE = false
     end
 
-    -- TODO: change to use Signal event
-    if WAS_GUN_HIT then
-        WAS_GUN_HIT = false
+    if isGameSetupDone then
+        if #ACTIVE_DEBRIS <= 0 and CURRENT_BULLET_COUNT <= 0 then
+            gfx.drawText("GAME OVER", 200, 120)
+            pd.wait(GAME_OVER_CONSTANTS.gameOverWaitDuration)
+        end
     end
 end

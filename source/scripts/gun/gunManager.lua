@@ -142,7 +142,7 @@ end
 function GunManager:getHit()
     if self.currentHP > 0 then
         self.currentHP -= 1
-        WAS_GUN_HIT = true
+        NOTIFICATION_CENTER:notify(NOTIFY_GUN_WAS_HIT)
     end
     if self.currentHP <= 0 then
         self.available = false

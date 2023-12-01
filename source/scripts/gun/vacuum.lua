@@ -43,6 +43,10 @@ function Vacuum:init(gun)
 
     self:setupVacuumVapor()
     self:setVacuumLine()
+
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_WAS_HIT, self, function()
+        self:changeState(tostring(self.gun.currentHP))
+    end)
 end
 
 function Vacuum:setupVacuumVapor()
@@ -91,10 +95,6 @@ function Vacuum:update()
         else
             self:setVisible(false)
         end
-    end
-
-    if WAS_GUN_HIT then
-        self:changeState(tostring(self.gun.currentHP))
     end
 
     if not self.gun.available then
