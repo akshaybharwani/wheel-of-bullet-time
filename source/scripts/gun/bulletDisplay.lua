@@ -20,7 +20,10 @@ local numberPadding = bulletDisplayConstants.numberPadding
 local bounceTotalDuration = bulletDisplayConstants.bounceTotalDuration
 local bounceHeight = bulletDisplayConstants.bounceHeight
 
+local lastBulletCount = CURRENT_BULLET_COUNT
+
 function BulletDisplay:init()
+
     self.numbersImageTable = gfx.imagetable.new(numbersImagePath)
 
     self.bulletSprite = gfx.sprite.new(gfx.image.new(bulletImagePath))
@@ -66,6 +69,8 @@ function BulletDisplay:updateCount()
     if thirdNumber ~= 0 then
         self:updateNumber(self.thirdNumberSprite, thirdNumber)
     end
+
+    lastBulletCount = CURRENT_BULLET_COUNT
 end
 
 function BulletDisplay:updateNumber(numberSprite, number)
@@ -82,9 +87,14 @@ function BulletDisplay:updateNumber(numberSprite, number)
 end
 
 function BulletDisplay:getBounceAnimator(x, y)
+    local endPoint
+    if (lastBulletCount < CURRENT_BULLET_COUNT) then
+        endPoint = geo.point.new(x, y - bounceHeight)
+    else
+        endPoint = geo.point.new(x, y + bounceHeight)
+    end
     local startPoint = geo.point.new(x, y)
-    local endPoint = geo.point.new(x, y - bounceHeight)
-    local bounceAnimator = Animator.new(bounceTotalDuration, startPoint, endPoint, pd.easingFunctions.inCubic)
+    local bounceAnimator = Animator.new(bounceTotalDuration, startPoint, endPoint)
     bounceAnimator.reverses = true
     return bounceAnimator
 end

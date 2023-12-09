@@ -52,7 +52,7 @@ BULLET_DISPLAY_CONSTANTS = {}
 -- space between each number 
 BULLET_DISPLAY_CONSTANTS.numberPadding = 1
 BULLET_DISPLAY_CONSTANTS.bounceTotalDuration = 100
-BULLET_DISPLAY_CONSTANTS.bounceHeight = 2
+BULLET_DISPLAY_CONSTANTS.bounceHeight = 3
 
 GAME_OVER_CONSTANTS = {}
 GAME_OVER_CONSTANTS.gameOverWaitDuration = 5000

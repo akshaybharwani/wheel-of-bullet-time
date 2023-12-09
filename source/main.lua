@@ -27,8 +27,6 @@ IS_GAME_ACTIVE = false
 -- continously won't work properly, this can be used to help with that
 WAS_GAME_ACTIVE_LAST_CHECK = false
 
-CURRENT_BULLET_COUNT = 0
-
 MAX_SCREEN_WIDTH = pd.display.getWidth()
 MAX_SCREEN_HEIGHT = pd.display.getHeight()
 
