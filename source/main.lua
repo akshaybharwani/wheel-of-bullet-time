@@ -46,7 +46,9 @@ DEBRIS_TYPE_NAME = "debris"
 
 BACKGROUND_Z_INDEX = -100
 GUN_Z_INDEX = 100
-UI_Z_INDEX = 101
+UI_Z_INDEX = 200
+
+GAME_ACTIVE_ELAPSED_SECONDS = 0
 
 NOTIFY_INITIAL_DEBRIS_COLLECTED = "initialDebrisCollected"
 NOTIFY_BULLET_COUNT_UPDATED = "bulletCountUpdate"
@@ -55,14 +57,20 @@ NOTIFY_GUN_WAS_HIT = "gunWasHit"
 local titleConstants = TITLE_CONSTANTS
 local titleDuration = titleConstants.titleDuration
 
-local lastCrankPosition = nil
-local crankCheckWaitDuration = 100
+local coreGameConstants = CORE_GAME_CONSTANTS
+local crankCheckWaitDuration = coreGameConstants.crankCheckWaitDuration
 
-local isGameSetupDone = false
+local lastCrankPosition = nil
+
+IS_GAME_SETUP_DONE = false
 
 local function checkCrankInput()
     local currentCrankPosition = pd.getCrankPosition()
     if lastCrankPosition ~= currentCrankPosition then
+        -- TODO: move this to a separate script or logic
+        if IS_GAME_SETUP_DONE then
+            GAME_ACTIVE_ELAPSED_SECONDS += DELTA_TIME
+        end
         IS_GAME_ACTIVE = true
         WAS_GAME_ACTIVE_LAST_CHECK = true
     elseif WAS_GAME_ACTIVE_LAST_CHECK then
@@ -95,7 +103,7 @@ local function setupGame()
         -- ? is assigning a manager to initialization of another manager a good idea?
         EnemyManager(debrisManager)
         print("intial Debris collected")
-        isGameSetupDone = true
+        IS_GAME_SETUP_DONE = true
     end)
 end
 
@@ -121,7 +129,7 @@ function pd.update()
         IS_GAME_ACTIVE = false
     end
 
-    if isGameSetupDone then
+    if IS_GAME_SETUP_DONE then
         if #ACTIVE_DEBRIS <= 0 and CURRENT_BULLET_COUNT <= 0 then
             gfx.drawText("GAME OVER", 200, 120)
             -- TODO: Add the Game Over screen after this ends

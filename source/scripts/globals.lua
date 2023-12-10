@@ -3,6 +3,10 @@
 -- so, tickStep = 2 is every second frame, making animation 15fps. As the update still happens frame based, 
 -- not sure how float values will work here. TODO: revisit this
 
+-- core game
+CORE_GAME_CONSTANTS = {}
+CORE_GAME_CONSTANTS.crankCheckWaitDuration = 100
+
 -- title
 TITLE_CONSTANTS = {}
 TITLE_CONSTANTS.titleDuration = 2000

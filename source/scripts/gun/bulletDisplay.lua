@@ -11,7 +11,7 @@ local Animator = gfx.animator
 class('BulletDisplay').extends(gfx.sprite)
 
 local bulletImagePath = "images/ui/UI_bullet_8x16"
-local numbersImagePath = "images/ui/UI_numbers-table-8-16"
+local numbersImagePath = "images/ui/UI_numbers_and_time-table-8-16"
 
 local bulletDisplayConstants = BULLET_DISPLAY_CONSTANTS
 local uiConstants = UI_CONSTANTS
