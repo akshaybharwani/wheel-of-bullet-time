@@ -60,7 +60,3 @@ BULLET_DISPLAY_CONSTANTS.bounceHeight = 3
 -- game over
 GAME_OVER_CONSTANTS = {}
 GAME_OVER_CONSTANTS.gameOverWaitDuration = 5000
-
--- game timer
-GAME_TIMER_CONSTANTS = {}
-GAME_TIMER_CONSTANTS.posY = 20

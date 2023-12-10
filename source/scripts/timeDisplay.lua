@@ -1,51 +1,57 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "CoreLibs/animator"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
-local geo <const> = pd.geometry
-local Animator = gfx.animator
 
 class('TimeDisplay').extends(gfx.sprite)
 
 local timeImagePath = "images/ui/UI_time-table-8-16"
 local numbersImagePath = "images/ui/UI_numbers-table-8-16"
 
-local gameTimerConstants = GAME_TIMER_CONSTANTS
 local uiConstants = UI_CONSTANTS
 local numberPadding = uiConstants.numberPadding
 
-local totalTimeDisplayWidth = 48 + (numberPadding * 5)
+-- 5 for the number of sprites which are going to require the padding
+local totalTimeDisplayWidth = 64 + (numberPadding * 5)
 
 function TimeDisplay:init()
     self.timeUIImagetable = gfx.imagetable.new(timeImagePath)
-    print(self.timeUIImagetable:getLength())
     self.numbersImagetable = gfx.imagetable.new(numbersImagePath)
 
-    self.timeY = gameTimerConstants.posY
+    local numberImage = self.numbersImagetable:getImage(1)
+    self.numberWidth = numberImage.width
+    self.numberHeight = numberImage.height
+
+    self.timeY = self.numberHeight / 2
     self.timeX = MAX_SCREEN_WIDTH / 2 - totalTimeDisplayWidth / 2
     self.minutes = 00
     self.seconds = 00
 
-    self.numberWidth = self.numbersImagetable:getImage(1).width
+    self.leftBracketSprite = self:getTimeUISprite(7, self:getPosX(0, 0))
 
+    -- TODO: look into the getDigit function and figure out why 2 is the firstNumber here
     local firstNumber = self:getDigit(self.minutes, 2)
-    self.firstNumberSprite = self:getNumberSprite(firstNumber, self.timeX + self.numberWidth)
+    self.firstNumberSprite = self:getNumberSprite(firstNumber, self:getPosX(1, 0))
 
     local secondNumber = self:getDigit(self.minutes, 1)
-    self.secondNumberSprite = self:getNumberSprite(secondNumber, self.timeX + self.numberWidth * 2 + numberPadding)
+    self.secondNumberSprite = self:getNumberSprite(secondNumber, self:getPosX(2, numberPadding))
 
-    self.minuteSprite = self:getTimeUISprite(5, self.timeX + self.numberWidth * 3 + numberPadding * 3)
+    self.minuteSprite = self:getTimeUISprite(5, self:getPosX(3, numberPadding))
 
     local thirdNumber = self:getDigit(self.seconds, 2)
-    self.thirdNumberSprite = self:getNumberSprite(thirdNumber, self.timeX + self.numberWidth * 4 + numberPadding * 4)
+    self.thirdNumberSprite = self:getNumberSprite(thirdNumber, self:getPosX(4, numberPadding))
 
     local fourthNumber = self:getDigit(self.seconds, 1)
-    self.fourthNumberSprite = self:getNumberSprite(fourthNumber, self.timeX + self.numberWidth * 5 + numberPadding * 5)
+    self.fourthNumberSprite = self:getNumberSprite(fourthNumber, self:getPosX(5, numberPadding))
 
-    self.secondsSprite = self:getTimeUISprite(6, self.timeX + self.numberWidth * 6 + numberPadding * 6)
+    self.secondsSprite = self:getTimeUISprite(6, self:getPosX(6, numberPadding))
+    -- ! Hack: figure out a way to do this using the function itself 
+    self.rightBracketSprite = self:getTimeUISprite(8, self.timeX + self.numberWidth * 7 + numberPadding * 6)
+    
+    self:setBounds(self.timeX + self.numberWidth, 0, self.numberWidth * 6, self.numberHeight)
+    self:setZIndex(UI_Z_INDEX - 1)
     self:add()
 end
 
@@ -65,6 +71,11 @@ function TimeDisplay:draw()
 
     local fourthNumber = self:getDigit(self.seconds, 1)
     self:updateNumber(self.fourthNumberSprite, fourthNumber)
+    gfx.fillRect(0, 0, self.width, self.height)
+end
+
+function TimeDisplay:getPosX(sequencePosition, padding)
+    return self.timeX + self.numberWidth * sequencePosition + padding * sequencePosition
 end
 
 function TimeDisplay:updateNumber(numberSprite, number)
@@ -93,16 +104,8 @@ function TimeDisplay:minutesAndSecondsFromMilliseconds(ms)
     return m, s
 end
 
-function TimeDisplay:addLeadingZero(num)
-    if num < 10 then
-        return '0'..num
-    end
-    return num
-end
-
 function TimeDisplay:updateClock()
     self.minutes, self.seconds = self:minutesAndSecondsFromMilliseconds(pd.getCurrentTimeMilliseconds())
-    --self.minutes, self.seconds = self:addLeadingZero(self.minutes), self:addLeadingZero(self.seconds)
     self:draw()
 end
 

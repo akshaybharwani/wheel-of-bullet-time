@@ -38,7 +38,7 @@ BULLET_GROUP = 4
 GUN_GROUP = 5
 VACUUM_GROUP = 6
 
--- TODO: do we need types _and_ groups? Revisit
+-- ? do we need types _and_ groups? Revisit
 
 GUN_TYPE_NAME = "gun-element"
 ENEMY_TYPE_NAME = "enemy"
@@ -92,7 +92,7 @@ local function setupGame()
     Opening(titleDuration, debrisManager)
     Background(titleDuration)
     NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
-        -- TODO: is assigning a manager to initialization of another manager a good idea?
+        -- ? is assigning a manager to initialization of another manager a good idea?
         EnemyManager(debrisManager)
         print("intial Debris collected")
         isGameSetupDone = true
@@ -104,7 +104,6 @@ setupGame()
 function pd.update()
     --gfx.clear()
 
-    --print(pd.getCurrentTimeMilliseconds())
     DELTA_TIME = pd.getElapsedTime()
     pd.resetElapsedTime()
 
