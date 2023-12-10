@@ -47,12 +47,20 @@ BULLET_CONSTANTS = {}
 BULLET_CONSTANTS.bulletSpeed = 16
 BULLET_CONSTANTS.bulletTrailDistance = 8
 
+-- ui
+UI_CONSTANTS = {}
+UI_CONSTANTS.numberPadding = 1
+
 -- bulletDisplay
 BULLET_DISPLAY_CONSTANTS = {}
 -- space between each number 
-BULLET_DISPLAY_CONSTANTS.numberPadding = 1
 BULLET_DISPLAY_CONSTANTS.bounceTotalDuration = 100
 BULLET_DISPLAY_CONSTANTS.bounceHeight = 3
 
+-- game over
 GAME_OVER_CONSTANTS = {}
 GAME_OVER_CONSTANTS.gameOverWaitDuration = 5000
+
+-- game timer
+GAME_TIMER_CONSTANTS = {}
+GAME_TIMER_CONSTANTS.posY = 20

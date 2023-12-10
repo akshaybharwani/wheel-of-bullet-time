@@ -9,6 +9,7 @@ import "scripts/enemyManager"
 import "scripts/gun/gunManager"
 import "scripts/background/opening"
 import "scripts/libraries/Signal"
+import "scripts/timeDisplay"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -83,6 +84,7 @@ local function setupGame()
     pd.resetElapsedTime()
     pd.ui.crankIndicator:start()
     setupCrankCheckTimer()
+    TimeDisplay()
 
     local gunManager = GunManager()
     local recyclerManager = RecyclerManager(gunManager)
@@ -102,6 +104,7 @@ setupGame()
 function pd.update()
     --gfx.clear()
 
+    --print(pd.getCurrentTimeMilliseconds())
     DELTA_TIME = pd.getElapsedTime()
     pd.resetElapsedTime()
 
@@ -122,6 +125,7 @@ function pd.update()
     if isGameSetupDone then
         if #ACTIVE_DEBRIS <= 0 and CURRENT_BULLET_COUNT <= 0 then
             gfx.drawText("GAME OVER", 200, 120)
+            -- TODO: Add the Game Over screen after this ends
             pd.wait(GAME_OVER_CONSTANTS.gameOverWaitDuration)
         end
     end

@@ -13,12 +13,13 @@ class('BulletDisplay').extends(gfx.sprite)
 local bulletImagePath = "images/ui/UI_bullet_8x16"
 local numbersImagePath = "images/ui/UI_numbers-table-8-16"
 
-local totalBulletDisplayWidth = 34
-
 local bulletDisplayConstants = BULLET_DISPLAY_CONSTANTS
-local numberPadding = bulletDisplayConstants.numberPadding
+local uiConstants = UI_CONSTANTS
+local numberPadding = uiConstants.numberPadding
 local bounceTotalDuration = bulletDisplayConstants.bounceTotalDuration
 local bounceHeight = bulletDisplayConstants.bounceHeight
+
+local totalBulletDisplayWidth = 32 + (numberPadding * 2)
 
 local lastBulletCount = CURRENT_BULLET_COUNT
 
@@ -37,14 +38,16 @@ function BulletDisplay:init()
 
     self.bulletCountString = string.format("%03d", CURRENT_BULLET_COUNT)
 
+    self.numberWidth = self.numbersImageTable:getImage(1).width
+
     local firstNumber = string.sub(self.bulletCountString, 1, 1)
-    self.firstNumberSprite = self:getNumberSprite(firstNumber, self.bulletSpriteX + self.bulletSprite.width)
+    self.firstNumberSprite = self:getNumberSprite(firstNumber, self.bulletSpriteX + self.numberWidth)
 
     local secondNumber = string.sub(self.bulletCountString, 2, 2)
-    self.secondNumberSprite = self:getNumberSprite(secondNumber, self.bulletSpriteX + self.bulletSprite.width * 2 + numberPadding)
+    self.secondNumberSprite = self:getNumberSprite(secondNumber, self.bulletSpriteX + self.numberWidth * 2 + numberPadding)
 
     local thirdNumber = string.sub(self.bulletCountString, 3, 3)
-    self.thirdNumberSprite = self:getNumberSprite(thirdNumber, self.bulletSpriteX + self.bulletSprite.width * 3 + numberPadding * 2)
+    self.thirdNumberSprite = self:getNumberSprite(thirdNumber, self.bulletSpriteX + self.numberWidth * 3 + numberPadding * 2)
     self:add()
 
     NOTIFICATION_CENTER:subscribe(NOTIFY_BULLET_COUNT_UPDATED, self, function()
