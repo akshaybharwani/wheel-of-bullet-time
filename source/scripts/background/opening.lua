@@ -9,6 +9,13 @@ local gfx <const> = pd.graphics
 
 class("Opening").extends(gfx.sprite)
 
+local openingAnimationConstants = OPENING_ANIMATION_CONSTANTS
+
+local waitDurationToSpawnRecyclers = openingAnimationConstants.waitDurationToSpawnRecyclers
+local waitDurationToSpawnDebris = openingAnimationConstants.waitDurationToSpawnDebris
+local debrisGroupAtStartCount = openingAnimationConstants.debrisGroupAtStartCount
+local cloudsAtStartCount = openingAnimationConstants.cloudsAtStartCount
+
 local currentRecyclerIndex = 0
 local currentDebrisCount = 0
 
@@ -49,7 +56,7 @@ function Opening:update()
 end
 
 function Opening:spawnRecyclers()
-    self.recyclerSpawningTimer = pd.timer.new(OPENING_ANIMATION.recyclerSpawnDuration)
+    self.recyclerSpawningTimer = pd.timer.new(waitDurationToSpawnRecyclers)
     --self.recyclerSpawningTimer.delay = 500
     self.recyclerSpawningTimer.discardOnCompletion = false
     self.recyclerSpawningTimer.repeats = true
@@ -66,12 +73,12 @@ function Opening:spawnRecyclers()
 end
 
 function Opening:spawnDebris()
-    self.debrisSpawningTimer = pd.timer.new(OPENING_ANIMATION.debrisSpawnDuration)
+    self.debrisSpawningTimer = pd.timer.new(waitDurationToSpawnDebris)
     self.debrisSpawningTimer:pause()
     self.debrisSpawningTimer.discardOnCompletion = false
     self.debrisSpawningTimer.repeats = true
     self.debrisSpawningTimer.timerEndedCallback = function(timer)
-        if currentDebrisCount < OPENING_ANIMATION.debrisGroupAtStartCount then
+        if currentDebrisCount < debrisGroupAtStartCount then
             currentDebrisCount += 1
             local spawnX = math.random(16, MAX_SCREEN_WIDTH - 16)
             local spawnY = math.random(16, MAX_SCREEN_HEIGHT / 2)
@@ -86,7 +93,7 @@ end
 function Opening:spawnClouds()
     self.clouds = {}
     local cloudX = CLOUD_WIDTH / 2
-    for i = 1, OPENING_ANIMATION.cloudAtStartCount, 1 do
+    for i = 1, cloudsAtStartCount, 1 do
         table.insert(self.clouds, Cloud(cloudX))
         cloudX = i * CLOUD_WIDTH + i * CLOUD_SEPARATION_DISTANCE + CLOUD_WIDTH / 2
     end

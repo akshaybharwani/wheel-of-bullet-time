@@ -92,15 +92,15 @@ local function setupGame()
     pd.resetElapsedTime()
     pd.ui.crankIndicator:start()
     setupCrankCheckTimer()
-    TimeDisplay()
 
     local gunManager = GunManager()
+    -- ? is assigning a manager to initialization of another manager a good idea?
     local recyclerManager = RecyclerManager(gunManager)
     local debrisManager = DebrisManager(recyclerManager)
+    TimeDisplay()
     Opening(titleDuration, debrisManager)
     Background(titleDuration)
     NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
-        -- ? is assigning a manager to initialization of another manager a good idea?
         EnemyManager(debrisManager)
         print("intial Debris collected")
         IS_GAME_SETUP_DONE = true
@@ -130,10 +130,11 @@ function pd.update()
     end
 
     if IS_GAME_SETUP_DONE then
+        -- TODO: Improve this. Will activate even when no bullets and debris collected but not recycled
         if #ACTIVE_DEBRIS <= 0 and CURRENT_BULLET_COUNT <= 0 then
-            gfx.drawText("GAME OVER", 200, 120)
+            --gfx.drawText("GAME OVER", 200, 120)
             -- TODO: Add the Game Over screen after this ends
-            pd.wait(GAME_OVER_CONSTANTS.gameOverWaitDuration)
+            --pd.wait(GAME_OVER_CONSTANTS.gameOverWaitDuration)
         end
     end
 end

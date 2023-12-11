@@ -15,7 +15,11 @@ local collectedDebrisImagePath = "images/recycler/debris_mini"
 local generatedAmmoImagePath = "images/recycler/bullet_mini"
 local recyclingUIImagePath = "images/recycler/UI_recycling"
 
-local maxHP = RECYCLER_CONSTANTS.maxHP
+local recyclerConstants = RECYCLER_CONSTANTS
+
+local maxHP = recyclerConstants.maxHP
+local debrisTravelDuration = recyclerConstants.debrisTravelDuration
+local ammoGenerationDuration = recyclerConstants.ammoGenerationDuration
 
 function Recycler:init(x, y, connectorY, isLeftToGun)
     Recycler.super.init(self)
@@ -89,7 +93,7 @@ function Recycler:setupDebrisToRecyclerAnimation()
             horizontalConnector = geo.lineSegment.new(x2, y2, x1, y1)
         end
         local connectorParts = { horizontalConnector, connector.verticalConnector }
-        self.debrisToRecyclerAnimator = Animator.new(RECYCLER_CONSTANTS.debrisTravelDuration, connectorParts, playdate.easingFunctions.linear)
+        self.debrisToRecyclerAnimator = Animator.new(debrisTravelDuration, connectorParts, playdate.easingFunctions.linear)
     else
         local connectorLine = connector.horizontalConnector
         local x1, y1, x2, y2 = connector.horizontalConnector:unpack()
@@ -98,13 +102,12 @@ function Recycler:setupDebrisToRecyclerAnimation()
             connectorLine = geo.lineSegment.new(x2, y2, x1, y1)
         end
 
-        self.debrisToRecyclerAnimator = Animator.new(RECYCLER_CONSTANTS.debrisTravelDuration, connectorLine,
+        self.debrisToRecyclerAnimator = Animator.new(debrisTravelDuration, connectorLine,
             playdate.easingFunctions.linear)
     end
     self.collectedDebrisSprite:moveTo(initialX, initialY - self.collectedDebrisSprite:getSize())
 end
 
--- TODO: simplify animation methods
 function Recycler:setupAmmoToGunAnimation()
     local connector = self.connector
     local initialX, initialY = 0, 0
@@ -120,7 +123,7 @@ function Recycler:setupAmmoToGunAnimation()
             horizontalConnector = geo.lineSegment.new(x2, y2, x1, y1)
         end
         local connectorParts = { verticalConnector, horizontalConnector }
-        self.ammoToGunAnimator = Animator.new(RECYCLER_CONSTANTS.debrisTravelDuration, connectorParts, playdate.easingFunctions.linear)
+        self.ammoToGunAnimator = Animator.new(debrisTravelDuration, connectorParts, playdate.easingFunctions.linear)
     else
         local connectorLine = connector.horizontalConnector
         local x1, y1, x2, y2 = connector.horizontalConnector:unpack()
@@ -129,7 +132,7 @@ function Recycler:setupAmmoToGunAnimation()
             connectorLine = geo.lineSegment.new(x2, y2, x1, y1)
         end
 
-        self.ammoToGunAnimator = Animator.new(RECYCLER_CONSTANTS.debrisTravelDuration, connectorLine,
+        self.ammoToGunAnimator = Animator.new(debrisTravelDuration, connectorLine,
             playdate.easingFunctions.linear)
     end
     self.collectedDebrisSprite:moveTo(initialX, initialY - self.collectedDebrisSprite:getSize())
@@ -161,7 +164,7 @@ function Recycler:update()
             self.debrisToRecyclerAnimator = nil
             self.recyclingSprite:add()
             self.collectedDebrisSprite:remove()
-            local ammoTimer = pd.timer.new(RECYCLER_CONSTANTS.ammoGenerationTime)
+            local ammoTimer = pd.timer.new(ammoGenerationDuration)
             ammoTimer.timerEndedCallback = function(timer)
                 self:sendAmmoToGun()
             end

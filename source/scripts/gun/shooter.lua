@@ -14,7 +14,7 @@ CURRENT_BULLET_COUNT = 0
 local gunShooterConstants = GUN_SHOOTER_CONSTANTS
 local gunConstants = GUN_CONSTANTS
 local maxHP = gunConstants.maxHP
-local maxFiringCooldown = gunShooterConstants.maxFiringCooldown
+local maxFiringCooldown = gunShooterConstants.maxFiringCooldown / 1000 -- as using DELTA_TIME which is in s and not ms
 local currentFiringCooldown = maxFiringCooldown
 
 local imagetablePath = "images/gun/gun_shooting-table-64-64"

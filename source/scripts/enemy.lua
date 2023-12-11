@@ -11,13 +11,15 @@ local geo <const> = pd.geometry
 
 class("Enemy").extends(gfx.sprite)
 
-local minSpeed, maxSpeed = 5, 10
-local hitDuration = 100
-local explosionLoopCount = 3
-local explosionAnimationFPS = 5
+local enemyConstants = ENEMY_CONSTANTS
 
-local minTotalPatrolDuration, maxTotalPatrolDuration = 2, 5
-local minPatrolSegmentDuration, maxPatrolSegmentDuration = 1, 2
+local minSpeed, maxSpeed = enemyConstants.minSpeed, enemyConstants.maxSpeed
+local hitAnimationDuration = enemyConstants.hitAnimationDuration
+local explosionAnimationLoopCount = enemyConstants.explosionAnimationLoopCount
+local explosionAnimationFPS = enemyConstants.explosionAnimationFPS
+
+local minTotalPatrolDuration, maxTotalPatrolDuration = enemyConstants.minTotalPatrolDuration, enemyConstants.maxTotalPatrolDuration
+local minPatrolSegmentDuration, maxPatrolSegmentDuration = enemyConstants.minPatrolSegmentDuration, enemyConstants.minPatrolSegmentDuration
 
 function Enemy:init(enemyType, debrisManager)
     Enemy.super.init(self)
@@ -60,7 +62,7 @@ function Enemy:setupExplosionAnimation()
     self.explosionSprite = AnimatedSprite.new(imageTable)
     self.explosionSpriteHeight = imageTable:getImage(1).height
     self.explosionSprite:addState("exploding", nil, nil, {tickStep = explosionAnimationFPS})
-    self.explosionSprite.states.exploding.loop = explosionLoopCount
+    self.explosionSprite.states.exploding.loop = explosionAnimationLoopCount
     self.exploding = false
     self.explosionSprite.states.exploding.onAnimationEndEvent = function (self)
         self:remove()
@@ -73,7 +75,6 @@ function Enemy:setupPatroling()
         self:setNewPatrolPoint()
     end, true)
     self.totalPatrolTimer = CrankTimer(math.random(minTotalPatrolDuration, maxTotalPatrolDuration), true, function()
-        -- TODO: go to Game Over instead of this
         if #ACTIVE_TARGETS > 0 then
             self:setTarget()
         else
@@ -170,7 +171,7 @@ function Enemy:setupShieldCollider()
 end
 
 function Enemy:setupHitAnimator()
-    self.hitAnimator = pd.timer.new(hitDuration)
+    self.hitAnimator = pd.timer.new(hitAnimationDuration)
     self.hitAnimator.discardOnCompletion = false
     self.hitAnimator:pause()
     self.hitAnimator.timerEndedCallback = function(timer)

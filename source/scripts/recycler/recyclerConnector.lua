@@ -9,8 +9,7 @@ local geo <const> = pd.geometry
 class("RecyclerConnector").extends(gfx.sprite)
 
 local connectorWidth = 3
-local verticalConnectorAnimatorTime = 1000
-local horizontalConnectorAnimatorTime = 1000
+local connectorAnimationDuration = RECYCLER_CONSTANTS.connectorAnimationDuration
 
 function RecyclerConnector:init(recycler, verticalConnectorHeight)
     RecyclerConnector.super.init(self)
@@ -55,7 +54,7 @@ function RecyclerConnector:init(recycler, verticalConnectorHeight)
 
     self:setImage(connectorImage)
     self:setCenter(0,0)
-    -- recycler image is specified 32x32 but there is whitespace, figure it out
+    -- TODO: recycler image is specified 32x32 but there is whitespace, figure it out
     self.spriteY = MAX_SCREEN_HEIGHT - 22 - verticalConnectorHeight
     self:moveTo(self.connnectorX, self.spriteY)
     self:setupConnectorAnimators()
@@ -73,8 +72,8 @@ function RecyclerConnector:setupConnectorAnimators()
     self.connectorAnimationEnded = false
     local horizontalConnectorAnimatorDelay = 0
     if self.verticalConnector ~= nil then
-        horizontalConnectorAnimatorDelay += verticalConnectorAnimatorTime
-        self.clipRectVerticalAnimator = pd.timer.new(verticalConnectorAnimatorTime)
+        horizontalConnectorAnimatorDelay += connectorAnimationDuration
+        self.clipRectVerticalAnimator = pd.timer.new(connectorAnimationDuration)
         self.clipRectVerticalAnimator:pause()
         self.clipRectVerticalAnimator.startValue = 0
         self.clipRectVerticalAnimator.endValue = connectorWidth + self.verticalConnectorHeight
@@ -90,7 +89,7 @@ function RecyclerConnector:setupConnectorAnimators()
         self.clipRectHeight = connectorWidth + self.verticalConnectorHeight
     end
 
-    self.clipRectHorizontalAnimator = pd.timer.new(horizontalConnectorAnimatorTime)
+    self.clipRectHorizontalAnimator = pd.timer.new(connectorAnimationDuration)
     self.clipRectHorizontalAnimator:pause()
     self.clipRectHorizontalAnimator.easingFunction = pd.easingFunctions.outCubic
     self.clipRectHorizontalAnimator.delay = horizontalConnectorAnimatorDelay

@@ -8,16 +8,19 @@ local gfx <const> = pd.graphics
 
 class('RecyclerManager').extends(gfx.sprite)
 
-local maxRecyclerCount = 5
-ACTIVE_RECYCLERS = {}
+local recyclerConstants = RECYCLER_CONSTANTS
 
-local debrisHoldTime = 300
+local maxRecyclerCount = recyclerConstants.maxRecyclerCount
+local debrisHoldDuration = recyclerConstants.debrisHoldDuration
+
 local collectedDebris = 0
+
+ACTIVE_RECYCLERS = {}
 
 function RecyclerManager:init()
     RecyclerManager.super.init(self)
 
-    self.holdDebrisTimer = pd.timer.new(debrisHoldTime)
+    self.holdDebrisTimer = pd.timer.new(debrisHoldDuration)
     self.holdDebrisTimer:pause()
     self.holdDebrisTimer.discardOnCompletion = false
     self.holdDebrisTimer.repeats = true
