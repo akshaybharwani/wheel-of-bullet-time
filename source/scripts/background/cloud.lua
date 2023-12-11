@@ -1,7 +1,3 @@
-import "CoreLibs/object"
-import "CoreLibs/graphics"
-import "CoreLibs/sprites"
-
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 

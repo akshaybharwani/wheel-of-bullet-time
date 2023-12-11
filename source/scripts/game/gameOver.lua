@@ -1,7 +1,4 @@
-import "CoreLibs/object"
-import "CoreLibs/graphics"
-import "CoreLibs/sprites"
-import "scripts/game/storedDataManager.lua"
+import "scripts/game/storedDataManager"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics

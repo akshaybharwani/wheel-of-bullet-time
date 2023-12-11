@@ -1,8 +1,3 @@
-import "CoreLibs/object"
-import "CoreLibs/graphics"
-import "CoreLibs/sprites"
-import "scripts/libraries/AnimatedSprite"
-
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 local geo <const> = pd.geometry

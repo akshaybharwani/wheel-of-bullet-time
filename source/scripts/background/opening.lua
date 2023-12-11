@@ -1,6 +1,3 @@
-import "CoreLibs/object"
-import "CoreLibs/graphics"
-import "CoreLibs/sprites"
 import "scripts/background/cloud"
 import "scripts/background/satellite"
 
@@ -37,6 +34,7 @@ function Opening:init(delay, debrisManager)
     local titleTimer = pd.timer.new(delay)
     titleTimer.timerEndedCallback = function(timer)
         self.titleSprite:remove()
+        -- TODO: move background stuff to backgroundManager
         self:spawnClouds()
         self:spawnSatellite()
         self:spawnRecyclers()

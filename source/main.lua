@@ -1,15 +1,26 @@
+-- CoreLibs
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
+import "CoreLibs/crank"
+import "CoreLibs/animator"
+
+-- libraries
+import "scripts/libraries/AnimatedSprite"
+import "scripts/libraries/Signal"
+
+-- game
+import "scripts/game/utilities"
+import "scripts/game/crankTimer"
+import "scripts/globals"
+
 import "scripts/background/background"
 import "scripts/enemies/enemyManager"
 import "scripts/gun/gunManager"
 import "scripts/background/opening"
-import "scripts/libraries/Signal"
-import "scripts/game/utilities"
 import "scripts/game/timeDisplay"
 
 local pd <const> = playdate

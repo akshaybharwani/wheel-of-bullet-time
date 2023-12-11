@@ -1,7 +1,3 @@
-import "CoreLibs/object"
-import "CoreLibs/graphics"
-import "CoreLibs/sprites"
-import "scripts/libraries/AnimatedSprite"
 import "scripts/gun/vacuumVapor"
 
 local pd <const> = playdate

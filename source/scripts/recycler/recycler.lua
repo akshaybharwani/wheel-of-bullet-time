@@ -1,6 +1,3 @@
-import "CoreLibs/object"
-import "CoreLibs/graphics"
-import "CoreLibs/sprites"
 import "scripts/recycler/recyclerConnector"
 
 local pd <const> = playdate
