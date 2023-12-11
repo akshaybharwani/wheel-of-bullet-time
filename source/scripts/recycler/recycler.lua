@@ -177,7 +177,9 @@ function Recycler:update()
         else
             self.ammoToGunAnimator = nil
             self.generatedAmmoSprite:remove()
+            -- TODO: these values could be updated in a better central place?
             CURRENT_BULLET_COUNT += 1
+            DEBRIS_NOT_RECYCLED -= 1
             NOTIFICATION_CENTER:notify(NOTIFY_BULLET_COUNT_UPDATED)
             self.available = true
         end

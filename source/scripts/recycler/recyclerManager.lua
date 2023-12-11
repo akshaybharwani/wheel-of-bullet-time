@@ -20,23 +20,7 @@ ACTIVE_RECYCLERS = {}
 function RecyclerManager:init()
     RecyclerManager.super.init(self)
 
-    self.holdDebrisTimer = pd.timer.new(debrisHoldDuration)
-    self.holdDebrisTimer:pause()
-    self.holdDebrisTimer.discardOnCompletion = false
-    self.holdDebrisTimer.repeats = true
-    self.holdDebrisTimer.timerEndedCallback = function(timer)
-        if collectedDebris > 0 then
-            for i = 1, #ACTIVE_RECYCLERS do
-                if ACTIVE_RECYCLERS[i].available == true then
-                    ACTIVE_RECYCLERS[i]:sendDebrisToRecycler()
-                    collectedDebris -= 1
-                    break
-                end
-            end
-        else
-            self.holdDebrisTimer:pause()
-        end
-    end
+    self:setupDebrisHoldTimer()
 
     self:spawnRecyclers()
     self:add()
@@ -97,6 +81,26 @@ function RecyclerManager:generateRecyclerPositions(maxCount, minX, maxX, maxY)
     end
 
     return pairs
+end
+
+function RecyclerManager:setupDebrisHoldTimer() 
+    self.holdDebrisTimer = pd.timer.new(debrisHoldDuration)
+    self.holdDebrisTimer:pause()
+    self.holdDebrisTimer.discardOnCompletion = false
+    self.holdDebrisTimer.repeats = true
+    self.holdDebrisTimer.timerEndedCallback = function(timer)
+        if collectedDebris > 0 then
+            for i = 1, #ACTIVE_RECYCLERS do
+                if ACTIVE_RECYCLERS[i].available == true then
+                    ACTIVE_RECYCLERS[i]:sendDebrisToRecycler()
+                    collectedDebris -= 1
+                    break
+                end
+            end
+        else
+            self.holdDebrisTimer:pause()
+        end
+    end
 end
 
 function RecyclerManager:assignDebris()

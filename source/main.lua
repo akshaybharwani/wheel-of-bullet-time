@@ -130,8 +130,7 @@ function pd.update()
     end
 
     if IS_GAME_SETUP_DONE then
-        -- TODO: Improve this. Will activate even when no bullets and debris collected but not recycled
-        if #ACTIVE_DEBRIS <= 0 and CURRENT_BULLET_COUNT <= 0 then
+        if #DEBRIS_NOT_RECYCLED <= 0 and CURRENT_BULLET_COUNT <= 0 then
             --gfx.drawText("GAME OVER", 200, 120)
             -- TODO: Add the Game Over screen after this ends
             --pd.wait(GAME_OVER_CONSTANTS.gameOverWaitDuration)
