@@ -1,7 +1,7 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "scripts/crankTimer"
+import "scripts/game/crankTimer"
 import "scripts/libraries/AnimatedSprite"
 
 local pd <const> = playdate

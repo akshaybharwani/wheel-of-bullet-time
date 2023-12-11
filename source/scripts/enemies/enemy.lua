@@ -1,8 +1,8 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "scripts/debrisManager"
-import "scripts/crankTimer"
+import "scripts/enemies/debrisManager"
+import "scripts/game/crankTimer"
 import "scripts/libraries/AnimatedSprite"
 
 local pd <const> = playdate

@@ -1,8 +1,8 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "scripts/enemy"
-import "scripts/crankTimer"
+import "scripts/enemies/enemy"
+import "scripts/game/crankTimer"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics

@@ -1,7 +1,7 @@
 import "CoreLibs/object"
 import "CoreLibs/graphics"
 import "CoreLibs/sprites"
-import "scripts/debris"
+import "scripts/enemies/debris"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -18,7 +18,7 @@ local debrisCenter = (gridSize / 4) - (debrisSize / 2)
 
 ACTIVE_DEBRIS = {}
 -- table for maintaining debris count until they become a bullet
-DEBRIS_NOT_RECYCLED = {}
+DEBRIS_NOT_RECYCLED_COUNT = 0
 
 local quadrants = {
     {
@@ -60,7 +60,7 @@ function DebrisManager:spawnDebris(spawnX, spawnY)
     for i = 1, debrisSpawnCount do
         local debris = Debris(debrisSpawnPositions[i][1], debrisSpawnPositions[i][2], self)
         table.insert(ACTIVE_DEBRIS, debris)
-        table.insert(DEBRIS_NOT_RECYCLED, debris)
+        DEBRIS_NOT_RECYCLED_COUNT += 1
     end
 end
 

@@ -91,3 +91,7 @@ ENEMY_CONSTANTS.maxEnemyRate = 6
 -- enemy data
 -- * Go to scripts/enemyManager for setting individual enemy data
 -- TODO: Move these settings to a json file
+
+-- high score
+HIGH_SCORE_CONSTANTS = {}
+HIGH_SCORE_CONSTANTS.maxScores = 5

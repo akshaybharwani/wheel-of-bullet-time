@@ -5,11 +5,12 @@ import "CoreLibs/timer"
 import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
 import "scripts/background/background"
-import "scripts/enemyManager"
+import "scripts/enemies/enemyManager"
 import "scripts/gun/gunManager"
 import "scripts/background/opening"
 import "scripts/libraries/Signal"
-import "scripts/timeDisplay"
+import "scripts/game/utilities"
+import "scripts/game/timeDisplay"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -127,13 +128,5 @@ function pd.update()
     -- reset game state after updating everything
     if IS_GAME_ACTIVE then
         IS_GAME_ACTIVE = false
-    end
-
-    if IS_GAME_SETUP_DONE then
-        if #DEBRIS_NOT_RECYCLED <= 0 and CURRENT_BULLET_COUNT <= 0 then
-            --gfx.drawText("GAME OVER", 200, 120)
-            -- TODO: Add the Game Over screen after this ends
-            --pd.wait(GAME_OVER_CONSTANTS.gameOverWaitDuration)
-        end
     end
 end

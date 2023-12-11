@@ -5,6 +5,8 @@ import "CoreLibs/sprites"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
+local utils <const> = UTILITIES
+
 class('TimeDisplay').extends(gfx.sprite)
 
 local numbersImagePath = "images/ui/UI_numbers_and_time-table-8-16"
@@ -107,14 +109,8 @@ function TimeDisplay:getTimeUISprite(index, positionX)
     return timeUISprite
 end
 
-function TimeDisplay:secondsToMinutesAndSeconds(s)
-    local m = math.floor(s / 60)
-    s = s % 60
-    return m, s
-end
-
 function TimeDisplay:updateClock()
-    self.minutes, self.seconds = self:secondsToMinutesAndSeconds(GAME_ACTIVE_ELAPSED_SECONDS)
+    self.minutes, self.seconds = utils.secondsToMinutesAndSeconds(GAME_ACTIVE_ELAPSED_SECONDS)
     self:draw()
 end
 
