@@ -102,7 +102,6 @@ end
 local function setupGame()
     math.randomseed(pd.getSecondsSinceEpoch())
     pd.resetElapsedTime()
-    pd.ui.crankIndicator:start()
     setupCrankCheckTimer()
 
     local gunManager = GunManager()
@@ -132,7 +131,7 @@ function pd.update()
     -- Update stuff every frame
     -- This needs to be called after the sprites are updated
     --[[ if pd.isCrankDocked() then
-        pd.ui.crankIndicator:update()
+        pd.ui.crankIndicator:draw()
     end ]]
     pd.drawFPS(x, y)
 
