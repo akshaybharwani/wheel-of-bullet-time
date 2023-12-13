@@ -4,7 +4,7 @@ import "scripts/background/satellite"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
-class("Opening").extends(gfx.sprite)
+class("GameSetup").extends(gfx.sprite)
 
 local openingAnimationConstants = OPENING_ANIMATION_CONSTANTS
 
@@ -13,22 +13,23 @@ local waitDurationToSpawnDebris = openingAnimationConstants.waitDurationToSpawnD
 local debrisGroupAtStartCount = openingAnimationConstants.debrisGroupAtStartCount
 local cloudsAtStartCount = openingAnimationConstants.cloudsAtStartCount
 
+local titleImagePath = "images/background/Title"
+
 local currentRecyclerIndex = 0
 local currentDebrisCount = 0
 
 local openingDebrisSpawned = false
 local initialDebrisCollected = false
 
-function Opening:init(delay, debrisManager)
-    Opening.super.init(self)
+
+function GameSetup:init(delay, debrisManager)
+    GameSetup.super.init(self)
 
     self.debrisManager = debrisManager
 
-    local titleImage = gfx.image.new("images/background/Title")
-
-    self.titleSprite = gfx.sprite.new(titleImage)
-    self.titleSprite:moveTo(200, 120)
-    self.titleSprite:setZIndex(1000)
+    self.titleSprite = gfx.sprite.new(gfx.image.new(titleImagePath))
+    self.titleSprite:moveTo(HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT)
+    self.titleSprite:setZIndex(BANNER_Z_INDEX)
     self.titleSprite:add()
 
     local titleTimer = pd.timer.new(delay)
@@ -44,7 +45,7 @@ function Opening:init(delay, debrisManager)
     self:add()
 end
 
-function Opening:update()
+function GameSetup:update()
     if openingDebrisSpawned and not initialDebrisCollected then
         if #ACTIVE_DEBRIS <= 0 then
             NOTIFICATION_CENTER:notify(NOTIFY_INITIAL_DEBRIS_COLLECTED)
@@ -53,7 +54,7 @@ function Opening:update()
     end
 end
 
-function Opening:spawnRecyclers()
+function GameSetup:spawnRecyclers()
     self.recyclerSpawningTimer = pd.timer.new(waitDurationToSpawnRecyclers)
     --self.recyclerSpawningTimer.delay = 500
     self.recyclerSpawningTimer.discardOnCompletion = false
@@ -70,7 +71,7 @@ function Opening:spawnRecyclers()
     end
 end
 
-function Opening:spawnDebris()
+function GameSetup:spawnDebris()
     self.debrisSpawningTimer = pd.timer.new(waitDurationToSpawnDebris)
     self.debrisSpawningTimer:pause()
     self.debrisSpawningTimer.discardOnCompletion = false
@@ -78,8 +79,8 @@ function Opening:spawnDebris()
     self.debrisSpawningTimer.timerEndedCallback = function(timer)
         if currentDebrisCount < debrisGroupAtStartCount then
             currentDebrisCount += 1
-            local spawnX = math.random(16, MAX_SCREEN_WIDTH - 16)
-            local spawnY = math.random(16, MAX_SCREEN_HEIGHT / 2)
+            local spawnX = math.random(16, SCREEN_WIDTH - 16)
+            local spawnY = math.random(16, HALF_SCREEN_HEIGHT)
             self.debrisManager:spawnDebris(spawnX, spawnY)
         else
             self.debrisSpawningTimer:remove()
@@ -88,7 +89,7 @@ function Opening:spawnDebris()
     end
 end
 
-function Opening:spawnClouds()
+function GameSetup:spawnClouds()
     self.clouds = {}
     local cloudX = CLOUD_WIDTH / 2
     for i = 1, cloudsAtStartCount, 1 do
@@ -97,6 +98,6 @@ function Opening:spawnClouds()
     end
 end
 
-function Opening:spawnSatellite()
+function GameSetup:spawnSatellite()
     self.satellite = Satellite()
 end

@@ -13,15 +13,17 @@ import "scripts/libraries/AnimatedSprite"
 import "scripts/libraries/Signal"
 
 -- game
+import "scripts/globals"
 import "scripts/game/utilities"
 import "scripts/game/crankTimer"
-import "scripts/globals"
+import "scripts/game/crankInput"
 
 import "scripts/background/background"
 import "scripts/enemies/enemyManager"
 import "scripts/gun/gunManager"
-import "scripts/background/opening"
+import "scripts/game/gameSetup"
 import "scripts/game/timeDisplay"
+import "scripts/game/gameOver"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -40,8 +42,10 @@ IS_GAME_ACTIVE = false
 -- continously won't work properly, this can be used to help with that
 WAS_GAME_ACTIVE_LAST_CHECK = false
 
-MAX_SCREEN_WIDTH = pd.display.getWidth()
-MAX_SCREEN_HEIGHT = pd.display.getHeight()
+SCREEN_WIDTH = pd.display.getWidth()
+HALF_SCREEN_WIDTH = SCREEN_WIDTH / 2
+SCREEN_HEIGHT = pd.display.getHeight()
+HALF_SCREEN_HEIGHT = SCREEN_HEIGHT / 2
 
 PLAYER_GROUP = 1
 ENEMY_GROUP = 2
@@ -59,6 +63,7 @@ DEBRIS_TYPE_NAME = "debris"
 BACKGROUND_Z_INDEX = -100
 GUN_Z_INDEX = 100
 UI_Z_INDEX = 200
+BANNER_Z_INDEX = 300
 
 GAME_ACTIVE_ELAPSED_SECONDS = 0
 
@@ -69,48 +74,21 @@ NOTIFY_GUN_WAS_HIT = "gunWasHit"
 local titleConstants = TITLE_CONSTANTS
 local titleDuration = titleConstants.titleDuration
 
-local coreGameConstants = CORE_GAME_CONSTANTS
-local crankCheckWaitDuration = coreGameConstants.crankCheckWaitDuration
-
-local lastCrankPosition = nil
-
 IS_GAME_SETUP_DONE = false
-
-local function checkCrankInput()
-    local currentCrankPosition = pd.getCrankPosition()
-    if lastCrankPosition ~= currentCrankPosition then
-        -- TODO: move this to a separate script or logic
-        if IS_GAME_SETUP_DONE then
-            GAME_ACTIVE_ELAPSED_SECONDS += DELTA_TIME
-        end
-        IS_GAME_ACTIVE = true
-        WAS_GAME_ACTIVE_LAST_CHECK = true
-    elseif WAS_GAME_ACTIVE_LAST_CHECK then
-        WAS_GAME_ACTIVE_LAST_CHECK = false
-    end
-    lastCrankPosition = currentCrankPosition
-end
-
-local function setupCrankCheckTimer()
-    local crankTimer = pd.timer.new(crankCheckWaitDuration)
-    crankTimer.repeats = true
-    crankTimer.timerEndedCallback = function(timer)
-        checkCrankInput()
-    end
-end
 
 local function setupGame()
     math.randomseed(pd.getSecondsSinceEpoch())
     pd.resetElapsedTime()
-    setupCrankCheckTimer()
 
+    CrankInput()
     local gunManager = GunManager()
     -- ? is assigning a manager to initialization of another manager a good idea?
     local recyclerManager = RecyclerManager(gunManager)
     local debrisManager = DebrisManager(recyclerManager)
     TimeDisplay()
-    Opening(titleDuration, debrisManager)
+    GameSetup(titleDuration, debrisManager)
     Background(titleDuration)
+    GameOver()
     NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
         EnemyManager(debrisManager)
         print("intial Debris collected")
@@ -128,7 +106,6 @@ function pd.update()
 
     pd.timer.updateTimers()
     gfx.sprite.update()
-    -- Update stuff every frame
     -- This needs to be called after the sprites are updated
     --[[ if pd.isCrankDocked() then
         pd.ui.crankIndicator:draw()

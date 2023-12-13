@@ -39,14 +39,14 @@ end
 
 function Satellite:setupPosition(spawnX)
     if spawnX == nil then
-        spawnX = math.random(16, MAX_SCREEN_WIDTH - 16)
+        spawnX = math.random(16, SCREEN_WIDTH - 16)
     end
-    local spawnY = math.random(16, MAX_SCREEN_HEIGHT / 2)
+    local spawnY = math.random(16, SCREEN_HEIGHT / 2)
     self:moveTo(spawnX, spawnY)
 end
 
 function Satellite:setupRespawnTimer()
     self.respawnTimer = CrankTimer(math.random(minRespawnDuration, maxRespawnDuration), false, function()
-        self:setupPosition(MAX_SCREEN_WIDTH + SATELLITE_WIDTH)
+        self:setupPosition(SCREEN_WIDTH + SATELLITE_WIDTH)
     end)
 end

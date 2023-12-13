@@ -50,8 +50,8 @@ function GunManager:init()
     local gunBaseImage = gfx.image.new(gunBaseImagePath)
     self.gunBaseSprite = gfx.sprite.new(gunBaseImage)
 
-    GUN_BASE_X = MAX_SCREEN_WIDTH / 2
-    GUN_BASE_Y = MAX_SCREEN_HEIGHT - (self.gunBaseSprite.width / 2)
+    GUN_BASE_X = SCREEN_WIDTH / 2
+    GUN_BASE_Y = SCREEN_HEIGHT - (self.gunBaseSprite.width / 2)
 
     -- HACK: this should not be refering to a direct image
     local gunTopDefaultImage = gfx.image.new(gunTopDefaultImagePath)
@@ -93,6 +93,11 @@ function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
 end
 
 function GunManager:update()
+
+    if IS_GAME_OVER then
+        return
+    end
+
     self:readRotationInput()
 
     if IS_GAME_ACTIVE then

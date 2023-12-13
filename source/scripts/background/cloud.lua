@@ -27,7 +27,7 @@ end
 function Cloud:update()
     if (WAS_GAME_ACTIVE_LAST_CHECK) then
         if (self.x < -CLOUD_WIDTH) then
-            self:setSpriteImage(MAX_SCREEN_WIDTH + CLOUD_SEPARATION_DISTANCE)
+            self:setSpriteImage(SCREEN_WIDTH + CLOUD_SEPARATION_DISTANCE)
         end
         local nextX = self.x - speed * DELTA_TIME
         self:moveTo(nextX, self.y)

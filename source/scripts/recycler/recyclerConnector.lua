@@ -51,7 +51,7 @@ function RecyclerConnector:init(recycler, verticalConnectorHeight)
     self:setImage(connectorImage)
     self:setCenter(0,0)
     -- TODO: recycler image is specified 32x32 but there is whitespace, figure it out
-    self.spriteY = MAX_SCREEN_HEIGHT - 22 - verticalConnectorHeight
+    self.spriteY = SCREEN_HEIGHT - 22 - verticalConnectorHeight
     self:moveTo(self.connnectorX, self.spriteY)
     self:setupConnectorAnimators()
 end

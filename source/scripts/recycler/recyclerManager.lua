@@ -26,12 +26,12 @@ end
 function RecyclerManager:spawnRecyclers()
     local recyclerCenterPos = RECYCLER_SIZE / 2
     local pairs = self:generateRecyclerPositions(maxRecyclerCount, recyclerCenterPos,
-        MAX_SCREEN_WIDTH - recyclerCenterPos, MAX_SCREEN_HEIGHT - recyclerCenterPos)
+        SCREEN_WIDTH - recyclerCenterPos, SCREEN_HEIGHT - recyclerCenterPos)
 
     local leftToGunRecyclers = {}
     local rightToGunRecyclers = {}
     for i = 1, #pairs do
-        if (pairs[i].x < MAX_SCREEN_WIDTH / 2) then
+        if (pairs[i].x < SCREEN_WIDTH / 2) then
             table.insert(leftToGunRecyclers, pairs[i])
         else
             table.insert(rightToGunRecyclers, pairs[i])

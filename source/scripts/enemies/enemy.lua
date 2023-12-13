@@ -84,11 +84,11 @@ function Enemy:setStartingPosition()
     local halfWidth = self.width / 2
     local halfHeight = self.height / 2
     local startY = -halfHeight
-    local startXPositions = { -halfWidth, math.random(halfWidth, MAX_SCREEN_WIDTH - halfWidth),
-        MAX_SCREEN_WIDTH + halfWidth }
+    local startXPositions = { -halfWidth, math.random(halfWidth, SCREEN_WIDTH - halfWidth),
+        SCREEN_WIDTH + halfWidth }
     local startX = startXPositions[math.random(1, #startXPositions)]
-    if startX == -halfWidth or startX == MAX_SCREEN_WIDTH + halfWidth then
-        startY = math.random(-halfHeight, MAX_SCREEN_HEIGHT / 2 - halfHeight)
+    if startX == -halfWidth or startX == SCREEN_WIDTH + halfWidth then
+        startY = math.random(-halfHeight, SCREEN_HEIGHT / 2 - halfHeight)
     end
 
     self:moveTo(startX, startY)
@@ -113,8 +113,8 @@ function Enemy:move()
 end
 
 function Enemy:setNewPatrolPoint()
-    local nextX = math.random(16, MAX_SCREEN_WIDTH - 16)
-    local nextY = math.random(16, MAX_SCREEN_HEIGHT / 2)
+    local nextX = math.random(16, SCREEN_WIDTH - 16)
+    local nextY = math.random(16, SCREEN_HEIGHT / 2)
     self:setVelocity(nextX, nextY)
 end
 
