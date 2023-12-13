@@ -25,14 +25,14 @@ function TimeDisplay:init()
     self.timeY = self.numberHeight / 2
     self.timeX = HALF_SCREEN_WIDTH - totalTimeDisplayWidth / 2 + self.numberWidth / 2
 
-    self.leftBracketSprite = utils.getTimeUISprite(17, utils.getPosX(self.timeX, 0, 0), self.timeY)
+    self.leftBracketSprite = utils.getTimeUISprite(17, utils.getPosX(self.timeX, 0, 0), self.timeY, UI_Z_INDEX)
 
     self.firstNumberSprite,
     self.secondNumberSprite,
     self.thirdNumberSprite,
-    self.fourthNumberSprite = utils.getFormattedTime(self.timeX, self.timeY)
+    self.fourthNumberSprite = utils.getFormattedTime(self.minutes, self.seconds, self.timeX, self.timeY, UI_Z_INDEX, numberPadding)
     -- ! Hack: figure out a way to do this using the function itself 
-    self.rightBracketSprite = utils.getTimeUISprite(18, self.timeX + (totalTimeDisplayWidth - self.numberWidth) - numberPadding, self.timeY)
+    self.rightBracketSprite = utils.getTimeUISprite(18, self.timeX + (totalTimeDisplayWidth - self.numberWidth) - numberPadding, self.timeY, UI_Z_INDEX)
 
     self:setBounds(self.timeX + self.numberWidth , 0, self.numberWidth * numberOfPaddings, self.numberHeight)
     self:setZIndex(UI_Z_INDEX - 1)

@@ -25,6 +25,9 @@ end
 -- ? do we want to save the entire game state, with enemies, bullets, etc?
 function StoredDataManager:saveGameData()
     local currentScore = GAME_ACTIVE_ELAPSED_SECONDS
+    if currentScore == 0 then
+        return highScores
+    end
     if #highScores > 0 then
         for i = 1, #highScores do
             if (currentScore > highScores[i]) then
@@ -42,7 +45,7 @@ function StoredDataManager:saveGameData()
         highScores = highScores
     }
     pd.datastore.write(gameData)
-    return highScores
+    return gameData.highScores
 end
 
 --[[ function pd.gameWillTerminate()

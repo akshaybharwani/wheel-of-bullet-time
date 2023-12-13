@@ -35,20 +35,15 @@ function BulletDisplay:init()
     self.bulletCountString = string.format("%03d", CURRENT_BULLET_COUNT)
 
     self.numberWidth = utils.numbersTimeFirstImage.width
-
-    print(self.bulletSpriteX)
-    print(utils.getPosX(self.bulletSpriteX, 1, 0))
-    print(utils.getPosX(self.bulletSpriteX, 2, numberPadding))
-    print(utils.getPosX(self.bulletSpriteX, 3, numberPadding))
-
+    
     local firstNumber = string.sub(self.bulletCountString, 1, 1)
-    self.firstNumberSprite = utils.getNumberSprite(firstNumber, utils.getPosX(self.bulletSpriteX, 1, 0), self.bulletSpriteY)
+    self.firstNumberSprite = utils.getNumberSprite(firstNumber, utils.getPosX(self.bulletSpriteX, 1, 0), self.bulletSpriteY, UI_Z_INDEX)
 
     local secondNumber = string.sub(self.bulletCountString, 2, 2)
-    self.secondNumberSprite = utils.getNumberSprite(secondNumber, utils.getPosX(self.bulletSpriteX, 2, numberPadding), self.bulletSpriteY)
+    self.secondNumberSprite = utils.getNumberSprite(secondNumber, utils.getPosX(self.bulletSpriteX, 2, numberPadding), self.bulletSpriteY, UI_Z_INDEX)
 
     local thirdNumber = string.sub(self.bulletCountString, 3, 3)
-    self.thirdNumberSprite = utils.getNumberSprite(thirdNumber, utils.getPosX(self.bulletSpriteX, 3, numberPadding), self.bulletSpriteY)
+    self.thirdNumberSprite = utils.getNumberSprite(thirdNumber, utils.getPosX(self.bulletSpriteX, 3, numberPadding), self.bulletSpriteY, UI_Z_INDEX)
     self:add()
 
     NOTIFICATION_CENTER:subscribe(NOTIFY_BULLET_COUNT_UPDATED, self, function()

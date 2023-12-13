@@ -75,6 +75,7 @@ local titleConstants = TITLE_CONSTANTS
 local titleDuration = titleConstants.titleDuration
 
 IS_GAME_SETUP_DONE = false
+IS_GAME_OVER = false
 
 local function setupGame()
     math.randomseed(pd.getSecondsSinceEpoch())
@@ -99,8 +100,6 @@ end
 setupGame()
 
 function pd.update()
-    --gfx.clear()
-
     DELTA_TIME = pd.getElapsedTime()
     pd.resetElapsedTime()
 
