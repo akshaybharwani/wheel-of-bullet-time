@@ -19,6 +19,7 @@ local highScoreYPadding = 1
 
 function GameOver:init()
     GameOver.super.init(self)
+    self.gameOverSound = SfxPlayer(SFX_FILES.game_over)
     self:setImage(gfx.image.new(gameOverImagePath))
     self:setupGameOverTimer()
     self:setupGameOverText()
@@ -34,6 +35,7 @@ end
 function GameOver:update()
     if IS_GAME_SETUP_DONE then
         if DEBRIS_NOT_RECYCLED_COUNT <= 0 and CURRENT_BULLET_COUNT <= 0 then
+            self.gameOverSound:play()
             IS_GAME_OVER = true
             self.gameOverTextSprite:setVisible(true)
             self.gameOverTimer:start()

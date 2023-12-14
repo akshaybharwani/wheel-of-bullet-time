@@ -19,6 +19,8 @@ local imagetable = gfx.imagetable.new(imagetablePath)
 function Shooter:init(gun)
     Shooter.super.init(self, imagetable)
 
+    self.bulletSound = SfxPlayer(SFX_FILES.gun_bullet)
+
     self.imagetable = imagetable
     self.gun = gun
 
@@ -45,6 +47,7 @@ end
 
 function Shooter:shootBullet(startX, startY, angle)
     Bullet(startX, startY, angle)
+    self.bulletSound:play()
 end
 
 function Shooter:update()

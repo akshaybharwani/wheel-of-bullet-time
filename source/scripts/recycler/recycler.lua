@@ -21,6 +21,8 @@ local ammoGenerationDuration = recyclerConstants.ammoGenerationDuration
 function Recycler:init(x, y, connectorY, isLeftToGun)
     Recycler.super.init(self)
 
+    self.deathSound = SfxPlayer(SFX_FILES.recycler_lost)
+
     self.type = GUN_TYPE_NAME
     self.available = true
     self.currentHP = maxHP
@@ -55,6 +57,7 @@ function Recycler:getHit()
         self.currentHP -= 1
     end
     if self.currentHP <= 0 then
+        self.deathSound:play()
         -- TODO: could animate this retracting
         self:clearCollideRect()
         self.connector:remove()

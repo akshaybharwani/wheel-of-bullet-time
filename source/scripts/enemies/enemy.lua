@@ -19,6 +19,10 @@ local minPatrolSegmentDuration, maxPatrolSegmentDuration = enemyConstants.minPat
 function Enemy:init(enemyType, debrisManager)
     Enemy.super.init(self)
 
+    self.hitSound = SfxPlayer(SFX_FILES.enemy_hit)
+    self.selfDestructSound = SfxPlayer(SFX_FILES.enemy_selfdestruct)
+
+    self.deathSound = enemyType.deathSound
     self.enemyType = enemyType
     self.debrisManager = debrisManager
     self.hp = enemyType.hp
@@ -102,6 +106,7 @@ function Enemy:move()
         local target = collisions[i].other
         if target.type == GUN_TYPE_NAME then
             target:getHit()
+            self.selfDestructSound:play()
             self:explode(target)
             return
         end
@@ -134,8 +139,10 @@ end
 function Enemy:getHit()
     self.hp -= 1
     if self.hp <= 0 then
+        self.deathSound:play()
         self:shatter()
     else
+        self.hitSound:play()
         self.hitAnimator:reset()
         self.hitAnimator:start()
         self:setVisible(false)

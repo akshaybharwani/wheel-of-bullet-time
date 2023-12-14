@@ -21,7 +21,8 @@ local enemyA = {
     attackColliderSize = 22,
     shieldColliderSize = 26,
     baseImagePath = "images/enemies/enemy_a",
-    explosionImageTable = gfx.imagetable.new(explosionImagePath)
+    explosionImageTable = gfx.imagetable.new(explosionImagePath),
+    deathSound = SfxPlayer(SFX_FILES.enemy_dead_type1)
 }
 
 local enemyB = {
@@ -29,7 +30,8 @@ local enemyB = {
     attackColliderSize = 26,
     shieldColliderSize = 30,
     baseImagePath = "images/enemies/enemy_b",
-    explosionImageTable = gfx.imagetable.new(explosionImagePath)
+    explosionImageTable = gfx.imagetable.new(explosionImagePath),
+    deathSound = SfxPlayer(SFX_FILES.enemy_dead_type3)
 }
 
 local enemyC = {
@@ -37,7 +39,8 @@ local enemyC = {
     attackColliderSize = 40,
     shieldColliderSize = 46,
     baseImagePath = "images/enemies/enemy_c",
-    explosionImageTable = gfx.imagetable.new(explosionImagePath)
+    explosionImageTable = gfx.imagetable.new(explosionImagePath),
+    deathSound = SfxPlayer(SFX_FILES.enemy_dead_type5)
 }
 
 local enemies = { enemyA, enemyB, enemyC }
