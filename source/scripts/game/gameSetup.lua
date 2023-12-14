@@ -21,10 +21,12 @@ local currentDebrisCount = 0
 local openingDebrisSpawned = false
 local initialDebrisCollected = false
 
-
 function GameSetup:init(delay, debrisManager)
     GameSetup.super.init(self)
 
+    self.gameStartSound = SfxPlayer(SFX_FILES.game_start)
+    self.warningSirenSound = SfxPlayer(SFX_FILES.warning_sirens)
+    self.recyclerSpawningSound = SfxPlayer(SFX_FILES.recyclers_spawning)
     self.debrisManager = debrisManager
 
     self.titleSprite = gfx.sprite.new(gfx.image.new(titleImagePath))
@@ -35,10 +37,17 @@ function GameSetup:init(delay, debrisManager)
     local titleTimer = pd.timer.new(delay)
     titleTimer.timerEndedCallback = function(timer)
         self.titleSprite:remove()
+        self.gameStartSound:play()
         -- TODO: move background stuff to backgroundManager
         self:spawnClouds()
         self:spawnSatellite()
-        self:spawnRecyclers()
+
+        local recyclerSpawningDelayTimer = pd.timer.new(waitDurationToSpawnRecyclers)
+        recyclerSpawningDelayTimer.timerEndedCallback = function(timer)
+            self.warningSirenSound:play()
+            self:spawnRecyclers()
+        end
+
         self:spawnDebris()
     end
 
@@ -55,8 +64,8 @@ function GameSetup:update()
 end
 
 function GameSetup:spawnRecyclers()
+    self.recyclerSpawningSound:playLooping()
     self.recyclerSpawningTimer = pd.timer.new(waitDurationToSpawnRecyclers)
-    --self.recyclerSpawningTimer.delay = 500
     self.recyclerSpawningTimer.discardOnCompletion = false
     self.recyclerSpawningTimer.repeats = true
     self.recyclerSpawningTimer.timerEndedCallback = function(timer)
@@ -65,6 +74,7 @@ function GameSetup:spawnRecyclers()
             local recycler = ACTIVE_RECYCLERS[currentRecyclerIndex]
             recycler:addSprite()
         else
+            self.recyclerSpawningSound:stop()
             self.recyclerSpawningTimer:remove()
             self.debrisSpawningTimer:start()
         end

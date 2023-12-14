@@ -42,6 +42,8 @@ local gunBaseImagePath = "images/gun/base"
 function GunManager:init()
     GunManager.super.init(self)
 
+    self.gunTurningSound = SfxPlayer(SFX_FILES.gun_turning)
+
     self.type = GUN_TYPE_NAME
     self.available = true
     self.currentHP = maxHP
@@ -94,12 +96,17 @@ end
 
 function GunManager:update()
 
+    --[[ if not IS_GAME_SETUP_DONE then
+        return
+    end ]]
+
     if IS_GAME_OVER then
         return
     end
 
     self:readRotationInput()
 
+    -- TODO: revisit this. not sure if this is entirely correct according to specs
     if IS_GAME_ACTIVE then
         local crankChange = pd.getCrankChange()
         -- should update this to use an angle accumulator for more accuracy
@@ -115,7 +122,14 @@ function GunManager:update()
     -- runtime rotation is very expensive
     -- this will change when we have pre-rendered rotated sprites
     if WAS_GUN_ROTATED then
+        if not self.gunTurningSound:isPlaying() then
+            self.gunTurningSound:play()
+        end
         self:setRotation(GUN_CURRENT_ROTATION_ANGLE)
+    else
+        if self.gunTurningSound:isPlaying() then
+            self.gunTurningSound:stop()
+        end
     end
 end
 
