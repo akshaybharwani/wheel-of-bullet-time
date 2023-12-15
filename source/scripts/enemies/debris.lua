@@ -53,7 +53,6 @@ function Debris:moveTowardsGun()
         self:remove()
     else
         local nextX, nextY = self.x + self.dx, self.y + self.dy
-        print(FRAME_COUNT .. ": " .. nextY)
         self:moveTo(nextX, nextY)
         if self.speed < maxSpeed then
             self.speed += acceleration * DELTA_TIME
