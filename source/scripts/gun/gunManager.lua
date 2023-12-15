@@ -112,10 +112,15 @@ function GunManager:update()
         -- should update this to use an angle accumulator for more accuracy
         CURRENT_CRANK_SHOOTING_TICKS = pd.getCrankTicks(crankShootingTicks)
 
-        if (crankChange > 0) then
+        if crankChange > 0 and GUN_CURRENT_STATE ~= GUN_SHOOTING_STATE then
             GUN_CURRENT_STATE = GUN_SHOOTING_STATE
-        elseif (crankChange < 0) then
+            NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, GUN_SHOOTING_STATE)
+        elseif crankChange < 0 and GUN_CURRENT_STATE ~= GUN_VACUUM_STATE then
             GUN_CURRENT_STATE = GUN_VACUUM_STATE
+            NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, GUN_VACUUM_STATE)
+        elseif crankChange == 0 and GUN_CURRENT_STATE ~= GUN_NEUTRAL_STATE then
+            GUN_CURRENT_STATE = GUN_NEUTRAL_STATE
+            NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, GUN_NEUTRAL_STATE)
         end
     end
 

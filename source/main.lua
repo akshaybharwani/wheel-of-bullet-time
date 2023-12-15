@@ -18,13 +18,13 @@ import "scripts/game/utilities"
 import "scripts/game/crankTimer"
 import "scripts/game/crankInput"
 
+import "scripts/audio/sfxPlayer"
 import "scripts/background/background"
 import "scripts/enemies/enemyManager"
 import "scripts/gun/gunManager"
 import "scripts/game/gameSetup"
 import "scripts/game/timeDisplay"
 import "scripts/game/gameOver"
-import "scripts/audio/sfxPlayer"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -32,6 +32,11 @@ local gfx <const> = pd.graphics
 -- globals
 
 NOTIFICATION_CENTER = Signal()
+
+NOTIFY_INITIAL_DEBRIS_COLLECTED = "initialDebrisCollected"
+NOTIFY_BULLET_COUNT_UPDATED = "bulletCountUpdate"
+NOTIFY_GUN_WAS_HIT = "gunWasHit"
+NOTIFY_GUN_STATE_CHANGED = "gunStateChanged"
 
 -- TODO: assuming FPS is constant 30, majorly used by AnimatedSprite
 CONSTANT_FPS = 30
@@ -67,10 +72,6 @@ UI_Z_INDEX = 200
 BANNER_Z_INDEX = 300
 
 GAME_ACTIVE_ELAPSED_SECONDS = 0
-
-NOTIFY_INITIAL_DEBRIS_COLLECTED = "initialDebrisCollected"
-NOTIFY_BULLET_COUNT_UPDATED = "bulletCountUpdate"
-NOTIFY_GUN_WAS_HIT = "gunWasHit"
 
 local titleConstants = TITLE_CONSTANTS
 local titleDuration = titleConstants.titleDuration

@@ -1,6 +1,11 @@
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
+local debrisConstants = DEBRIS_CONSTANTS
+local startSpeed = debrisConstants.startSpeed
+local maxSpeed = debrisConstants.maxSpeed
+local acceleration = debrisConstants.acceleration
+
 local debrisImagePath = "images/enemies/debris"
 local debrisSpawnImagePath = "images/enemies/debris_spawn-table-16-16"
 
@@ -18,6 +23,7 @@ function Debris:init(x, y, debrisManager)
     self:setImage(gfx.image.new(debrisImagePath))
     self.shouldRotate = math.random() < rotationChance
 
+    self.speed = startSpeed
     self:setCollideRect(0, 0, self:getSize())
     self:setGroups(DEBRIS_GROUP)
     self:setCollidesWithGroups({ VACUUM_GROUP })
@@ -25,10 +31,16 @@ function Debris:init(x, y, debrisManager)
         self:setRotation(90)
     end
     self:moveTo(x, y)
-    self:setVelocity(GUN_BASE_X, GUN_BASE_Y)
+    self:setupDistanceToTarget(GUN_BASE_X, GUN_BASE_Y)
+    self:setVelocity()
     self:setupSpawnAnimation(x, y)
     self:add()
     self:setVisible(false)
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_STATE_CHANGED, self, function(currentState)
+        if currentState ~= GUN_VACUUM_STATE and self.speed ~= startSpeed then
+            self.speed = startSpeed
+        end
+    end)
 end
 
 function Debris:moveTowardsGun()
@@ -40,25 +52,33 @@ function Debris:moveTowardsGun()
         self.debrisManager:removeDebris(self)
         self:remove()
     else
-        local nextX, nextY = self.x + self.dx * DELTA_TIME, self.y + self.dy * DELTA_TIME
+        local nextX, nextY = self.x + self.dx, self.y + self.dy
+        print(FRAME_COUNT .. ": " .. nextY)
         self:moveTo(nextX, nextY)
+        if self.speed < maxSpeed then
+            self.speed += acceleration * DELTA_TIME
+            self:setVelocity()
+        end
     end
 end
 
-function Debris:setVelocity(x, y)
-    local distance = pd.geometry.distanceToPoint(self.x, self.y, x, y)
-    -- why divide by 1000?
-    self.speed = distance / (DEBRIS_CONSTANTS.toRecycleDuration / 1000)
+function Debris:setupDistanceToTarget(x, y)
+    local distanceToTarget = pd.geometry.distanceToPoint(self.x, self.y, x, y)
     local nx = x - self.x
     local ny = y - self.y
-    self.dx = (nx / distance) * self.speed
-    self.dy = (ny / distance) * self.speed
+    self.horizontalDistanceToTarget = (nx / distanceToTarget)
+    self.verticalDistanceToTarget = (ny / distanceToTarget)
+end
+
+function Debris:setVelocity()
+    self.dx = self.horizontalDistanceToTarget * self.speed
+    self.dy = self.verticalDistanceToTarget * self.speed
 end
 
 function Debris:setupSpawnAnimation(x, y)
     local imageTable = gfx.imagetable.new(debrisSpawnImagePath)
     self.spawnSprite = AnimatedSprite.new(imageTable)
-    self.spawnSprite:addState("spawning", 1, 11, {tickStep = DEBRIS_CONSTANTS.spawnAnimationFPS})
+    self.spawnSprite:addState("spawning", 1, 11, {tickStep = debrisConstants.spawnAnimationFPS})
     self.spawnSprite.states.spawning.loop = false
     if self.shouldRotate then
         self.spawnSprite:setRotation(90)

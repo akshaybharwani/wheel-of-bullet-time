@@ -27,7 +27,9 @@ OPENING_ANIMATION_CONSTANTS.cloudsAtStartCount = 7
 -- debris
 DEBRIS_CONSTANTS = {}
 DEBRIS_CONSTANTS.spawnAnimationFPS = 1.2
-DEBRIS_CONSTANTS.toRecycleDuration = 1000
+DEBRIS_CONSTANTS.startSpeed = 2
+DEBRIS_CONSTANTS.maxSpeed = 6
+DEBRIS_CONSTANTS.acceleration = 0.5
 DEBRIS_CONSTANTS.minDebris, DEBRIS_CONSTANTS.maxDebris = 3, 8
 
 -- recycler

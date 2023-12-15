@@ -5,8 +5,8 @@ local gfx <const> = pd.graphics
 
 class('DebrisManager').extends(gfx.sprite)
 
-local debsisConstants = DEBRIS_CONSTANTS
-local minDebris, maxDebris = debsisConstants.minDebris, debsisConstants.maxDebris
+local debrisConstants = DEBRIS_CONSTANTS
+local minDebris, maxDebris = debrisConstants.minDebris, debrisConstants.maxDebris
 
 local gridSize = 64
 -- TODO: do this by getting the size of the image
