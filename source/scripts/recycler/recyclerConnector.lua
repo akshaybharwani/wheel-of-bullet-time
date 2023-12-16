@@ -9,6 +9,9 @@ local connectorAnimationDuration = RECYCLER_CONSTANTS.connectorAnimationDuration
 
 function RecyclerConnector:init(recycler, verticalConnectorHeight)
     RecyclerConnector.super.init(self)
+
+    self.recyclerSpawningSound = SfxPlayer(SFX_FILES.recyclers_spawning)
+
     -- TODO: very complicated to look at. Revisit to improve
 
     -- NOTE: Tried to change this logic to use drawLine instead as it would have the ease of accessing
@@ -58,6 +61,7 @@ end
 
 function RecyclerConnector:addSprite()
     self:add()
+    self.recyclerSpawningSound:play()
     if self.verticalConnector ~= nil then
         self.clipRectVerticalAnimator:start()
     end

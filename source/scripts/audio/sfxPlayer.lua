@@ -48,3 +48,7 @@ end
 function SfxPlayer:isPlaying()
     return self.player:isPlaying()
 end
+
+function SfxPlayer:getLength()
+    return self.player:getLength()
+end
