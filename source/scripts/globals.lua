@@ -86,9 +86,10 @@ ENEMY_CONSTANTS.explosionAnimationFPS = 5
 ENEMY_CONSTANTS.minTotalPatrolDuration, ENEMY_CONSTANTS.maxTotalPatrolDuration = 2, 5
 ENEMY_CONSTANTS.minPatrolSegmentDuration, ENEMY_CONSTANTS.maxPatrolSegmentDuration = 1, 2
 
-ENEMY_CONSTANTS.enemySpawnWaitDuration = 5000 -- here this is number of seconds instead of miliseconds elsewhere
+ENEMY_CONSTANTS.enemySpawnWaitDuration = 5000
 ENEMY_CONSTANTS.oneWaveDuration = 30000
-ENEMY_CONSTANTS.maxEnemyRate = 6
+-- number of enemies spawn after every enemySpawnWaitDuration
+ENEMY_CONSTANTS.maxEnemySpawnRate = 6
 
 -- enemy data
 -- * Go to scripts/enemyManager for setting individual enemy data
