@@ -26,7 +26,6 @@ function GameSetup:init(delay, debrisManager)
 
     self.gameStartSound = SfxPlayer(SFX_FILES.game_start)
     self.warningSirenSound = SfxPlayer(SFX_FILES.warning_sirens)
-    self.recyclerSpawningSound = SfxPlayer(SFX_FILES.recyclers_spawning)
     self.debrisManager = debrisManager
 
     self.titleSprite = gfx.sprite.new(gfx.image.new(titleImagePath))
@@ -38,17 +37,15 @@ function GameSetup:init(delay, debrisManager)
     titleTimer.timerEndedCallback = function(timer)
         self.titleSprite:remove()
         self.gameStartSound:play()
+        local warningSirenDelayTimer = pd.timer.new(self.gameStartSound:getLength() * 1000)
+        warningSirenDelayTimer.timerEndedCallback = function(timer)
+            self.warningSirenSound:play()
+            self:setupRecyclerSpawn()
+        end
+        self:spawnDebris()
         -- TODO: move background stuff to backgroundManager
         self:spawnClouds()
         self:spawnSatellite()
-
-        local recyclerSpawningDelayTimer = pd.timer.new(waitDurationToSpawnRecyclers)
-        recyclerSpawningDelayTimer.timerEndedCallback = function(timer)
-            self.warningSirenSound:play()
-            self:spawnRecyclers()
-        end
-
-        self:spawnDebris()
     end
 
     self:add()
@@ -63,22 +60,33 @@ function GameSetup:update()
     end
 end
 
+function GameSetup:setupRecyclerSpawn()
+    local recyclerSpawningDelayTimer = pd.timer.new(self.warningSirenSound:getLength() * 1000)
+    recyclerSpawningDelayTimer.timerEndedCallback = function(timer)
+        -- spawn first recycler as soon as the siren ends, start timer which waits for other spawning
+        self:spawnRecycler()
+        self:spawnRecyclers()
+    end
+end
+
 function GameSetup:spawnRecyclers()
-    self.recyclerSpawningSound:playLooping()
     self.recyclerSpawningTimer = pd.timer.new(waitDurationToSpawnRecyclers)
     self.recyclerSpawningTimer.discardOnCompletion = false
     self.recyclerSpawningTimer.repeats = true
     self.recyclerSpawningTimer.timerEndedCallback = function(timer)
         if currentRecyclerIndex < #ACTIVE_RECYCLERS then
-            currentRecyclerIndex += 1
-            local recycler = ACTIVE_RECYCLERS[currentRecyclerIndex]
-            recycler:addSprite()
+            self:spawnRecycler()
         else
-            self.recyclerSpawningSound:stop()
             self.recyclerSpawningTimer:remove()
             self.debrisSpawningTimer:start()
         end
     end
+end
+
+function GameSetup:spawnRecycler()
+    currentRecyclerIndex += 1
+    local recycler = ACTIVE_RECYCLERS[currentRecyclerIndex]
+    recycler:addSprite()
 end
 
 function GameSetup:spawnDebris()

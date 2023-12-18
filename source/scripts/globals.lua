@@ -18,8 +18,8 @@ TITLE_CONSTANTS.titleDuration = 2000
 
 -- opening animation
 OPENING_ANIMATION_CONSTANTS = {}
-OPENING_ANIMATION_CONSTANTS.waitDurationToSpawnRecyclers = 500  
-OPENING_ANIMATION_CONSTANTS.waitDurationToSpawnDebris = 2700
+OPENING_ANIMATION_CONSTANTS.waitDurationToSpawnRecyclers = 1000
+OPENING_ANIMATION_CONSTANTS.waitDurationToSpawnDebris = 1000
 OPENING_ANIMATION_CONSTANTS.debrisGroupAtStartCount = 4
 -- includes the cloud outside the max screen width
 OPENING_ANIMATION_CONSTANTS.cloudsAtStartCount = 7
@@ -27,15 +27,15 @@ OPENING_ANIMATION_CONSTANTS.cloudsAtStartCount = 7
 -- debris
 DEBRIS_CONSTANTS = {}
 DEBRIS_CONSTANTS.spawnAnimationFPS = 1.2
-DEBRIS_CONSTANTS.startSpeed = 0.2
+DEBRIS_CONSTANTS.startSpeed = 1
 DEBRIS_CONSTANTS.maxSpeed = 6
-DEBRIS_CONSTANTS.acceleration = 0.8
+DEBRIS_CONSTANTS.acceleration = 0.5
 DEBRIS_CONSTANTS.minDebris, DEBRIS_CONSTANTS.maxDebris = 3, 8
 
 -- recycler
 RECYCLER_CONSTANTS = {}
-RECYCLER_CONSTANTS.ammoGenerationDuration = 400 
-RECYCLER_CONSTANTS.debrisTravelDuration = 300
+RECYCLER_CONSTANTS.ammoGenerationDuration = 500
+RECYCLER_CONSTANTS.debrisTravelDuration = 1000
 RECYCLER_CONSTANTS.maxHP = 4
 -- connector are the pipes going from recyclers to the gun
 RECYCLER_CONSTANTS.connectorAnimationDuration = 500
@@ -86,9 +86,10 @@ ENEMY_CONSTANTS.explosionAnimationFPS = 5
 ENEMY_CONSTANTS.minTotalPatrolDuration, ENEMY_CONSTANTS.maxTotalPatrolDuration = 2, 5
 ENEMY_CONSTANTS.minPatrolSegmentDuration, ENEMY_CONSTANTS.maxPatrolSegmentDuration = 1, 2
 
-ENEMY_CONSTANTS.enemySpawnWaitDuration = 5000 -- here this is number of seconds instead of miliseconds elsewhere
+ENEMY_CONSTANTS.enemySpawnWaitDuration = 5000
 ENEMY_CONSTANTS.oneWaveDuration = 30000
-ENEMY_CONSTANTS.maxEnemyRate = 8000
+-- number of enemies spawn after every enemySpawnWaitDuration
+ENEMY_CONSTANTS.maxEnemySpawnRate = 6
 
 -- enemy data
 -- * Go to scripts/enemyManager for setting individual enemy data

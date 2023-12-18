@@ -9,7 +9,7 @@ local enemyConstants = ENEMY_CONSTANTS
 
 local enemySpawnWaitDuration = enemyConstants.enemySpawnWaitDuration / 1000 -- here this is number of seconds instead of miliseconds elsewhere
 local oneWaveDuration = enemyConstants.oneWaveDuration
-local maxEnemySpawnRate = enemyConstants.oneWaveDuration
+local maxEnemySpawnRate = enemyConstants.maxEnemySpawnRate
 
 local currentEnemySpawnRate = 1
 local currentWaveDuration = 0
