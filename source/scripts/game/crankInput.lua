@@ -22,7 +22,6 @@ end
 function CrankInput:checkCrankInput()
     local currentCrankPosition = pd.getCrankPosition()
     if lastCrankPosition ~= currentCrankPosition then
-        -- TODO: move this to a separate script or logic
         if IS_GAME_SETUP_DONE then
             GAME_ACTIVE_ELAPSED_SECONDS += DELTA_TIME
         end

@@ -150,11 +150,13 @@ function Enemy:getHit()
 end
 
 function Enemy:shatter()
+    self:clearCollideRect()
     self.debrisManager:spawnDebris(self.x, self.y)
     self:remove()
 end
 
 function Enemy:explode(target)
+    self:clearCollideRect()
     self:setVisible(false)
 
     -- magic number 220, might want to revisit
