@@ -29,7 +29,7 @@ import "scripts/game/gameOver"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
--- globals
+-- constants
 
 NOTIFICATION_CENTER = Signal()
 
