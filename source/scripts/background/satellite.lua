@@ -6,14 +6,16 @@ class("Satellite").extends(AnimatedSprite)
 local satelliteImagePath = "images/background/satellite-table-64-64"
 local imageTable = gfx.imagetable.new(satelliteImagePath)
 
-local speed = 15
+local backgroundConstants = BACKGROUND_CONSTANTS
+
+local speed = backgroundConstants.satelliteSpeed
+local satelliteFPS =backgroundConstants.satelliteFPS
+
+local minRespawnDuration, maxRespawnDuration = BACKGROUND_CONSTANTS.satelliteMinRespawnDuration, BACKGROUND_CONSTANTS.satelliteMinRespawnDuration
 
 -- TODO: shouldn't be a magic number
 SATELLITE_WIDTH = 64
-
-local satelliteFPS = 3
-
-local minRespawnDuration, maxRespawnDuration = 3, 6
+local satelliteWidth = 64
 
 function Satellite:init()
     Satellite.super.init(self, imageTable)
@@ -27,7 +29,7 @@ end
 
 function Satellite:update()
     if (WAS_GAME_ACTIVE_LAST_CHECK) then
-        if (self.x < -SATELLITE_WIDTH) then
+        if (self.x < -satelliteWidth) then
             self:setupRespawnTimer()
         else
             local nextX = self.x - speed * DELTA_TIME

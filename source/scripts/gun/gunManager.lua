@@ -8,11 +8,6 @@ local gfx <const> = pd.graphics
 
 class('GunManager').extends(gfx.sprite)
 
-local gunMaxRotationAngle = 85
-local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
-
-local gunPadding = 20
-
 -- TODO: should be a better way to maintain these variables
 GUN_BASE_SIZE = 64
 GUN_BASE_X, GUN_BASE_Y = 0, 0
@@ -26,21 +21,29 @@ CURRENT_CRANK_SHOOTING_TICKS = 0
 
 ACTIVE_TARGETS = {}
 
-CURRENT_BULLET_COUNT = 0
-
 -- TODO: change to Signal events
 
 WAS_GUN_ROTATED = false
 
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
 
-local maxHP = GUN_CONSTANTS.maxHP
-
 local gunTopDefaultImagePath = "images/gun/gun_top_default"
 local gunBaseImagePath = "images/gun/base"
 
+local gunConstants = GUN_CONSTANTS
+
+local maxRotationAngle = gunConstants.maxRotationAngle
+local rotationSpeed = gunConstants.rotationSpeed -- Screen updates 30 times per second by default
+local maxHP = gunConstants.maxHP
+
+local gunPadding = 20
+
 function GunManager:init()
     GunManager.super.init(self)
+    CURRENT_CRANK_SHOOTING_TICKS = 0
+    WAS_GUN_ROTATED = false
+    ACTIVE_TARGETS = {}
+    GUN_CURRENT_STATE = GUN_NEUTRAL_STATE
 
     self.gunTurningSound = SfxPlayer(SFX_FILES.gun_turning)
 
@@ -140,15 +143,15 @@ end
 
 function GunManager:readRotationInput()
     WAS_GUN_ROTATED = false
-    if pd.buttonIsPressed("RIGHT") then
-        if (GUN_CURRENT_ROTATION_ANGLE < gunMaxRotationAngle) then
+    if pd.buttonIsPressed(pd.kButtonRight) then
+        if (GUN_CURRENT_ROTATION_ANGLE < maxRotationAngle) then
             WAS_GUN_ROTATED = true
-            GUN_CURRENT_ROTATION_ANGLE += gunRotationSpeed
+            GUN_CURRENT_ROTATION_ANGLE += rotationSpeed
         end
-    elseif pd.buttonIsPressed("LEFT") then
-        if (GUN_CURRENT_ROTATION_ANGLE > -gunMaxRotationAngle) then
+    elseif pd.buttonIsPressed(pd.kButtonLeft) then
+        if (GUN_CURRENT_ROTATION_ANGLE > -maxRotationAngle) then
             WAS_GUN_ROTATED = true
-            GUN_CURRENT_ROTATION_ANGLE -= gunRotationSpeed
+            GUN_CURRENT_ROTATION_ANGLE -= rotationSpeed
         end
     end
 end

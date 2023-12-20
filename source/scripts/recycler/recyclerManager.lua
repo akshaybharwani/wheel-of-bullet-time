@@ -10,13 +10,13 @@ local recyclerConstants = RECYCLER_CONSTANTS
 local maxRecyclerCount = recyclerConstants.maxRecyclerCount
 local debrisHoldDuration = recyclerConstants.debrisHoldDuration
 
-local collectedDebris = 0
-
 ACTIVE_RECYCLERS = {}
 
 function RecyclerManager:init()
     RecyclerManager.super.init(self)
-
+    ACTIVE_RECYCLERS = {}
+    self.collectedDebris = 0
+    
     self:setupDebrisHoldTimer()
 
     self:spawnRecyclers()
@@ -86,11 +86,11 @@ function RecyclerManager:setupDebrisHoldTimer()
     self.holdDebrisTimer.discardOnCompletion = false
     self.holdDebrisTimer.repeats = true
     self.holdDebrisTimer.timerEndedCallback = function(timer)
-        if collectedDebris > 0 then
+        if self.collectedDebris > 0 then
             for i = 1, #ACTIVE_RECYCLERS do
                 if ACTIVE_RECYCLERS[i].available == true then
                     ACTIVE_RECYCLERS[i]:sendDebrisToRecycler()
-                    collectedDebris -= 1
+                    self.collectedDebris -= 1
                     break
                 end
             end
@@ -101,7 +101,7 @@ function RecyclerManager:setupDebrisHoldTimer()
 end
 
 function RecyclerManager:assignDebris()
-    collectedDebris += 1
+    self.collectedDebris += 1
     if self.holdDebrisTimer.paused == true then
         self.holdDebrisTimer:start()
     end

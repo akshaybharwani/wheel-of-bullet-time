@@ -18,6 +18,7 @@ local imagetable = gfx.imagetable.new(imagetablePath)
 
 function Shooter:init(gun)
     Shooter.super.init(self, imagetable)
+    CURRENT_BULLET_COUNT = 0
 
     self.bulletSound = SfxPlayer(SFX_FILES.gun_bullet)
 

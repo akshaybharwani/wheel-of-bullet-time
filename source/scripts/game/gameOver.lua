@@ -19,9 +19,10 @@ local highScoreYPadding = 1
 
 function GameOver:init()
     GameOver.super.init(self)
+    self.resultsAreShown = false
     self.gameOverSound = SfxPlayer(SFX_FILES.game_over)
     self:setImage(gfx.image.new(gameOverImagePath))
-    self:setupGameOverTimer()
+    self:setupWaitingToShowResultsTimer()
     self:setupGameOverText()
 
     -- TODO: would need to move this to a more central place when complexity increases
@@ -33,21 +34,32 @@ function GameOver:init()
 end
 
 function GameOver:update()
+    if self.resultsAreShown then
+        if utils.checkActionButtonInput() then
+            gfx.sprite.removeAll()
+            GameSetup()
+        end
+    end
+
+    if IS_GAME_OVER then
+        return
+    end
+
     if IS_GAME_SETUP_DONE then
         if DEBRIS_NOT_RECYCLED_COUNT <= 0 and CURRENT_BULLET_COUNT <= 0 then
             self.gameOverSound:play()
             IS_GAME_OVER = true
             self.gameOverTextSprite:setVisible(true)
-            self.gameOverTimer:start()
+            self.waitToShowResultsTimer:start()
         end
     end
 end
 
-function GameOver:setupGameOverTimer()
-    self.gameOverTimer = pd.timer.new(gameOverConstants.gameOverWaitDuration)
-    self.gameOverTimer:pause()
-    self.gameOverTimer.timerEndedCallback = function(timer)
-        self:showGameOverBanner()
+function GameOver:setupWaitingToShowResultsTimer()
+    self.waitToShowResultsTimer = pd.timer.new(gameOverConstants.waitToShowResultsDuration)
+    self.waitToShowResultsTimer:pause()
+    self.waitToShowResultsTimer.timerEndedCallback = function(timer)
+        self:showResults()
     end
 end
 
@@ -67,7 +79,7 @@ function GameOver:setupGameOverText()
 end
 
 
-function GameOver:showGameOverBanner()
+function GameOver:showResults()
     self:setVisible(true)
     local numberWidth = utils.numbersTimeFirstImage.width
     local numberHeight = utils.numbersTimeFirstImage.height
@@ -85,5 +97,10 @@ function GameOver:showGameOverBanner()
             utils.getFormattedTime(minutes, seconds, scorePosX + halfNumberWidth, scoreY, gameOverScoreZIndex, gameOverScoreNumberPadding)
             startingPosY += highScoreYPadding
         end
+    end
+
+    local showResultsTimer = pd.timer.new(gameOverConstants.showResultsDuration)
+    showResultsTimer.timerEndedCallback = function(timer)
+        self.resultsAreShown = true
     end
 end

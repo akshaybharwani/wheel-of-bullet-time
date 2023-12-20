@@ -3,6 +3,8 @@ local gfx <const> = pd.graphics
 
 class('CrankInput').extends(gfx.sprite)
 
+GAME_ACTIVE_ELAPSED_SECONDS = 0
+
 local coreGameConstants = CORE_GAME_CONSTANTS
 local crankCheckWaitDuration = coreGameConstants.crankCheckWaitDuration
 

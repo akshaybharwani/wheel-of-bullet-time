@@ -5,6 +5,13 @@ UTILITIES = {}
 
 -- table functions
 
+function UTILITIES.checkActionButtonInput()
+    if pd.buttonIsPressed(pd.kButtonA) or
+       pd.buttonIsPressed(pd.kButtonB) then
+        return true
+    end
+end
+
 function UTILITIES.arrayRemove(array, checkFunction)
     local n = #array
     local removedElements = {}

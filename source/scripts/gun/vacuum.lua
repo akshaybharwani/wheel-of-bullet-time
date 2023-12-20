@@ -21,6 +21,7 @@ local imagetable = gfx.imagetable.new(imagetablePath)
 
 function Vacuum:init(gun)
     Vacuum.super.init(self, imagetable)
+    TOP_VACUUM_VAPOR_POSITION = nil
 
     self.imagetable = imagetable
     self.gun = gun

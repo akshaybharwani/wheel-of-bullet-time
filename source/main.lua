@@ -22,9 +22,9 @@ import "scripts/audio/sfxPlayer"
 import "scripts/background/background"
 import "scripts/enemies/enemyManager"
 import "scripts/gun/gunManager"
-import "scripts/game/gameSetup"
 import "scripts/game/timeDisplay"
 import "scripts/game/gameOver"
+import "scripts/game/gameSetup"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -71,35 +71,7 @@ GUN_Z_INDEX = 100
 UI_Z_INDEX = 200
 BANNER_Z_INDEX = 300
 
-GAME_ACTIVE_ELAPSED_SECONDS = 0
-
-local titleConstants = TITLE_CONSTANTS
-local titleDuration = titleConstants.titleDuration
-
-IS_GAME_SETUP_DONE = false
-IS_GAME_OVER = false
-
-local function setupGame()
-    math.randomseed(pd.getSecondsSinceEpoch())
-    pd.resetElapsedTime()
-
-    CrankInput()
-    local gunManager = GunManager()
-    -- ? is assigning a manager to initialization of another manager a good idea?
-    local recyclerManager = RecyclerManager(gunManager)
-    local debrisManager = DebrisManager(recyclerManager)
-    TimeDisplay()
-    GameSetup(titleDuration, debrisManager)
-    Background(titleDuration)
-    GameOver()
-    NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
-        EnemyManager(debrisManager)
-        print("intial Debris collected")
-        IS_GAME_SETUP_DONE = true
-    end)
-end
-
-setupGame()
+GameSetup()
 
 function pd.update()
     DELTA_TIME = pd.getElapsedTime()
