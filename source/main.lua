@@ -37,6 +37,7 @@ NOTIFY_INITIAL_DEBRIS_COLLECTED = "initialDebrisCollected"
 NOTIFY_BULLET_COUNT_UPDATED = "bulletCountUpdate"
 NOTIFY_GUN_WAS_HIT = "gunWasHit"
 NOTIFY_GUN_STATE_CHANGED = "gunStateChanged"
+NOTIFY_GAME_OVER = "gameOver"
 
 -- TODO: assuming FPS is constant 30, majorly used by AnimatedSprite
 CONSTANT_FPS = 30

@@ -98,7 +98,7 @@ function GameSetup:setupGameEntities()
 
     Background()
     TimeDisplay()
-    GameOver()
+    GameOver(self.gunManager)
     NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
         EnemyManager(self.debrisManager)
         IS_GAME_STARTED = true

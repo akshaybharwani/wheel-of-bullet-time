@@ -15,12 +15,6 @@ function CrankInput:init()
     self:add()
 end
 
-function CrankInput:update()
-    if IS_GAME_OVER then
-        self.crankInputTimer:remove()
-    end
-end
-
 function CrankInput:checkCrankInput()
     local currentCrankPosition = pd.getCrankPosition()
     if self.lastCrankPosition ~= currentCrankPosition then
@@ -41,4 +35,7 @@ function CrankInput:setupCrankCheckTimer()
     self.crankInputTimer.timerEndedCallback = function(timer)
         self:checkCrankInput()
     end
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GAME_OVER, self, function()
+        self.crankInputTimer:remove()
+    end)
 end

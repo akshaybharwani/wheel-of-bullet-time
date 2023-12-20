@@ -17,10 +17,12 @@ local currentScorePosY = 48
 local highScoreStartingPosY = 95
 local highScoreYPadding = 1
 
-function GameOver:init()
+function GameOver:init(gun)
     GameOver.super.init(self)
     self.resultsAreShown = false
     self.gameOverSound = SfxPlayer(SFX_FILES.game_over)
+
+    self.gun = gun
     self:setImage(gfx.image.new(gameOverImagePath))
     self:setupWaitingToShowResultsTimer()
     self:setupGameOverText()
@@ -36,22 +38,31 @@ end
 function GameOver:update()
     if self.resultsAreShown then
         if utils.checkActionButtonInput() then
+            local allTimers = pd.timer.allTimers()
+            for i = 1, #allTimers do
+                allTimers[i]:remove()
+            end
             gfx.sprite.removeAll()
             GameSetup()
+            return
         end
+    end
+
+    if not IS_GAME_STARTED then
+        return
     end
 
     if IS_GAME_OVER then
         return
     end
 
-    if IS_GAME_STARTED then
-        if DEBRIS_NOT_RECYCLED_COUNT <= 0 and CURRENT_BULLET_COUNT <= 0 then
-            self.gameOverSound:play()
-            IS_GAME_OVER = true
-            self.gameOverTextSprite:setVisible(true)
-            self.waitToShowResultsTimer:start()
-        end
+    if (DEBRIS_NOT_RECYCLED_COUNT <= 0 and CURRENT_BULLET_COUNT <= 0)
+    or not self.gun.available then
+        self.gameOverSound:play()
+        NOTIFICATION_CENTER:notify(NOTIFY_GAME_OVER)
+        IS_GAME_OVER = true
+        self.gameOverTextSprite:setVisible(true)
+        self.waitToShowResultsTimer:start()
     end
 end
 
