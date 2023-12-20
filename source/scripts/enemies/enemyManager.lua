@@ -11,9 +11,6 @@ local enemySpawnWaitDuration = enemyConstants.enemySpawnWaitDuration / 1000 -- h
 local oneWaveDuration = enemyConstants.oneWaveDuration
 local maxEnemySpawnRate = enemyConstants.maxEnemySpawnRate
 
-local currentEnemySpawnRate = 1
-local currentWaveDuration = 0
-
 local explosionImagePath = "images/enemies/enemy_explosion-table-64-64"
 
 local enemyA = {
@@ -47,6 +44,8 @@ local enemies = { enemyA, enemyB, enemyC }
 
 function EnemyManager:init(debrisManager)
     EnemyManager.super.init(self)
+    self.currentEnemySpawnRate = 1
+    self.currentWaveDuration = 0
 
     self.debrisManager = debrisManager
     self.enemySpawnTimer = CrankTimer(enemySpawnWaitDuration, true, function()
@@ -58,18 +57,18 @@ function EnemyManager:init(debrisManager)
 end
 
 function EnemyManager:spawnEnemies()
-    for i = 1, currentEnemySpawnRate do
+    for i = 1, self.currentEnemySpawnRate do
         local enemyToSpawn = enemies[math.random(1, #enemies)]
         Enemy(enemyToSpawn, self.debrisManager)
     end
 end
 
 function EnemyManager:handleEnemyWave()
-    if (maxEnemySpawnRate > currentEnemySpawnRate) then
-        currentWaveDuration += enemySpawnWaitDuration
-        if (currentWaveDuration >= oneWaveDuration) then
-            currentEnemySpawnRate += 1
-            currentWaveDuration = 0
+    if (maxEnemySpawnRate > self.currentEnemySpawnRate) then
+        self.currentWaveDuration += enemySpawnWaitDuration
+        if (self.currentWaveDuration >= oneWaveDuration) then
+            self.currentEnemySpawnRate += 1
+            self.currentWaveDuration = 0
         end
     end
 end

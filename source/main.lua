@@ -43,10 +43,6 @@ CONSTANT_FPS = 30
 
 DELTA_TIME = 0
 -- if crank was moved this frame based on crankCheckWaitDuration, this is true
-IS_GAME_ACTIVE = false
--- as the crankCheckWaitDuration is non-zero, the animation relying on IS_GAME_ACTIVE will
--- continously won't work properly, this can be used to help with that
-WAS_GAME_ACTIVE_LAST_CHECK = false
 
 SCREEN_WIDTH = pd.display.getWidth()
 HALF_SCREEN_WIDTH = SCREEN_WIDTH / 2

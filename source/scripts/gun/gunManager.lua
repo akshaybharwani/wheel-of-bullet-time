@@ -11,18 +11,14 @@ class('GunManager').extends(gfx.sprite)
 -- TODO: should be a better way to maintain these variables
 GUN_BASE_SIZE = 64
 GUN_BASE_X, GUN_BASE_Y = 0, 0
-GUN_CURRENT_ROTATION_ANGLE = 0
 RECYCLER_SIZE = 32
 
 GUN_NEUTRAL_STATE, GUN_SHOOTING_STATE, GUN_VACUUM_STATE = 0, 1, 2
 GUN_CURRENT_STATE = GUN_NEUTRAL_STATE
-
+GUN_CURRENT_ROTATION_ANGLE = 0
 CURRENT_CRANK_SHOOTING_TICKS = 0
-
 ACTIVE_TARGETS = {}
-
 -- TODO: change to Signal events
-
 WAS_GUN_ROTATED = false
 
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
@@ -44,6 +40,7 @@ function GunManager:init()
     WAS_GUN_ROTATED = false
     ACTIVE_TARGETS = {}
     GUN_CURRENT_STATE = GUN_NEUTRAL_STATE
+    GUN_CURRENT_ROTATION_ANGLE = 0
 
     self.gunTurningSound = SfxPlayer(SFX_FILES.gun_turning)
 
@@ -98,10 +95,9 @@ function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
 end
 
 function GunManager:update()
-
-    --[[ if not IS_GAME_SETUP_DONE then
+    if not IS_GAME_SETUP_DONE then
         return
-    end ]]
+    end
 
     if IS_GAME_OVER then
         return

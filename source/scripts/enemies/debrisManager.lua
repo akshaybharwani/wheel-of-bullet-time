@@ -49,6 +49,9 @@ local quadrants = {
 
 function DebrisManager:init(recyclerManager)
     DebrisManager.super.init(self)
+    ACTIVE_DEBRIS = {}
+    DEBRIS_NOT_RECYCLED_COUNT = 0
+
     self.recyclerManager = recyclerManager
     self:add()
 end

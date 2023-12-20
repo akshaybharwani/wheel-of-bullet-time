@@ -8,9 +8,9 @@ GAME_ACTIVE_ELAPSED_SECONDS = 0
 local coreGameConstants = CORE_GAME_CONSTANTS
 local crankCheckWaitDuration = coreGameConstants.crankCheckWaitDuration
 
-local lastCrankPosition = nil
-
 function CrankInput:init()
+    GAME_ACTIVE_ELAPSED_SECONDS = 0
+    self.lastCrankPosition = nil
     self:setupCrankCheckTimer()
     self:add()
 end
@@ -23,7 +23,7 @@ end
 
 function CrankInput:checkCrankInput()
     local currentCrankPosition = pd.getCrankPosition()
-    if lastCrankPosition ~= currentCrankPosition then
+    if self.lastCrankPosition ~= currentCrankPosition then
         if IS_GAME_SETUP_DONE then
             GAME_ACTIVE_ELAPSED_SECONDS += DELTA_TIME
         end
@@ -32,7 +32,7 @@ function CrankInput:checkCrankInput()
     elseif WAS_GAME_ACTIVE_LAST_CHECK then
         WAS_GAME_ACTIVE_LAST_CHECK = false
     end
-    lastCrankPosition = currentCrankPosition
+    self.lastCrankPosition = currentCrankPosition
 end
 
 function CrankInput:setupCrankCheckTimer()

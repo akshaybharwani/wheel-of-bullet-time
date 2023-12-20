@@ -5,6 +5,11 @@ local utils <const> = UTILITIES
 
 class("GameSetup").extends(gfx.sprite)
 
+IS_GAME_ACTIVE = false
+-- as the crankCheckWaitDuration is non-zero, the animation relying on IS_GAME_ACTIVE will
+-- continously won't work properly, this can be used to help with that
+WAS_GAME_ACTIVE_LAST_CHECK = false
+
 IS_GAME_SETUP_DONE = false
 IS_GAME_OVER = false
 
@@ -57,6 +62,9 @@ function GameSetup:setupGameVariables()
     pd.resetElapsedTime()
 
     -- TODO: add all relevant variables
+
+    IS_GAME_ACTIVE = false
+    WAS_GAME_ACTIVE_LAST_CHECK = false
 
     IS_GAME_OVER = false
     IS_GAME_SETUP_DONE = false
