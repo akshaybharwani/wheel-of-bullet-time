@@ -52,7 +52,7 @@ function GameSetup:update()
 
     if self.openingDebrisSpawned and not self.initialDebrisCollected then
         if #ACTIVE_DEBRIS <= 0 then
-            NOTIFICATION_CENTER:notify(NOTIFY_INITIAL_DEBRIS_COLLECTED)
+            NOTIFICATION_CENTER:notify(NOTIFY_GAME_STARTED)
             self.initialDebrisCollected = true
         end
     end
@@ -99,10 +99,11 @@ function GameSetup:setupGameEntities()
     Background()
     TimeDisplay()
     GameOver(self.gunManager)
-    NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GAME_STARTED, self, function()
         EnemyManager(self.debrisManager)
         IS_GAME_STARTED = true
     end)
+    
     -- TODO: move to DebrisManager
     self:spawnDebris()
 end

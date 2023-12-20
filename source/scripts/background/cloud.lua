@@ -27,6 +27,14 @@ function Cloud:init(x)
 end
 
 function Cloud:update()
+    if not IS_GAME_SETUP_DONE then
+        return
+    end
+
+    if IS_GAME_OVER then
+        return
+    end
+
     if (WAS_GAME_ACTIVE_LAST_CHECK) then
         if (self.x < -cloudWidth) then
             self:setSpriteImage(SCREEN_WIDTH + cloudSeparationDistance)

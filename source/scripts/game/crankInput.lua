@@ -12,6 +12,9 @@ function CrankInput:init()
     GAME_ACTIVE_ELAPSED_SECONDS = 0
     self.lastCrankPosition = nil
     self:setupCrankCheckTimer()
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GAME_OVER, self, function()
+        self.crankInputTimer:remove()
+    end)
     self:add()
 end
 
@@ -35,7 +38,4 @@ function CrankInput:setupCrankCheckTimer()
     self.crankInputTimer.timerEndedCallback = function(timer)
         self:checkCrankInput()
     end
-    NOTIFICATION_CENTER:subscribe(NOTIFY_GAME_OVER, self, function()
-        self.crankInputTimer:remove()
-    end)
 end
