@@ -52,7 +52,6 @@ function Shooter:shootBullet(startX, startY, angle)
 end
 
 function Shooter:update()
-
     if WAS_GAME_ACTIVE_LAST_CHECK then
         if GUN_CURRENT_STATE == GUN_SHOOTING_STATE then
             self:updateAnimation()

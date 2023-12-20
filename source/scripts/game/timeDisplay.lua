@@ -40,7 +40,7 @@ function TimeDisplay:init()
 end
 
 function TimeDisplay:update()
-    if not IS_GAME_SETUP_DONE then
+    if not IS_GAME_STARTED then
         return
     end
 

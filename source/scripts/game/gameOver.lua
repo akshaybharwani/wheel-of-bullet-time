@@ -45,7 +45,7 @@ function GameOver:update()
         return
     end
 
-    if IS_GAME_SETUP_DONE then
+    if IS_GAME_STARTED then
         if DEBRIS_NOT_RECYCLED_COUNT <= 0 and CURRENT_BULLET_COUNT <= 0 then
             self.gameOverSound:play()
             IS_GAME_OVER = true

@@ -10,6 +10,7 @@ IS_GAME_ACTIVE = false
 -- continously won't work properly, this can be used to help with that
 WAS_GAME_ACTIVE_LAST_CHECK = false
 
+IS_GAME_STARTED = false
 IS_GAME_SETUP_DONE = false
 IS_GAME_OVER = false
 
@@ -66,8 +67,9 @@ function GameSetup:setupGameVariables()
     IS_GAME_ACTIVE = false
     WAS_GAME_ACTIVE_LAST_CHECK = false
 
-    IS_GAME_OVER = false
+    IS_GAME_STARTED = false
     IS_GAME_SETUP_DONE = false
+    IS_GAME_OVER = false
 
     self.currentRecyclerIndex = 0
     self.currentDebrisCount = 0
@@ -83,10 +85,10 @@ function GameSetup:setupGameEntities()
     self.gameStartSound:play()
 
     CrankInput()
-    local gunManager = GunManager()
+    self.gunManager = GunManager()
     -- ? is assigning a manager to initialization of another manager a good idea?
-    local recyclerManager = RecyclerManager(gunManager)
-    self.debrisManager = DebrisManager(recyclerManager)
+    self.recyclerManager = RecyclerManager(self.gunManager)
+    self.debrisManager = DebrisManager(self.recyclerManager)
 
     local warningSirenDelayTimer = pd.timer.new(self.gameStartSound:getLength() * 1000)
     warningSirenDelayTimer.timerEndedCallback = function(timer)
@@ -98,9 +100,8 @@ function GameSetup:setupGameEntities()
     TimeDisplay()
     GameOver()
     NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
-        EnemyManager(debrisManager)
-        print("intial Debris collected")
-        IS_GAME_SETUP_DONE = true
+        EnemyManager(self.debrisManager)
+        IS_GAME_STARTED = true
     end)
     -- TODO: move to DebrisManager
     self:spawnDebris()
@@ -148,6 +149,7 @@ function GameSetup:spawnDebris()
             self.debrisManager:spawnDebris(spawnX, spawnY)
         else
             self.debrisSpawningTimer:remove()
+            IS_GAME_SETUP_DONE = true
             self.openingDebrisSpawned = true
         end
     end
