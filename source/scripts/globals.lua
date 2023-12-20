@@ -31,6 +31,7 @@ DEBRIS_CONSTANTS.startSpeed = 1
 DEBRIS_CONSTANTS.maxSpeed = 6
 DEBRIS_CONSTANTS.acceleration = 0.5
 DEBRIS_CONSTANTS.minDebris, DEBRIS_CONSTANTS.maxDebris = 3, 8
+DEBRIS_CONSTANTS.expirationDuration = 3000
 
 -- recycler
 RECYCLER_CONSTANTS = {}

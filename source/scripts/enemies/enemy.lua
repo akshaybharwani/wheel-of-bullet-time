@@ -150,7 +150,8 @@ function Enemy:getHit()
 end
 
 function Enemy:shatter()
-    self:clearCollideRect()
+    -- TODO: this affects moveWithCollisions, which it shouldn't as it immediately gets removed
+    --self:clearCollideRect()
     self.debrisManager:spawnDebris(self.x, self.y)
     self:remove()
 end

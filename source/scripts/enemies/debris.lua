@@ -14,11 +14,12 @@ local debrisDetectionPadding = 20
 
 class("Debris").extends(gfx.sprite)
 
-function Debris:init(x, y, debrisManager)
+function Debris:init(x, y, debrisManager, gameActiveElapsedSeconds)
     Debris.super.init(self)
 
     self.type = DEBRIS_TYPE_NAME
     self.debrisManager = debrisManager
+    self.gameActiveElapsedSecondsAtCreation = gameActiveElapsedSeconds
 
     self:setImage(gfx.image.new(debrisImagePath))
     self.shouldRotate = math.random() < rotationChance
@@ -90,4 +91,10 @@ function Debris:setupSpawnAnimation(x, y)
     self.spawnSprite:moveTo(x, y)
     self.spawnSprite:playAnimation()
     self.spawning = true
+end
+
+function Debris:expire()
+    self:clearCollideRect()
+    self:remove()
+    -- TODO: add expiring animation
 end
