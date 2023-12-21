@@ -14,6 +14,7 @@ import "scripts/libraries/Signal"
 
 -- game
 import "scripts/globals"
+import "scripts/game/notificationCenter"
 import "scripts/game/utilities"
 import "scripts/game/crankTimer"
 import "scripts/game/crankInput"
@@ -30,15 +31,6 @@ local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 -- constants
-
-NOTIFICATION_CENTER = Signal()
-
-NOTIFY_BULLET_COUNT_UPDATED = "bulletCountUpdate"
-NOTIFY_GUN_WAS_HIT = "gunWasHit"
-NOTIFY_GUN_STATE_CHANGED = "gunStateChanged"
-NOTIFY_GAME_OVER = "gameOver"
-NOTIFY_GUN_IS_DISABLED = "gunIsDisabled"
-NOTIFY_GAME_STARTED = "gameStarted"
 
 -- TODO: assuming FPS is constant 30, majorly used by AnimatedSprite
 CONSTANT_FPS = 30

@@ -11,16 +11,14 @@ local satelliteFPS = backgroundConstants.satelliteFPS
 
 local minRespawnDuration, maxRespawnDuration = BACKGROUND_CONSTANTS.satelliteMinRespawnDuration, BACKGROUND_CONSTANTS.satelliteMinRespawnDuration
 
--- TODO: shouldn't be a magic number
-SATELLITE_WIDTH = 64
-local satelliteWidth = 64
-
 function Satellite:init()
     Satellite.super.init(self, imageTable)
 
     self.speed = backgroundConstants.satelliteSpeed
     self.isGunDisabled = false
+    self.isRespawing = false
 
+    self.satelliteSize = imageTable:getImage(1):getSize()
     self:setupPosition(nil)
     self:addState("fly", 1, 4, {tickStep = satelliteFPS})
     self.states.fly.yoyo = true
@@ -42,8 +40,12 @@ function Satellite:update()
         return
     end
 
+    if self.isRespawing then
+        return
+    end
+
     if self.isGunDisabled or WAS_GAME_ACTIVE_LAST_CHECK then
-        if (self.x < -satelliteWidth) then
+        if self.x < -self.satelliteSize then
             self:setupRespawnTimer()
         else
             local nextX = self.x - self.speed * DELTA_TIME
@@ -63,6 +65,8 @@ end
 
 function Satellite:setupRespawnTimer()
     self.respawnTimer = CrankTimer(math.random(minRespawnDuration, maxRespawnDuration), false, function()
-        self:setupPosition(SCREEN_WIDTH + SATELLITE_WIDTH)
+        self:setupPosition(SCREEN_WIDTH + self.satelliteSize)
+        self.isRespawing = false
     end)
+    self.isRespawing = true
 end

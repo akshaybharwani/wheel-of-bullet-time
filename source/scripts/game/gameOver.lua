@@ -69,12 +69,16 @@ function GameOver:update()
     #ACTIVE_BULLETS <= 0)
     or not self.gun.available then
         if #ACTIVE_TARGETS > 0 then
-            IS_GUN_DISABLED = true
-            NOTIFICATION_CENTER:notify(NOTIFY_GUN_IS_DISABLED)
+            self:disableGun()
         else
             self:showGameOver()
         end
     end
+end
+
+function GameOver:disableGun()
+    IS_GUN_DISABLED = true
+    NOTIFICATION_CENTER:notify(NOTIFY_GUN_IS_DISABLED)
 end
 
 function GameOver:showGameOver()

@@ -63,11 +63,7 @@ function Enemy:update()
         return
     end
 
-    if IS_GAME_ACTIVE then
-        self:move()
-    end
-
-    if self.isGunDisabled then
+    if IS_GAME_ACTIVE or self.isGunDisabled then
         self:move()
     end
 end

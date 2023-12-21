@@ -86,6 +86,7 @@ function GameSetup:setupGameEntities()
     self.titleSprite:remove()
     self.gameStartSound:play()
 
+    NotificationCenter()
     CrankInput()
     self.gunManager = GunManager()
     -- ? is assigning a manager to initialization of another manager a good idea?
@@ -157,3 +158,14 @@ function GameSetup:spawnDebris()
         end
     end
 end
+
+-- use this for debugging inside simulator
+--[[ function pd.keyPressed(key)
+    if (key == "q") then
+        disableGun()
+    end
+
+    if (key == "u") then
+        print("yeah debugging!")
+    end
+end ]]

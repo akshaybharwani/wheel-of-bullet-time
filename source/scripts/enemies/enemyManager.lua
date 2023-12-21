@@ -47,6 +47,8 @@ function EnemyManager:init(debrisManager)
     self.currentEnemySpawnRate = 1
     self.currentWaveDuration = 0
     self.isGunDisabled = false
+    self.enemies = {}
+    self.time = pd.getTime()
 
     self.debrisManager = debrisManager
     self.gameActiveSpawnTimer = CrankTimer(enemySpawnWaitDuration / 1000, true, function()
@@ -63,6 +65,7 @@ function EnemyManager:init(debrisManager)
     end)
     NOTIFICATION_CENTER:subscribe(NOTIFY_GAME_OVER, self, function()
         self.gunDisabledSpawnTimer:remove()
+        --self:destroyAllEnemies()
     end)
     self:spawnEnemies()
     self:add()
@@ -76,7 +79,8 @@ end
 function EnemyManager:spawnEnemies()
     for i = 1, self.currentEnemySpawnRate do
         local enemyToSpawn = enemies[math.random(1, #enemies)]
-        Enemy(enemyToSpawn, self.debrisManager, self.isGunDisabled)
+        local enemy = Enemy(enemyToSpawn, self.debrisManager, self.isGunDisabled)
+        table.insert(self.enemies, enemy)
     end
 end
 
@@ -87,5 +91,11 @@ function EnemyManager:handleEnemyWave()
             self.currentEnemySpawnRate += 1
             self.currentWaveDuration = 0
         end
+    end
+end
+
+function EnemyManager:destroyAllEnemies()
+    for i = 1, #self.enemies do
+        self.enemies[i]:remove()
     end
 end
