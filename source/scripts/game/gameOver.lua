@@ -24,7 +24,6 @@ function GameOver:init(gun)
 
     self.gun = gun
     self:setImage(gfx.image.new(gameOverImagePath))
-    self:setupWaitingToShowResultsTimer()
     self:setupGameOverText()
 
     -- TODO: would need to move this to a more central place when complexity increases
@@ -36,6 +35,10 @@ function GameOver:init(gun)
 end
 
 function GameOver:update()
+    if not IS_GAME_STARTED then
+        return
+    end
+
     if self.resultsAreShown then
         if utils.checkActionButtonInput() then
             local allTimers = pd.timer.allTimers()
@@ -44,34 +47,41 @@ function GameOver:update()
             end
             gfx.sprite.removeAll()
             GameSetup()
-            return
         end
-    end
-
-    if not IS_GAME_STARTED then
         return
     end
 
     if IS_GAME_OVER then
         return
     end
+    
+    if IS_GUN_DISABLED then
+        if #ACTIVE_TARGETS <= 0 then
+            pd.timer.performAfterDelay(gameOverConstants.waitToShowResultsDuration, function ()
+                self:showResults()
+            end)
+            self:handleGameOver()
+        end
+        return
+    end
 
-    if (DEBRIS_NOT_RECYCLED_COUNT <= 0 and CURRENT_BULLET_COUNT <= 0)
+    if (DEBRIS_NOT_RECYCLED_COUNT <= 0 and CURRENT_BULLET_COUNT <= 0 and 
+    #ACTIVE_BULLETS <= 0)
     or not self.gun.available then
         self.gameOverSound:play()
-        NOTIFICATION_CENTER:notify(NOTIFY_GAME_OVER)
-        IS_GAME_OVER = true
+        if #ACTIVE_TARGETS > 0 then
+            IS_GUN_DISABLED = true
+            NOTIFICATION_CENTER:notify(NOTIFY_GUN_IS_DISABLED)
+        else
+            self:handleGameOver()
+        end
         self.gameOverTextSprite:setVisible(true)
-        self.waitToShowResultsTimer:start()
     end
 end
 
-function GameOver:setupWaitingToShowResultsTimer()
-    self.waitToShowResultsTimer = pd.timer.new(gameOverConstants.waitToShowResultsDuration)
-    self.waitToShowResultsTimer:pause()
-    self.waitToShowResultsTimer.timerEndedCallback = function(timer)
-        self:showResults()
-    end
+function GameOver:handleGameOver()
+    NOTIFICATION_CENTER:notify(NOTIFY_GAME_OVER)
+    IS_GAME_OVER = true
 end
 
 function GameOver:setupGameOverText()
@@ -88,7 +98,6 @@ function GameOver:setupGameOverText()
     self.gameOverTextSprite:add()
     self.gameOverTextSprite:setVisible(false)
 end
-
 
 function GameOver:showResults()
     self:setVisible(true)

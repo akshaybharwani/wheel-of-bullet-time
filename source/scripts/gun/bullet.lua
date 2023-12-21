@@ -8,9 +8,11 @@ local bulletConstants = BULLET_CONSTANTS
 local bulletBodyImagePath = "images/gun/bullet_body"
 local bulletTrailImagePath = "images/gun/bullet_trail"
 
-function Bullet:init(startX, startY, angle)
+function Bullet:init(shooter, startX, startY, angle)
     Bullet.super.init(self)
 
+    self.shooter = shooter
+    self.isGunDisabled = false
     -- need to subract 90 as the default angle of the gun is up
     self.angleRad = math.rad(angle - 90)
     self.dx = bulletConstants.bulletSpeed * math.cos(self.angleRad)
@@ -27,9 +29,23 @@ function Bullet:init(startX, startY, angle)
     self.bulletTrailSprite:moveTo(startX - bulletConstants.bulletTrailDistance * math.cos(self.angleRad),
         startY - bulletConstants.bulletTrailDistance * math.sin(self.angleRad))
     self.bulletTrailSprite:add()
+
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+        -- ? remove the bullet or let it move after gun is disabled?
+        self.isGunDisabled = true
+        self:removeBullet()
+    end)
 end
 
 function Bullet:update()
+    if self.isGunDisabled then
+        return
+    end
+
+    if IS_GAME_OVER then
+        return
+    end
+
     if not IS_GAME_ACTIVE then
         return
     end
@@ -54,6 +70,7 @@ function Bullet:update()
 end
 
 function Bullet:removeBullet()
+    self.shooter:removeBullet(self)
     self.bulletTrailSprite:remove()
     self:remove()
 end

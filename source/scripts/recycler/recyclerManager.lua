@@ -48,19 +48,21 @@ function RecyclerManager:spawnRecyclers()
 
     local recyclerConnectorY = 0
     for i = 1, #leftToGunRecyclers do
-        local recycler = Recycler(leftToGunRecyclers[i].x, leftToGunRecyclers[i].y, recyclerConnectorY, true)
-        table.insert(ACTIVE_RECYCLERS, recycler)
-        table.insert(ACTIVE_TARGETS, recycler)
+        self:addRecycler(leftToGunRecyclers[i].x, leftToGunRecyclers[i].y, recyclerConnectorY, true)
         recyclerConnectorY += 5
     end
 
     recyclerConnectorY = 0
     for i = 1, #rightToGunRecyclers do
-        local recycler = Recycler(rightToGunRecyclers[i].x, rightToGunRecyclers[i].y, recyclerConnectorY, false)
-        table.insert(ACTIVE_RECYCLERS, recycler)
-        table.insert(ACTIVE_TARGETS, recycler)
+        self:addRecycler(rightToGunRecyclers[i].x, rightToGunRecyclers[i].y, recyclerConnectorY, false)
         recyclerConnectorY += 5
     end
+end
+
+function RecyclerManager:addRecycler(posX, posY, recyclerConnectorY, isLeftToGun)
+    local recycler = Recycler(posX,posY, recyclerConnectorY, isLeftToGun)
+    table.insert(ACTIVE_RECYCLERS, recycler)
+    table.insert(ACTIVE_TARGETS, recycler)
 end
 
 function RecyclerManager:generateRecyclerPositions(maxCount, minX, maxX, maxY)

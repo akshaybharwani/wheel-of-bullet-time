@@ -6,6 +6,7 @@ local gfx <const> = pd.graphics
 class("Shooter").extends(AnimatedSprite)
 
 CURRENT_BULLET_COUNT = 0
+ACTIVE_BULLETS = {}
 
 local gunShooterConstants = GUN_SHOOTER_CONSTANTS
 local gunConstants = GUN_CONSTANTS
@@ -20,6 +21,7 @@ function Shooter:init(gun)
     CURRENT_BULLET_COUNT = 0
     self.currentFiringCooldown = maxFiringCooldown
 
+    self.isGunDisabled = false
     self.bulletSound = SfxPlayer(SFX_FILES.gun_bullet)
 
     self.imagetable = imagetable
@@ -39,6 +41,10 @@ function Shooter:init(gun)
 
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_WAS_HIT, self, function()
         self:changeState(tostring(self.gun.currentHP))
+        self:updateGunTopSprite()
+    end)
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+        self.isGunDisabled = true
     end)
 end
 
@@ -47,19 +53,22 @@ function Shooter:setFiringCooldown()
 end
 
 function Shooter:shootBullet(startX, startY, angle)
-    Bullet(startX, startY, angle)
+    local bullet = Bullet(self, startX, startY, angle)
+    table.insert(ACTIVE_BULLETS, bullet)
     self.bulletSound:play()
 end
 
 function Shooter:update()
+    if self.isGunDisabled then
+        return
+    end
+
+    if IS_GAME_OVER then
+        return
+    end
+
     if WAS_GAME_ACTIVE_LAST_CHECK then
-        if GUN_CURRENT_STATE == GUN_SHOOTING_STATE then
-            self:updateAnimation()
-            -- TODO: this seems resource intensive?
-            self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
-        else
-            self:setVisible(false)
-        end
+        self:updateGunTopSprite()
     end
 
     if not self.gun.available then
@@ -76,6 +85,25 @@ function Shooter:update()
                 NOTIFICATION_CENTER:notify(NOTIFY_BULLET_COUNT_UPDATED)
                 self.currentFiringCooldown = maxFiringCooldown
             end
+        end
+    end
+end
+
+function Shooter:updateGunTopSprite()
+    if GUN_CURRENT_STATE == GUN_SHOOTING_STATE then
+        self:updateAnimation()
+        -- TODO: this seems resource intensive?
+        self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
+    else
+        self:setVisible(false)
+    end
+end
+
+function Shooter:removeBullet(bullet)
+    for i = 1, #ACTIVE_BULLETS do
+        if ACTIVE_BULLETS[i] == bullet then
+            table.remove(ACTIVE_BULLETS, i)
+            break
         end
     end
 end

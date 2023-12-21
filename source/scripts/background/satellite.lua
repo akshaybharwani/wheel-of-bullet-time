@@ -28,15 +28,15 @@ function Satellite:init()
 end
 
 function Satellite:update()
-    if not IS_GAME_SETUP_DONE then
-        return
-    end
-
     if IS_GAME_OVER then
         return
     end
 
-    if (WAS_GAME_ACTIVE_LAST_CHECK) then
+    if not IS_GAME_SETUP_DONE then
+        return
+    end
+
+    if WAS_GAME_ACTIVE_LAST_CHECK or IS_GUN_DISABLED then
         if (self.x < -satelliteWidth) then
             self:setupRespawnTimer()
         else

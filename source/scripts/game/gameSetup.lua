@@ -12,6 +12,7 @@ WAS_GAME_ACTIVE_LAST_CHECK = false
 
 IS_GAME_STARTED = false
 IS_GAME_SETUP_DONE = false
+IS_GUN_DISABLED = false
 IS_GAME_OVER = false
 
 local openingAnimationConstants = OPENING_ANIMATION_CONSTANTS
@@ -69,6 +70,7 @@ function GameSetup:setupGameVariables()
 
     IS_GAME_STARTED = false
     IS_GAME_SETUP_DONE = false
+    IS_GUN_DISABLED = false
     IS_GAME_OVER = false
 
     self.currentRecyclerIndex = 0

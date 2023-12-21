@@ -7,7 +7,7 @@ class('EnemyManager').extends(gfx.sprite)
 
 local enemyConstants = ENEMY_CONSTANTS
 
-local enemySpawnWaitDuration = enemyConstants.enemySpawnWaitDuration / 1000 -- here this is number of seconds instead of miliseconds elsewhere
+local enemySpawnWaitDuration = enemyConstants.enemySpawnWaitDuration
 local oneWaveDuration = enemyConstants.oneWaveDuration
 local maxEnemySpawnRate = enemyConstants.maxEnemySpawnRate
 
@@ -46,20 +46,39 @@ function EnemyManager:init(debrisManager)
     EnemyManager.super.init(self)
     self.currentEnemySpawnRate = 1
     self.currentWaveDuration = 0
+    self.isGunDisabled = false
 
     self.debrisManager = debrisManager
-    self.enemySpawnTimer = CrankTimer(enemySpawnWaitDuration, true, function()
-        self:handleEnemyWave()
-        self:spawnEnemies()
+    self.gameActiveSpawnTimer = CrankTimer(enemySpawnWaitDuration / 1000, true, function()
+        self:handleEnemySpawning()
     end)
-    self:setupEnemySpawn()
+    self.gunDisabledSpawnTimer = pd.timer.new(enemySpawnWaitDuration)
+    self.gunDisabledSpawnTimer:pause()
+    self.gunDisabledSpawnTimer.repeats = true
+    self.gunDisabledSpawnTimer.timerEndedCallback = function(timer)
+        self:handleEnemySpawning()
+    end
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+        self.gameActiveSpawnTimer:remove()
+        self.isGunDisabled = true
+        self.gunDisabledSpawnTimer:start()
+    end)
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GAME_OVER, self, function()
+        self.gunDisabledSpawnTimer:remove()
+    end)
+    self:spawnEnemies()
     self:add()
+end
+
+function EnemyManager:handleEnemySpawning()
+    self:handleEnemyWave()
+    self:spawnEnemies()
 end
 
 function EnemyManager:spawnEnemies()
     for i = 1, self.currentEnemySpawnRate do
         local enemyToSpawn = enemies[math.random(1, #enemies)]
-        Enemy(enemyToSpawn, self.debrisManager)
+        Enemy(enemyToSpawn, self.debrisManager, self.isGunDisabled)
     end
 end
 
@@ -71,8 +90,4 @@ function EnemyManager:handleEnemyWave()
             self.currentWaveDuration = 0
         end
     end
-end
-
-function EnemyManager:setupEnemySpawn()
-    self:spawnEnemies()
 end

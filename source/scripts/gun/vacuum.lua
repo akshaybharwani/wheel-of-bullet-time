@@ -23,6 +23,7 @@ function Vacuum:init(gun)
     Vacuum.super.init(self, imagetable)
     TOP_VACUUM_VAPOR_POSITION = nil
 
+    self.isGunDisabled = false
     self.imagetable = imagetable
     self.gun = gun
 
@@ -43,6 +44,10 @@ function Vacuum:init(gun)
 
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_WAS_HIT, self, function()
         self:changeState(tostring(self.gun.currentHP))
+        self:updateGunTopSprite()
+    end)
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+        self.isGunDisabled = true
     end)
 end
 
@@ -57,7 +62,6 @@ function Vacuum:setupVacuumVapor()
 end
 
 function Vacuum:checkForCollisions()
-
     for i = 1, #self.vacuumVapors do
         local vacuumVapor = self.vacuumVapors[i]
         if vacuumVapor ~= nil then
@@ -85,13 +89,17 @@ function Vacuum:setVacuumLine()
 end
 
 function Vacuum:update()
+    if self.isGunDisabled then
+        return
+    end
+
+    if IS_GAME_OVER then
+        return
+    end
+
+    -- TODO: double checks for this and shooter. consolidate
     if WAS_GAME_ACTIVE_LAST_CHECK then
-        if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
-            self:updateAnimation()
-            self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
-        else
-            self:setVisible(false)
-        end
+        self:updateGunTopSprite()
     end
 
     if not self.gun.available then
@@ -122,5 +130,14 @@ function Vacuum:update()
                 TOP_VACUUM_VAPOR_POSITION = { x = self.vacuumVapors[i - 1].x, y = self.vacuumVapors[i - 1].y }
             end
         end
+    end
+end
+
+function Vacuum:updateGunTopSprite()
+    if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
+        self:updateAnimation()
+        self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
+    else
+        self:setVisible(false)
     end
 end
