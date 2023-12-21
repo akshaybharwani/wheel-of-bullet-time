@@ -7,9 +7,7 @@ local satelliteImagePath = "images/background/satellite-table-64-64"
 local imageTable = gfx.imagetable.new(satelliteImagePath)
 
 local backgroundConstants = BACKGROUND_CONSTANTS
-
-local speed = backgroundConstants.satelliteSpeed
-local satelliteFPS =backgroundConstants.satelliteFPS
+local satelliteFPS = backgroundConstants.satelliteFPS
 
 local minRespawnDuration, maxRespawnDuration = BACKGROUND_CONSTANTS.satelliteMinRespawnDuration, BACKGROUND_CONSTANTS.satelliteMinRespawnDuration
 
@@ -20,11 +18,19 @@ local satelliteWidth = 64
 function Satellite:init()
     Satellite.super.init(self, imageTable)
 
+    self.speed = backgroundConstants.satelliteSpeed
+    self.isGunDisabled = false
+
     self:setupPosition(nil)
     self:addState("fly", 1, 4, {tickStep = satelliteFPS})
     self.states.fly.yoyo = true
     self:setZIndex(BACKGROUND_Z_INDEX)
     self:playAnimation()
+
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+        self.speed *= GAME_OVER_CONSTANTS.timeMultiplier
+        self.isGunDisabled = true
+    end)
 end
 
 function Satellite:update()
@@ -36,11 +42,11 @@ function Satellite:update()
         return
     end
 
-    if WAS_GAME_ACTIVE_LAST_CHECK or IS_GUN_DISABLED then
+    if self.isGunDisabled or WAS_GAME_ACTIVE_LAST_CHECK then
         if (self.x < -satelliteWidth) then
             self:setupRespawnTimer()
         else
-            local nextX = self.x - speed * DELTA_TIME
+            local nextX = self.x - self.speed * DELTA_TIME
             self:moveTo(nextX, self.y)
             self:updateAnimation()
         end

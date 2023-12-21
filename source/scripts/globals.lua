@@ -80,6 +80,7 @@ BULLET_DISPLAY_CONSTANTS.bounceHeight = 3
 GAME_OVER_CONSTANTS = {}
 GAME_OVER_CONSTANTS.waitToShowResultsDuration = 5000
 GAME_OVER_CONSTANTS.showResultsDuration = 5000
+GAME_OVER_CONSTANTS.timeMultiplier = 5
 
 -- enemy general settings
 ENEMY_CONSTANTS = {}

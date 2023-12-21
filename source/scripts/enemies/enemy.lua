@@ -48,6 +48,7 @@ function Enemy:init(enemyType, debrisManager, isGunDisabled)
         self:setupPatroling()
         NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
             self:endPatroling()
+            self.speed *= GAME_OVER_CONSTANTS.timeMultiplier
             self.isGunDisabled = true
         end)
     end

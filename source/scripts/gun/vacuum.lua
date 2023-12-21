@@ -46,7 +46,7 @@ function Vacuum:init(gun)
         self:changeState(tostring(self.gun.currentHP))
         self:updateGunTopSprite()
     end)
-    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
         self.isGunDisabled = true
     end)
 end

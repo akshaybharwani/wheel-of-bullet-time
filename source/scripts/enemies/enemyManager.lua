@@ -52,16 +52,14 @@ function EnemyManager:init(debrisManager)
     self.gameActiveSpawnTimer = CrankTimer(enemySpawnWaitDuration / 1000, true, function()
         self:handleEnemySpawning()
     end)
-    self.gunDisabledSpawnTimer = pd.timer.new(enemySpawnWaitDuration)
-    self.gunDisabledSpawnTimer:pause()
-    self.gunDisabledSpawnTimer.repeats = true
-    self.gunDisabledSpawnTimer.timerEndedCallback = function(timer)
-        self:handleEnemySpawning()
-    end
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
         self.gameActiveSpawnTimer:remove()
         self.isGunDisabled = true
-        self.gunDisabledSpawnTimer:start()
+        self.gunDisabledSpawnTimer = pd.timer.new(enemySpawnWaitDuration / GAME_OVER_CONSTANTS.timeMultiplier)
+        self.gunDisabledSpawnTimer.repeats = true
+        self.gunDisabledSpawnTimer.timerEndedCallback = function(timer)
+            self:handleEnemySpawning()
+        end
     end)
     NOTIFICATION_CENTER:subscribe(NOTIFY_GAME_OVER, self, function()
         self.gunDisabledSpawnTimer:remove()

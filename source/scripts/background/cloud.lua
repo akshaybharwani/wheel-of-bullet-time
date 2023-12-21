@@ -9,8 +9,6 @@ local yBaselineMin, yBaselineMax = 224, 230
 local rotationChance = 0.5
 
 local backgroundConstants = BACKGROUND_CONSTANTS
-
-local speed = backgroundConstants.cloudSpeed
 local cloudSeparationDistance = backgroundConstants.cloudSeperationDistance
 
 -- TODO: shouldn't be a magic number
@@ -20,10 +18,18 @@ local cloudWidth = CLOUD_WIDTH
 function Cloud:init(x)
     Cloud.super.init(self)
 
+    self.speed = backgroundConstants.cloudSpeed
+    self.isGunDisabled = false
+
     self.imageTable = gfx.imagetable.new(cloudImagePath)
     self:setSpriteImage(x)
     self:setZIndex(BACKGROUND_Z_INDEX)
     self:add()
+
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+        self.speed *= GAME_OVER_CONSTANTS.timeMultiplier
+        self.isGunDisabled = true
+    end)
 end
 
 function Cloud:update()
@@ -35,11 +41,11 @@ function Cloud:update()
         return
     end
 
-    if WAS_GAME_ACTIVE_LAST_CHECK or IS_GUN_DISABLED then
+    if self.isGunDisabled or WAS_GAME_ACTIVE_LAST_CHECK then
         if (self.x < -cloudWidth) then
             self:setSpriteImage(SCREEN_WIDTH + cloudSeparationDistance)
         end
-        local nextX = self.x - speed * DELTA_TIME
+        local nextX = self.x - self.speed * DELTA_TIME
         self:moveTo(nextX, self.y)
     end
 end

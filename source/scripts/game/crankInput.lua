@@ -12,7 +12,7 @@ function CrankInput:init()
     GAME_ACTIVE_ELAPSED_SECONDS = 0
     self.lastCrankPosition = nil
     self:setupCrankCheckTimer()
-    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
         self.crankInputTimer:remove()
     end)
     self:add()

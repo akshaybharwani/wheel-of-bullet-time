@@ -30,7 +30,7 @@ function Bullet:init(shooter, startX, startY, angle)
         startY - bulletConstants.bulletTrailDistance * math.sin(self.angleRad))
     self.bulletTrailSprite:add()
 
-    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
         -- ? remove the bullet or let it move after gun is disabled?
         self.isGunDisabled = true
         self:removeBullet()

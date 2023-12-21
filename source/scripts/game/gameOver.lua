@@ -54,13 +54,13 @@ function GameOver:update()
     if IS_GAME_OVER then
         return
     end
-    
+
     if IS_GUN_DISABLED then
         if #ACTIVE_TARGETS <= 0 then
             pd.timer.performAfterDelay(gameOverConstants.waitToShowResultsDuration, function ()
                 self:showResults()
             end)
-            self:handleGameOver()
+            self:showGameOver()
         end
         return
     end
@@ -68,20 +68,20 @@ function GameOver:update()
     if (DEBRIS_NOT_RECYCLED_COUNT <= 0 and CURRENT_BULLET_COUNT <= 0 and 
     #ACTIVE_BULLETS <= 0)
     or not self.gun.available then
-        self.gameOverSound:play()
         if #ACTIVE_TARGETS > 0 then
             IS_GUN_DISABLED = true
             NOTIFICATION_CENTER:notify(NOTIFY_GUN_IS_DISABLED)
         else
-            self:handleGameOver()
+            self:showGameOver()
         end
-        self.gameOverTextSprite:setVisible(true)
     end
 end
 
-function GameOver:handleGameOver()
+function GameOver:showGameOver()
+    self.gameOverSound:play()
     NOTIFICATION_CENTER:notify(NOTIFY_GAME_OVER)
     IS_GAME_OVER = true
+    self.gameOverTextSprite:setVisible(true)
 end
 
 function GameOver:setupGameOverText()
