@@ -105,7 +105,7 @@ function GunManager:update()
     self:readRotationInput()
 
     -- TODO: revisit this. not sure if this is entirely correct according to specs
-    if IS_GAME_ACTIVE then
+    if WAS_GAME_ACTIVE_LAST_CHECK then
         local crankChange = pd.getCrankChange()
         -- should update this to use an angle accumulator for more accuracy
         CURRENT_CRANK_SHOOTING_TICKS = pd.getCrankTicks(crankShootingTicks)
@@ -114,9 +114,9 @@ function GunManager:update()
             self:changeState(GUN_SHOOTING_STATE)
         elseif crankChange < 0 and GUN_CURRENT_STATE ~= GUN_VACUUM_STATE then
             self:changeState(GUN_VACUUM_STATE)
-        elseif crankChange == 0 and GUN_CURRENT_STATE ~= GUN_NEUTRAL_STATE then
-            self:changeState(GUN_NEUTRAL_STATE)
         end
+    elseif GUN_CURRENT_STATE ~= GUN_NEUTRAL_STATE then
+        self:changeState(GUN_NEUTRAL_STATE)
     end
 
     -- runtime rotation is very expensive

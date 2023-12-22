@@ -7,6 +7,8 @@ import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
 import "CoreLibs/crank"
 import "CoreLibs/animator"
+-- for debugging, should be removed for production
+import "CoreLibs/utilities/where"
 
 -- libraries
 import "scripts/libraries/AnimatedSprite"
