@@ -5,12 +5,12 @@ local debrisConstants = DEBRIS_CONSTANTS
 local startSpeed = debrisConstants.startSpeed
 local maxSpeed = debrisConstants.maxSpeed
 local acceleration = debrisConstants.acceleration
+local framesBeforeSpeedReset = debrisConstants.framesBeforeSpeedReset
 
 local debrisImagePath = "images/enemies/debris"
 local debrisSpawnImagePath = "images/enemies/debris_spawn-table-16-16"
 
 local rotationChance = 0.5
-local debrisDetectionPadding = 20
 
 class("Debris").extends(gfx.sprite)
 
@@ -37,11 +37,24 @@ function Debris:init(x, y, debrisManager, gameActiveElapsedSeconds)
     self:setupSpawnAnimation(x, y)
     self:add()
     self:setVisible(false)
+    self:setupSpeedResetTimer()
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_STATE_CHANGED, self, function(currentState)
-        if currentState ~= GUN_VACUUM_STATE and self.speed ~= startSpeed then
-            self.speed = startSpeed
+        if not self.isResettingSpeed
+        and self.speed ~= startSpeed 
+        and currentState ~= GUN_VACUUM_STATE then
+            self.isResettingSpeed = true
+            self.speedResetTimer:start()
         end
     end)
+end
+
+function Debris:setupSpeedResetTimer()
+    self.speedResetTimer = pd.frameTimer.new(framesBeforeSpeedReset, function ()
+        self.speed = startSpeed
+        self.isResettingSpeed = false
+    end)
+    self.speedResetTimer:pause()
+    self.speedResetTimer.discardOnCompletion = false
 end
 
 function Debris:moveTowardsGun()
@@ -49,12 +62,17 @@ function Debris:moveTowardsGun()
         return
     end
 
-    if self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - debrisDetectionPadding then
+    if self.y < GUN_BASE_Y and self.y > GUN_BASE_Y then
+        -- TODO: this should be handled by 
         self.debrisManager:removeDebris(self)
         self:remove()
     else
         local nextX, nextY = self.x + self.dx, self.y + self.dy
+        print(nextX .. ", " .. nextY)
         self:moveTo(nextX, nextY)
+        if self.isResettingSpeed then
+            self.speedResetTimer:reset()
+        end
         if self.speed < maxSpeed then
             self.speed += acceleration * DELTA_TIME
             self:setVelocity()

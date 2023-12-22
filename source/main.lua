@@ -35,9 +35,6 @@ local gfx <const> = pd.graphics
 -- TODO: assuming FPS is constant 30, majorly used by AnimatedSprite
 CONSTANT_FPS = 30
 
-DELTA_TIME = 0
--- if crank was moved this frame based on crankCheckWaitDuration, this is true
-
 SCREEN_WIDTH = pd.display.getWidth()
 HALF_SCREEN_WIDTH = SCREEN_WIDTH / 2
 SCREEN_HEIGHT = pd.display.getHeight()
@@ -68,6 +65,7 @@ function pd.update()
     pd.resetElapsedTime()
 
     pd.timer.updateTimers()
+    pd.frameTimer.updateTimers()
     gfx.sprite.update()
     -- This needs to be called after the sprites are updated
     --[[ if pd.isCrankDocked() then

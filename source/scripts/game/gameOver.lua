@@ -41,12 +41,7 @@ function GameOver:update()
 
     if self.resultsAreShown then
         if utils.checkActionButtonInput() then
-            local allTimers = pd.timer.allTimers()
-            for i = 1, #allTimers do
-                allTimers[i]:remove()
-            end
-            gfx.sprite.removeAll()
-            GameSetup()
+            self:restartGame()
         end
         return
     end
@@ -74,6 +69,19 @@ function GameOver:update()
             self:showGameOver()
         end
     end
+end
+
+function GameOver:restartGame()
+    local allTimers = pd.timer.allTimers()
+    for i = 1, #allTimers do
+        allTimers[i]:remove()
+    end
+    local allFrameTimers = pd.frameTimer.allTimers()
+    for i = 1, #allFrameTimers do
+        allFrameTimers[i]:remove()
+    end
+    gfx.sprite.removeAll()
+    GameSetup()
 end
 
 function GameOver:disableGun()
