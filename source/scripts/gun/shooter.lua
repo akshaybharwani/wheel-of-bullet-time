@@ -19,6 +19,7 @@ local imagetable = gfx.imagetable.new(imagetablePath)
 function Shooter:init(gun)
     Shooter.super.init(self, imagetable)
     CURRENT_BULLET_COUNT = 0
+    ACTIVE_BULLETS = {}
     self.currentFiringCooldown = maxFiringCooldown
 
     self.isGunDisabled = false
@@ -71,12 +72,12 @@ function Shooter:update()
         self:updateGunTopSprite()
     end
 
-    if not self.gun.available then
-        return
-    end
-
     self:setFiringCooldown()
 
+    self:checkForShootingBullet()
+end
+
+function Shooter:checkForShootingBullet()
     if WAS_GAME_ACTIVE_LAST_CHECK and (GUN_CURRENT_STATE == GUN_SHOOTING_STATE) then
         if (CURRENT_CRANK_SHOOTING_TICKS == 1) then
             if (self.currentFiringCooldown == 0 and CURRENT_BULLET_COUNT > 0) then

@@ -63,12 +63,11 @@ function Debris:moveTowardsGun()
     end
 
     if self.y < GUN_BASE_Y and self.y > GUN_BASE_Y then
-        -- TODO: this should be handled by 
+        -- TODO: this should be handled by Vacuum or DebrisManager?
         self.debrisManager:removeDebris(self)
         self:remove()
     else
         local nextX, nextY = self.x + self.dx, self.y + self.dy
-        print(nextX .. ", " .. nextY)
         self:moveTo(nextX, nextY)
         if self.isResettingSpeed then
             self.speedResetTimer:reset()

@@ -25,6 +25,8 @@ local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 3
 
 local gunTopDefaultImagePath = "images/gun/gun_top_default"
 local gunBaseImagePath = "images/gun/base"
+-- HACK: this should not be refering to a direct image
+local gunTopDefaultImage = gfx.image.new(gunTopDefaultImagePath)
 
 local gunConstants = GUN_CONSTANTS
 
@@ -54,9 +56,6 @@ function GunManager:init()
 
     GUN_BASE_X = SCREEN_WIDTH / 2
     GUN_BASE_Y = SCREEN_HEIGHT - (self.gunBaseSprite.width / 2)
-
-    -- HACK: this should not be refering to a direct image
-    local gunTopDefaultImage = gfx.image.new(gunTopDefaultImagePath)
 
     self.gunBaseSprite:moveTo(GUN_BASE_X, GUN_BASE_Y)
     self.gunBaseSprite:setZIndex(GUN_Z_INDEX)
@@ -112,14 +111,11 @@ function GunManager:update()
         CURRENT_CRANK_SHOOTING_TICKS = pd.getCrankTicks(crankShootingTicks)
 
         if crankChange > 0 and GUN_CURRENT_STATE ~= GUN_SHOOTING_STATE then
-            GUN_CURRENT_STATE = GUN_SHOOTING_STATE
-            NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, GUN_SHOOTING_STATE)
+            self:changeState(GUN_SHOOTING_STATE)
         elseif crankChange < 0 and GUN_CURRENT_STATE ~= GUN_VACUUM_STATE then
-            GUN_CURRENT_STATE = GUN_VACUUM_STATE
-            NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, GUN_VACUUM_STATE)
+            self:changeState(GUN_VACUUM_STATE)
         elseif crankChange == 0 and GUN_CURRENT_STATE ~= GUN_NEUTRAL_STATE then
-            GUN_CURRENT_STATE = GUN_NEUTRAL_STATE
-            NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, GUN_NEUTRAL_STATE)
+            self:changeState(GUN_NEUTRAL_STATE)
         end
     end
 
@@ -135,6 +131,11 @@ function GunManager:update()
             self.gunTurningSound:stop()
         end
     end
+end
+
+function GunManager:changeState(state)
+    GUN_CURRENT_STATE = state
+    NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, state)
 end
 
 function GunManager:readRotationInput()
@@ -155,8 +156,6 @@ end
 function GunManager:setTopSprite(sprite)
     self:setImage(sprite)
 end
-
--- TODO: could consolidate methods like getHit for 'gun-element's in a base class
 
 function GunManager:getHit()
     if self.currentHP > 0 then

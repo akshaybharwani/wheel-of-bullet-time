@@ -69,11 +69,11 @@ BULLET_CONSTANTS.bulletTrailDistance = 8
 
 -- ui
 UI_CONSTANTS = {}
+-- space between each number 
 UI_CONSTANTS.numberPadding = 1
 
 -- bulletDisplay
 BULLET_DISPLAY_CONSTANTS = {}
--- space between each number 
 BULLET_DISPLAY_CONSTANTS.bounceTotalDuration = 100
 BULLET_DISPLAY_CONSTANTS.bounceHeight = 3
 
