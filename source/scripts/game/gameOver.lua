@@ -60,8 +60,10 @@ function GameOver:update()
         return
     end
 
-    if (DEBRIS_NOT_RECYCLED_COUNT <= 0 and CURRENT_BULLET_COUNT <= 0 and 
-    #ACTIVE_BULLETS <= 0)
+    print(#ACTIVE_BULLETS)
+    if (DEBRIS_NOT_RECYCLED_COUNT <= 0
+    and CURRENT_BULLET_COUNT <= 0
+    and #ACTIVE_BULLETS <= 0)
     or not self.gun.available then
         if #ACTIVE_TARGETS > 0 then
             self:disableGun()

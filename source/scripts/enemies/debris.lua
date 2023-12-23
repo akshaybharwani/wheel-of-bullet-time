@@ -11,6 +11,7 @@ local debrisImagePath = "images/enemies/debris"
 local debrisSpawnImagePath = "images/enemies/debris_spawn-table-16-16"
 
 local rotationChance = 0.5
+local debrisDetectionPadding = 5
 
 class("Debris").extends(gfx.sprite)
 
@@ -62,7 +63,7 @@ function Debris:moveTowardsGun()
         return
     end
 
-    if self.y < GUN_BASE_Y and self.y > GUN_BASE_Y then
+    if self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - debrisDetectionPadding then
         -- TODO: this should be handled by Vacuum or DebrisManager?
         self.debrisManager:removeDebris(self)
         self:remove()
@@ -111,6 +112,7 @@ function Debris:setupSpawnAnimation(x, y)
 end
 
 function Debris:expire()
+    DEBRIS_NOT_RECYCLED_COUNT -= 1
     self:clearCollideRect()
     self:remove()
     -- TODO: add expiring animation
