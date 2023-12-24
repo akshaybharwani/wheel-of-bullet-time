@@ -8,39 +8,41 @@ local gfx <const> = pd.graphics
 
 class('GunManager').extends(gfx.sprite)
 
-local gunMaxRotationAngle = 85
-local gunRotationSpeed = 3 -- Screen updates 30 times per second by default
-
-local gunPadding = 20
-
 -- TODO: should be a better way to maintain these variables
 GUN_BASE_SIZE = 64
 GUN_BASE_X, GUN_BASE_Y = 0, 0
-GUN_CURRENT_ROTATION_ANGLE = 0
 RECYCLER_SIZE = 32
 
 GUN_NEUTRAL_STATE, GUN_SHOOTING_STATE, GUN_VACUUM_STATE = 0, 1, 2
 GUN_CURRENT_STATE = GUN_NEUTRAL_STATE
-
+GUN_CURRENT_ROTATION_ANGLE = 0
 CURRENT_CRANK_SHOOTING_TICKS = 0
-
 ACTIVE_TARGETS = {}
-
-CURRENT_BULLET_COUNT = 0
-
 -- TODO: change to Signal events
-
 WAS_GUN_ROTATED = false
 
 local crankShootingTicks = 10 -- for every 360 ÷ ticksPerRevolution. So every 36 degrees for 10 ticksPerRevolution
 
-local maxHP = GUN_CONSTANTS.maxHP
-
 local gunTopDefaultImagePath = "images/gun/gun_top_default"
 local gunBaseImagePath = "images/gun/base"
+-- HACK: this should not be refering to a direct image
+local gunTopDefaultImage = gfx.image.new(gunTopDefaultImagePath)
+
+local gunConstants = GUN_CONSTANTS
+
+local maxRotationAngle = gunConstants.maxRotationAngle
+local rotationSpeed = gunConstants.rotationSpeed -- Screen updates 30 times per second by default
+local maxHP = gunConstants.maxHP
+
+local gunPadding = 20
 
 function GunManager:init()
     GunManager.super.init(self)
+    CURRENT_CRANK_SHOOTING_TICKS = 0
+    WAS_GUN_ROTATED = false
+    ACTIVE_TARGETS = {}
+    GUN_CURRENT_STATE = GUN_NEUTRAL_STATE
+    GUN_CURRENT_ROTATION_ANGLE = 0
 
     self.gunTurningSound = SfxPlayer(SFX_FILES.gun_turning)
 
@@ -54,9 +56,6 @@ function GunManager:init()
 
     GUN_BASE_X = SCREEN_WIDTH / 2
     GUN_BASE_Y = SCREEN_HEIGHT - (self.gunBaseSprite.width / 2)
-
-    -- HACK: this should not be refering to a direct image
-    local gunTopDefaultImage = gfx.image.new(gunTopDefaultImagePath)
 
     self.gunBaseSprite:moveTo(GUN_BASE_X, GUN_BASE_Y)
     self.gunBaseSprite:setZIndex(GUN_Z_INDEX)
@@ -95,33 +94,29 @@ function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
 end
 
 function GunManager:update()
-
-    --[[ if not IS_GAME_SETUP_DONE then
+    if IS_GUN_DISABLED or IS_GAME_OVER then
         return
-    end ]]
-
-    if IS_GAME_OVER then
+    end
+    
+    if not IS_GAME_SETUP_DONE then
         return
     end
 
     self:readRotationInput()
 
     -- TODO: revisit this. not sure if this is entirely correct according to specs
-    if IS_GAME_ACTIVE then
+    if WAS_GAME_ACTIVE_LAST_CHECK then
         local crankChange = pd.getCrankChange()
         -- should update this to use an angle accumulator for more accuracy
         CURRENT_CRANK_SHOOTING_TICKS = pd.getCrankTicks(crankShootingTicks)
 
         if crankChange > 0 and GUN_CURRENT_STATE ~= GUN_SHOOTING_STATE then
-            GUN_CURRENT_STATE = GUN_SHOOTING_STATE
-            NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, GUN_SHOOTING_STATE)
+            self:changeState(GUN_SHOOTING_STATE)
         elseif crankChange < 0 and GUN_CURRENT_STATE ~= GUN_VACUUM_STATE then
-            GUN_CURRENT_STATE = GUN_VACUUM_STATE
-            NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, GUN_VACUUM_STATE)
-        elseif crankChange == 0 and GUN_CURRENT_STATE ~= GUN_NEUTRAL_STATE then
-            GUN_CURRENT_STATE = GUN_NEUTRAL_STATE
-            NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, GUN_NEUTRAL_STATE)
+            self:changeState(GUN_VACUUM_STATE)
         end
+    elseif GUN_CURRENT_STATE ~= GUN_NEUTRAL_STATE then
+        self:changeState(GUN_NEUTRAL_STATE)
     end
 
     -- runtime rotation is very expensive
@@ -138,17 +133,22 @@ function GunManager:update()
     end
 end
 
+function GunManager:changeState(state)
+    GUN_CURRENT_STATE = state
+    NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, state)
+end
+
 function GunManager:readRotationInput()
     WAS_GUN_ROTATED = false
-    if pd.buttonIsPressed("RIGHT") then
-        if (GUN_CURRENT_ROTATION_ANGLE < gunMaxRotationAngle) then
+    if pd.buttonIsPressed(pd.kButtonRight) then
+        if (GUN_CURRENT_ROTATION_ANGLE < maxRotationAngle) then
             WAS_GUN_ROTATED = true
-            GUN_CURRENT_ROTATION_ANGLE += gunRotationSpeed
+            GUN_CURRENT_ROTATION_ANGLE += rotationSpeed
         end
-    elseif pd.buttonIsPressed("LEFT") then
-        if (GUN_CURRENT_ROTATION_ANGLE > -gunMaxRotationAngle) then
+    elseif pd.buttonIsPressed(pd.kButtonLeft) then
+        if (GUN_CURRENT_ROTATION_ANGLE > -maxRotationAngle) then
             WAS_GUN_ROTATED = true
-            GUN_CURRENT_ROTATION_ANGLE -= gunRotationSpeed
+            GUN_CURRENT_ROTATION_ANGLE -= rotationSpeed
         end
     end
 end
@@ -156,8 +156,6 @@ end
 function GunManager:setTopSprite(sprite)
     self:setImage(sprite)
 end
-
--- TODO: could consolidate methods like getHit for 'gun-element's in a base class
 
 function GunManager:getHit()
     if self.currentHP > 0 then

@@ -3,10 +3,13 @@ import "scripts/enemies/debris"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
+local utils <const> = UTILITIES
+
 class('DebrisManager').extends(gfx.sprite)
 
 local debrisConstants = DEBRIS_CONSTANTS
 local minDebris, maxDebris = debrisConstants.minDebris, debrisConstants.maxDebris
+local expirationDuration = debrisConstants.expirationDuration / 1000
 
 local gridSize = 64
 -- TODO: do this by getting the size of the image
@@ -46,16 +49,39 @@ local quadrants = {
 
 function DebrisManager:init(recyclerManager)
     DebrisManager.super.init(self)
+    ACTIVE_DEBRIS = {}
+    DEBRIS_NOT_RECYCLED_COUNT = 0
+
     self.recyclerManager = recyclerManager
     self:add()
 end
 
+function DebrisManager:update()
+    if not IS_GAME_STARTED then
+        return
+    end
+
+    if not IS_GAME_ACTIVE then
+        return
+    end
+
+    local debrisToExpire = utils.arrayRemove(ACTIVE_DEBRIS,
+    function(debris)
+        return debris.gameActiveElapsedSecondsAtCreation + expirationDuration < GAME_ACTIVE_ELAPSED_SECONDS 
+    end)
+    
+    for i = 1, #debrisToExpire do
+        debrisToExpire[i]:expire()
+    end
+end
+
 function DebrisManager:spawnDebris(spawnX, spawnY)
     local debrisSpawnCount = math.random(minDebris, maxDebris)
+    local gameActiveElapsedSeconds = GAME_ACTIVE_ELAPSED_SECONDS
 
     local debrisSpawnPositions = self:getDebrisSpawnPositions(spawnX, spawnY, debrisSpawnCount)
     for i = 1, debrisSpawnCount do
-        local debris = Debris(debrisSpawnPositions[i][1], debrisSpawnPositions[i][2], self)
+        local debris = Debris(debrisSpawnPositions[i][1], debrisSpawnPositions[i][2], self, gameActiveElapsedSeconds)
         table.insert(ACTIVE_DEBRIS, debris)
         DEBRIS_NOT_RECYCLED_COUNT += 1
     end

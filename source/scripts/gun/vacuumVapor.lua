@@ -4,12 +4,14 @@ local geo <const> = pd.geometry
 
 class("VacuumVapor").extends(AnimatedSprite)
 
-local vacuumVaporSpeed = 32
-local animationFPS = 20
-local vacuumVaporImagePath = "images/gun/vacuum-table-32-32"
-local vacuumVaporImageTable = gfx.imagetable.new(vacuumVaporImagePath)
+local gunVacuumConstants = GUN_VACUUM_CONSTANTS
+local vacuumVaporSpeed = gunVacuumConstants.vacuumVaporSpeed
+local animationFPS = gunVacuumConstants.vacuumVaporAnimationFPS
 
 local vacuumVaporPadding = 10
+
+local vacuumVaporImagePath = "images/gun/vacuum-table-32-32"
+local vacuumVaporImageTable = gfx.imagetable.new(vacuumVaporImagePath)
 
 function VacuumVapor:init(x, y, distanceFromGun)
     VacuumVapor.super.init(self, vacuumVaporImageTable)
@@ -19,7 +21,7 @@ function VacuumVapor:init(x, y, distanceFromGun)
     self:setVelocity(GUN_BASE_X, GUN_BASE_Y)
     -- TODO: Add random rotation to this based on rules
     self:addState("shrink", 1, 5, {tickStep = animationFPS})
-    self:setZIndex(-101)
+    self:setZIndex(BACKGROUND_Z_INDEX + 1)
     self:setCollideRect(0, 0, vaporSize, vaporSize)
     self:setGroups(VACUUM_GROUP)
     self:setCollidesWithGroups({ DEBRIS_GROUP })

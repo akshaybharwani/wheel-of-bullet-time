@@ -17,11 +17,10 @@ local bounceHeight = bulletDisplayConstants.bounceHeight
 
 local totalBulletDisplayWidth = 32 + (numberPadding * 2)
 
-local lastBulletCount = CURRENT_BULLET_COUNT
-
 function BulletDisplay:init()
 
     self.numbersImageTable = utils.numbersTimeImagetable
+    self.lastBulletCount = CURRENT_BULLET_COUNT
 
     self.bulletSprite = gfx.sprite.new(gfx.image.new(bulletImagePath))
 
@@ -69,7 +68,7 @@ function BulletDisplay:updateCount()
         self:updateNumber(self.thirdNumberSprite, thirdNumber)
     end
 
-    lastBulletCount = CURRENT_BULLET_COUNT
+    self.lastBulletCount = CURRENT_BULLET_COUNT
 end
 
 function BulletDisplay:updateNumber(numberSprite, number)
@@ -87,7 +86,7 @@ end
 
 function BulletDisplay:getBounceAnimator(x, y)
     local endPoint
-    if (lastBulletCount < CURRENT_BULLET_COUNT) then
+    if (self.lastBulletCount < CURRENT_BULLET_COUNT) then
         endPoint = geo.point.new(x, y - bounceHeight)
     else
         endPoint = geo.point.new(x, y + bounceHeight)

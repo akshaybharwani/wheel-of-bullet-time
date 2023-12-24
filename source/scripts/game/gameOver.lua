@@ -17,11 +17,13 @@ local currentScorePosY = 48
 local highScoreStartingPosY = 95
 local highScoreYPadding = 1
 
-function GameOver:init()
+function GameOver:init(gun)
     GameOver.super.init(self)
+    self.resultsAreShown = false
     self.gameOverSound = SfxPlayer(SFX_FILES.game_over)
+
+    self.gun = gun
     self:setImage(gfx.image.new(gameOverImagePath))
-    self:setupGameOverTimer()
     self:setupGameOverText()
 
     -- TODO: would need to move this to a more central place when complexity increases
@@ -33,22 +35,67 @@ function GameOver:init()
 end
 
 function GameOver:update()
-    if IS_GAME_SETUP_DONE then
-        if DEBRIS_NOT_RECYCLED_COUNT <= 0 and CURRENT_BULLET_COUNT <= 0 then
-            self.gameOverSound:play()
-            IS_GAME_OVER = true
-            self.gameOverTextSprite:setVisible(true)
-            self.gameOverTimer:start()
+    if not IS_GAME_STARTED then
+        return
+    end
+
+    if self.resultsAreShown then
+        if utils.checkActionButtonInput() then
+            self:restartGame()
+        end
+        return
+    end
+
+    if IS_GAME_OVER then
+        return
+    end
+
+    if IS_GUN_DISABLED then
+        if #ACTIVE_TARGETS <= 0 then
+            pd.timer.performAfterDelay(gameOverConstants.waitToShowResultsDuration, function ()
+                self:showResults()
+            end)
+            self:showGameOver()
+        end
+        return
+    end
+
+    print(#ACTIVE_BULLETS)
+    if (DEBRIS_NOT_RECYCLED_COUNT <= 0
+    and CURRENT_BULLET_COUNT <= 0
+    and #ACTIVE_BULLETS <= 0)
+    or not self.gun.available then
+        if #ACTIVE_TARGETS > 0 then
+            self:disableGun()
+        else
+            self:showGameOver()
         end
     end
 end
 
-function GameOver:setupGameOverTimer()
-    self.gameOverTimer = pd.timer.new(gameOverConstants.gameOverWaitDuration)
-    self.gameOverTimer:pause()
-    self.gameOverTimer.timerEndedCallback = function(timer)
-        self:showGameOverBanner()
+function GameOver:restartGame()
+    local allTimers = pd.timer.allTimers()
+    for i = 1, #allTimers do
+        allTimers[i]:remove()
     end
+    local allFrameTimers = pd.frameTimer.allTimers()
+    for i = 1, #allFrameTimers do
+        allFrameTimers[i]:remove()
+    end
+    gfx.sprite.removeAll()
+    GameSetup()
+end
+
+function GameOver:disableGun()
+    IS_GUN_DISABLED = true
+    NOTIFICATION_CENTER:notify(NOTIFY_GUN_IS_DISABLED)
+end
+
+function GameOver:showGameOver()
+    self.gameOverSound:play()
+    NOTIFICATION_CENTER:notify(NOTIFY_GAME_OVER)
+    IS_GAME_OVER = true
+    self.gameOverTextSprite:setVisible(true)
 end
 
 function GameOver:setupGameOverText()
@@ -66,8 +113,7 @@ function GameOver:setupGameOverText()
     self.gameOverTextSprite:setVisible(false)
 end
 
-
-function GameOver:showGameOverBanner()
+function GameOver:showResults()
     self:setVisible(true)
     local numberWidth = utils.numbersTimeFirstImage.width
     local numberHeight = utils.numbersTimeFirstImage.height
@@ -85,5 +131,10 @@ function GameOver:showGameOverBanner()
             utils.getFormattedTime(minutes, seconds, scorePosX + halfNumberWidth, scoreY, gameOverScoreZIndex, gameOverScoreNumberPadding)
             startingPosY += highScoreYPadding
         end
+    end
+
+    local showResultsTimer = pd.timer.new(gameOverConstants.showResultsDuration)
+    showResultsTimer.timerEndedCallback = function(timer)
+        self.resultsAreShown = true
     end
 end

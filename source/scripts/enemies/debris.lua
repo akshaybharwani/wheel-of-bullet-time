@@ -5,20 +5,22 @@ local debrisConstants = DEBRIS_CONSTANTS
 local startSpeed = debrisConstants.startSpeed
 local maxSpeed = debrisConstants.maxSpeed
 local acceleration = debrisConstants.acceleration
+local framesBeforeSpeedReset = debrisConstants.framesBeforeSpeedReset
 
 local debrisImagePath = "images/enemies/debris"
 local debrisSpawnImagePath = "images/enemies/debris_spawn-table-16-16"
 
 local rotationChance = 0.5
-local debrisDetectionPadding = 20
+local debrisDetectionPadding = 5
 
 class("Debris").extends(gfx.sprite)
 
-function Debris:init(x, y, debrisManager)
+function Debris:init(x, y, debrisManager, gameActiveElapsedSeconds)
     Debris.super.init(self)
 
     self.type = DEBRIS_TYPE_NAME
     self.debrisManager = debrisManager
+    self.gameActiveElapsedSecondsAtCreation = gameActiveElapsedSeconds
 
     self:setImage(gfx.image.new(debrisImagePath))
     self.shouldRotate = math.random() < rotationChance
@@ -36,11 +38,24 @@ function Debris:init(x, y, debrisManager)
     self:setupSpawnAnimation(x, y)
     self:add()
     self:setVisible(false)
+    self:setupSpeedResetTimer()
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_STATE_CHANGED, self, function(currentState)
-        if currentState ~= GUN_VACUUM_STATE and self.speed ~= startSpeed then
-            self.speed = startSpeed
+        if not self.isResettingSpeed
+        and self.speed ~= startSpeed 
+        and currentState ~= GUN_VACUUM_STATE then
+            self.isResettingSpeed = true
+            self.speedResetTimer:start()
         end
     end)
+end
+
+function Debris:setupSpeedResetTimer()
+    self.speedResetTimer = pd.frameTimer.new(framesBeforeSpeedReset, function ()
+        self.speed = startSpeed
+        self.isResettingSpeed = false
+    end)
+    self.speedResetTimer:pause()
+    self.speedResetTimer.discardOnCompletion = false
 end
 
 function Debris:moveTowardsGun()
@@ -49,11 +64,15 @@ function Debris:moveTowardsGun()
     end
 
     if self.y < GUN_BASE_Y and self.y > GUN_BASE_Y - debrisDetectionPadding then
+        -- TODO: this should be handled by Vacuum or DebrisManager?
         self.debrisManager:removeDebris(self)
         self:remove()
     else
         local nextX, nextY = self.x + self.dx, self.y + self.dy
         self:moveTo(nextX, nextY)
+        if self.isResettingSpeed then
+            self.speedResetTimer:reset()
+        end
         if self.speed < maxSpeed then
             self.speed += acceleration * DELTA_TIME
             self:setVelocity()
@@ -90,4 +109,11 @@ function Debris:setupSpawnAnimation(x, y)
     self.spawnSprite:moveTo(x, y)
     self.spawnSprite:playAnimation()
     self.spawning = true
+end
+
+function Debris:expire()
+    DEBRIS_NOT_RECYCLED_COUNT -= 1
+    self:clearCollideRect()
+    self:remove()
+    -- TODO: add expiring animation
 end

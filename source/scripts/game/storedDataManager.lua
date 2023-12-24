@@ -5,10 +5,9 @@ class('StoredDataManager').extends(gfx.sprite)
 
 local maxScores = HIGH_SCORE_CONSTANTS.maxScores
 
-local highScores = {}
-
 function StoredDataManager:init()
     StoredDataManager.super.init(self)
+    self.highScores = {}
     self:loadGameData()
     self:add()
 end
@@ -17,7 +16,7 @@ function StoredDataManager:loadGameData()
     local gameData = pd.datastore.read()
     if gameData then
         if gameData.highScores then
-            highScores = gameData.highScores
+            self.highScores = gameData.highScores
         end
     end
 end
@@ -26,23 +25,23 @@ end
 function StoredDataManager:saveGameData()
     local currentScore = GAME_ACTIVE_ELAPSED_SECONDS
     if currentScore == 0 then
-        return highScores
+        return self.highScores
     end
-    if #highScores > 0 then
-        for i = 1, #highScores do
-            if (currentScore > highScores[i]) then
-                table.insert(highScores, i, currentScore)
+    if #self.highScores > 0 then
+        for i = 1, #self.highScores do
+            if (currentScore > self.highScores[i]) then
+                table.insert(self.highScores, i, currentScore)
                 break
             end
         end
-        if #highScores > maxScores then
-            table.remove(highScores, #highScores)
+        if #self.highScores > maxScores then
+            table.remove(self.highScores, #self.highScores)
         end
     else
-        table.insert(highScores, currentScore)
+        table.insert(self.highScores, currentScore)
     end
     local gameData = {
-        highScores = highScores
+        highScores = self.highScores
     }
     pd.datastore.write(gameData)
     return gameData.highScores

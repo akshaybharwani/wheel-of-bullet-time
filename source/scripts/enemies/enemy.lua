@@ -16,8 +16,10 @@ local explosionAnimationFPS = enemyConstants.explosionAnimationFPS
 local minTotalPatrolDuration, maxTotalPatrolDuration = enemyConstants.minTotalPatrolDuration, enemyConstants.maxTotalPatrolDuration
 local minPatrolSegmentDuration, maxPatrolSegmentDuration = enemyConstants.minPatrolSegmentDuration, enemyConstants.minPatrolSegmentDuration
 
-function Enemy:init(enemyType, debrisManager)
+function Enemy:init(enemyType, debrisManager, isGunDisabled)
     Enemy.super.init(self)
+
+    self.isGunDisabled = isGunDisabled
 
     self.hitSound = SfxPlayer(SFX_FILES.enemy_hit)
     self.selfDestructSound = SfxPlayer(SFX_FILES.enemy_selfdestruct)
@@ -36,24 +38,34 @@ function Enemy:init(enemyType, debrisManager)
     self:setImage(self.enemyBaseImage)
 
     self:setupShieldCollider()
-
     self:setupHitAnimator()
-
     self:setStartingPosition()
     self:add()
-    self:setupPatroling()
+    
+    if self.isGunDisabled then
+        self:setFinalTarget()
+    else
+        self:setupPatroling()
+        NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+            self:endPatroling()
+            self.speed *= GAME_OVER_CONSTANTS.timeMultiplier
+            self.isGunDisabled = true
+        end)
+    end
 end
 
 function Enemy:update()
+    if IS_GAME_OVER then
+        return
+    end
+
     if self.exploding then
         return
     end
 
-    if not IS_GAME_ACTIVE then
-        return
+    if IS_GAME_ACTIVE or self.isGunDisabled then
+        self:move()
     end
-
-    self:move()
 end
 
 function Enemy:setupExplosionAnimation()
@@ -74,14 +86,22 @@ function Enemy:setupPatroling()
         self:setNewPatrolPoint()
     end, true)
     self.totalPatrolTimer = CrankTimer(math.random(minTotalPatrolDuration, maxTotalPatrolDuration), true, function()
-        if #ACTIVE_TARGETS > 0 then
-            self:setTarget()
-        else
-            self:setVelocity(self.x, 440)
-        end
-        self.segmentPatrolTimer:remove()
-        self.totalPatrolTimer:remove()
+        self:endPatroling()
     end)
+end
+
+function Enemy:endPatroling()
+    self:setFinalTarget()
+    self.segmentPatrolTimer:remove()
+    self.totalPatrolTimer:remove()
+end
+
+function Enemy:setFinalTarget()
+    if #ACTIVE_TARGETS > 0 then
+        self:setTarget()
+    else
+        self:setVelocity(self.x, 440)
+    end
 end
 
 function Enemy:setStartingPosition()
@@ -105,16 +125,12 @@ function Enemy:move()
     for i = 1, #collisions do
         local target = collisions[i].other
         if target.type == GUN_TYPE_NAME then
-            target:getHit()
+            target:getHit(target)
             self.selfDestructSound:play()
             self:explode(target)
             return
         end
     end
-
-    --[[ if self.y > MAX_SCREEN_HEIGHT then
-        self:remove()
-    end ]]
 end
 
 function Enemy:setNewPatrolPoint()
@@ -150,7 +166,8 @@ function Enemy:getHit()
 end
 
 function Enemy:shatter()
-    self:clearCollideRect()
+    -- TODO: this affects moveWithCollisions, which it shouldn't as it immediately gets removed
+    --self:clearCollideRect()
     self.debrisManager:spawnDebris(self.x, self.y)
     self:remove()
 end
@@ -161,6 +178,9 @@ function Enemy:explode(target)
 
     -- magic number 220, might want to revisit
     self.explosionSprite:moveTo(target.x, 220 - self.explosionSpriteHeight / 2)
+    if self.hitAnimator.timeLeft > 0 then
+        self.hitAnimator:remove()
+    end
     self.explosionSprite:playAnimation()
     self.exploding = true
 end

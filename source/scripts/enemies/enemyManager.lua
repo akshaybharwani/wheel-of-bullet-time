@@ -7,12 +7,9 @@ class('EnemyManager').extends(gfx.sprite)
 
 local enemyConstants = ENEMY_CONSTANTS
 
-local enemySpawnWaitDuration = enemyConstants.enemySpawnWaitDuration / 1000 -- here this is number of seconds instead of miliseconds elsewhere
+local enemySpawnWaitDuration = enemyConstants.enemySpawnWaitDuration
 local oneWaveDuration = enemyConstants.oneWaveDuration
 local maxEnemySpawnRate = enemyConstants.maxEnemySpawnRate
-
-local currentEnemySpawnRate = 1
-local currentWaveDuration = 0
 
 local explosionImagePath = "images/enemies/enemy_explosion-table-64-64"
 
@@ -47,33 +44,58 @@ local enemies = { enemyA, enemyB, enemyC }
 
 function EnemyManager:init(debrisManager)
     EnemyManager.super.init(self)
+    self.currentEnemySpawnRate = 1
+    self.currentWaveDuration = 0
+    self.isGunDisabled = false
+    self.enemies = {}
+    self.time = pd.getTime()
 
     self.debrisManager = debrisManager
-    self.enemySpawnTimer = CrankTimer(enemySpawnWaitDuration, true, function()
-        self:handleEnemyWave()
-        self:spawnEnemies()
+    self.gameActiveSpawnTimer = CrankTimer(enemySpawnWaitDuration / 1000, true, function()
+        self:handleEnemySpawning()
     end)
-    self:setupEnemySpawn()
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
+        self.gameActiveSpawnTimer:remove()
+        self.isGunDisabled = true
+        self.gunDisabledSpawnTimer = pd.timer.new(enemySpawnWaitDuration / GAME_OVER_CONSTANTS.timeMultiplier)
+        self.gunDisabledSpawnTimer.repeats = true
+        self.gunDisabledSpawnTimer.timerEndedCallback = function(timer)
+            self:handleEnemySpawning()
+        end
+    end)
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GAME_OVER, self, function()
+        self.gunDisabledSpawnTimer:remove()
+        --self:destroyAllEnemies()
+    end)
+    self:spawnEnemies()
     self:add()
 end
 
+function EnemyManager:handleEnemySpawning()
+    self:handleEnemyWave()
+    self:spawnEnemies()
+end
+
 function EnemyManager:spawnEnemies()
-    for i = 1, currentEnemySpawnRate do
+    for i = 1, self.currentEnemySpawnRate do
         local enemyToSpawn = enemies[math.random(1, #enemies)]
-        Enemy(enemyToSpawn, self.debrisManager)
+        local enemy = Enemy(enemyToSpawn, self.debrisManager, self.isGunDisabled)
+        table.insert(self.enemies, enemy)
     end
 end
 
 function EnemyManager:handleEnemyWave()
-    if (maxEnemySpawnRate > currentEnemySpawnRate) then
-        currentWaveDuration += enemySpawnWaitDuration
-        if (currentWaveDuration >= oneWaveDuration) then
-            currentEnemySpawnRate += 1
-            currentWaveDuration = 0
+    if (maxEnemySpawnRate > self.currentEnemySpawnRate) then
+        self.currentWaveDuration += enemySpawnWaitDuration
+        if (self.currentWaveDuration >= oneWaveDuration) then
+            self.currentEnemySpawnRate += 1
+            self.currentWaveDuration = 0
         end
     end
 end
 
-function EnemyManager:setupEnemySpawn()
-    self:spawnEnemies()
+function EnemyManager:destroyAllEnemies()
+    for i = 1, #self.enemies do
+        self.enemies[i]:remove()
+    end
 end

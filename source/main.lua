@@ -7,6 +7,8 @@ import "CoreLibs/ui"
 import "CoreLibs/frameTimer"
 import "CoreLibs/crank"
 import "CoreLibs/animator"
+-- for debugging, should be removed for production
+import "CoreLibs/utilities/where"
 
 -- libraries
 import "scripts/libraries/AnimatedSprite"
@@ -14,6 +16,7 @@ import "scripts/libraries/Signal"
 
 -- game
 import "scripts/globals"
+import "scripts/game/notificationCenter"
 import "scripts/game/utilities"
 import "scripts/game/crankTimer"
 import "scripts/game/crankInput"
@@ -22,31 +25,17 @@ import "scripts/audio/sfxPlayer"
 import "scripts/background/background"
 import "scripts/enemies/enemyManager"
 import "scripts/gun/gunManager"
-import "scripts/game/gameSetup"
 import "scripts/game/timeDisplay"
 import "scripts/game/gameOver"
+import "scripts/game/gameSetup"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
 -- constants
 
-NOTIFICATION_CENTER = Signal()
-
-NOTIFY_INITIAL_DEBRIS_COLLECTED = "initialDebrisCollected"
-NOTIFY_BULLET_COUNT_UPDATED = "bulletCountUpdate"
-NOTIFY_GUN_WAS_HIT = "gunWasHit"
-NOTIFY_GUN_STATE_CHANGED = "gunStateChanged"
-
 -- TODO: assuming FPS is constant 30, majorly used by AnimatedSprite
 CONSTANT_FPS = 30
-
-DELTA_TIME = 0
--- if crank was moved this frame based on crankCheckWaitDuration, this is true
-IS_GAME_ACTIVE = false
--- as the crankCheckWaitDuration is non-zero, the animation relying on IS_GAME_ACTIVE will
--- continously won't work properly, this can be used to help with that
-WAS_GAME_ACTIVE_LAST_CHECK = false
 
 SCREEN_WIDTH = pd.display.getWidth()
 HALF_SCREEN_WIDTH = SCREEN_WIDTH / 2
@@ -71,41 +60,14 @@ GUN_Z_INDEX = 100
 UI_Z_INDEX = 200
 BANNER_Z_INDEX = 300
 
-GAME_ACTIVE_ELAPSED_SECONDS = 0
-
-local titleConstants = TITLE_CONSTANTS
-local titleDuration = titleConstants.titleDuration
-
-IS_GAME_SETUP_DONE = false
-IS_GAME_OVER = false
-
-local function setupGame()
-    math.randomseed(pd.getSecondsSinceEpoch())
-    pd.resetElapsedTime()
-
-    CrankInput()
-    local gunManager = GunManager()
-    -- ? is assigning a manager to initialization of another manager a good idea?
-    local recyclerManager = RecyclerManager(gunManager)
-    local debrisManager = DebrisManager(recyclerManager)
-    TimeDisplay()
-    GameSetup(titleDuration, debrisManager)
-    Background(titleDuration)
-    GameOver()
-    NOTIFICATION_CENTER:subscribe(NOTIFY_INITIAL_DEBRIS_COLLECTED, self, function()
-        EnemyManager(debrisManager)
-        print("intial Debris collected")
-        IS_GAME_SETUP_DONE = true
-    end)
-end
-
-setupGame()
+GameSetup()
 
 function pd.update()
     DELTA_TIME = pd.getElapsedTime()
     pd.resetElapsedTime()
 
     pd.timer.updateTimers()
+    pd.frameTimer.updateTimers()
     gfx.sprite.update()
     -- This needs to be called after the sprites are updated
     --[[ if pd.isCrankDocked() then

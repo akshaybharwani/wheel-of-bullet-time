@@ -3,6 +3,42 @@ local gfx <const> = pd.graphics
 
 UTILITIES = {}
 
+-- table functions
+
+function UTILITIES.checkActionButtonInput()
+    if pd.buttonIsPressed(pd.kButtonA) or
+       pd.buttonIsPressed(pd.kButtonB) then
+        return true
+    end
+end
+
+function UTILITIES.arrayRemove(array, checkFunction)
+    local n = #array
+    local removedElements = {}
+
+    for i = 1, n do
+        local element = array[i]
+        if checkFunction(element) then
+            table.insert(removedElements, element)
+            array[i] = nil
+        end
+    end
+
+    local j = 0
+    for i = 1, n do
+        if array[i] ~= nil then
+            j = j + 1
+            array[j] = array[i]
+        end
+    end
+
+    for i = j + 1, n do
+        array[i] = nil
+    end
+
+    return removedElements
+end
+
 -- time functions
 
 local numbersTimeImagePath = "images/ui/UI_numbers_and_time-table-8-16"

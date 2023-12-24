@@ -3,26 +3,25 @@ local gfx <const> = pd.graphics
 
 class('CrankInput').extends(gfx.sprite)
 
+GAME_ACTIVE_ELAPSED_SECONDS = 0
+
 local coreGameConstants = CORE_GAME_CONSTANTS
 local crankCheckWaitDuration = coreGameConstants.crankCheckWaitDuration
 
-local lastCrankPosition = nil
-
 function CrankInput:init()
+    GAME_ACTIVE_ELAPSED_SECONDS = 0
+    self.lastCrankPosition = nil
     self:setupCrankCheckTimer()
-    self:add()
-end
-
-function CrankInput:update()
-    if IS_GAME_OVER then
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
         self.crankInputTimer:remove()
-    end
+    end)
+    self:add()
 end
 
 function CrankInput:checkCrankInput()
     local currentCrankPosition = pd.getCrankPosition()
-    if lastCrankPosition ~= currentCrankPosition then
-        if IS_GAME_SETUP_DONE then
+    if self.lastCrankPosition ~= currentCrankPosition then
+        if IS_GAME_STARTED then
             GAME_ACTIVE_ELAPSED_SECONDS += DELTA_TIME
         end
         IS_GAME_ACTIVE = true
@@ -30,7 +29,7 @@ function CrankInput:checkCrankInput()
     elseif WAS_GAME_ACTIVE_LAST_CHECK then
         WAS_GAME_ACTIVE_LAST_CHECK = false
     end
-    lastCrankPosition = currentCrankPosition
+    self.lastCrankPosition = currentCrankPosition
 end
 
 function CrankInput:setupCrankCheckTimer()
