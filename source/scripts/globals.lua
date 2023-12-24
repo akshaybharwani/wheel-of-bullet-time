@@ -28,7 +28,7 @@ DEBRIS_CONSTANTS.spawnAnimationFPS = 1.2
 DEBRIS_CONSTANTS.startSpeed = 1
 DEBRIS_CONSTANTS.maxSpeed = 8
 DEBRIS_CONSTANTS.acceleration = 0.5
-DEBRIS_CONSTANTS.minDebris, DEBRIS_CONSTANTS.maxDebris = 5, 8
+DEBRIS_CONSTANTS.minDebris, DEBRIS_CONSTANTS.maxDebris = 4, 6
 DEBRIS_CONSTANTS.expirationDuration = 4000
 DEBRIS_CONSTANTS.framesBeforeSpeedReset = 5
 
