@@ -14,7 +14,7 @@ local maxEnemySpawnRate = enemyConstants.maxEnemySpawnRate
 local explosionImagePath = "images/enemies/enemy_explosion-table-64-64"
 
 local enemyA = {
-    hp = 1,
+    hp = 2,
     attackColliderSize = 22,
     shieldColliderSize = 26,
     baseImagePath = "images/enemies/enemy_a",
@@ -23,7 +23,7 @@ local enemyA = {
 }
 
 local enemyB = {
-    hp = 3,
+    hp = 6,
     attackColliderSize = 26,
     shieldColliderSize = 30,
     baseImagePath = "images/enemies/enemy_b",
@@ -32,7 +32,7 @@ local enemyB = {
 }
 
 local enemyC = {
-    hp = 5,
+    hp = 10,
     attackColliderSize = 40,
     shieldColliderSize = 46,
     baseImagePath = "images/enemies/enemy_c",
