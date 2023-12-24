@@ -14,33 +14,33 @@ CORE_GAME_CONSTANTS.crankCheckWaitDuration = 100
 
 -- title
 TITLE_CONSTANTS = {}
-TITLE_CONSTANTS.titleDuration = 2000
+TITLE_CONSTANTS.titleDuration = 1000
 
 -- opening animation
 OPENING_ANIMATION_CONSTANTS = {}
 OPENING_ANIMATION_CONSTANTS.waitDurationToSpawnRecyclers = 1000
-OPENING_ANIMATION_CONSTANTS.waitDurationToSpawnDebris = 1000
+OPENING_ANIMATION_CONSTANTS.waitDurationToSpawnDebris = 600
 OPENING_ANIMATION_CONSTANTS.debrisGroupAtStartCount = 4
 
 -- debris
 DEBRIS_CONSTANTS = {}
 DEBRIS_CONSTANTS.spawnAnimationFPS = 1.2
 DEBRIS_CONSTANTS.startSpeed = 1
-DEBRIS_CONSTANTS.maxSpeed = 6
+DEBRIS_CONSTANTS.maxSpeed = 8
 DEBRIS_CONSTANTS.acceleration = 0.5
-DEBRIS_CONSTANTS.minDebris, DEBRIS_CONSTANTS.maxDebris = 3, 8
-DEBRIS_CONSTANTS.expirationDuration = 3000
+DEBRIS_CONSTANTS.minDebris, DEBRIS_CONSTANTS.maxDebris = 5, 8
+DEBRIS_CONSTANTS.expirationDuration = 4000
 DEBRIS_CONSTANTS.framesBeforeSpeedReset = 5
 
 -- recycler
 RECYCLER_CONSTANTS = {}
-RECYCLER_CONSTANTS.ammoGenerationDuration = 500
-RECYCLER_CONSTANTS.debrisTravelDuration = 1000
+RECYCLER_CONSTANTS.ammoGenerationDuration = 250
+RECYCLER_CONSTANTS.debrisTravelDuration = 350
 RECYCLER_CONSTANTS.maxHP = 4
 -- connector are the pipes going from recyclers to the gun
-RECYCLER_CONSTANTS.connectorAnimationDuration = 500
+RECYCLER_CONSTANTS.connectorAnimationDuration = 300
 RECYCLER_CONSTANTS.maxRecyclerCount = 5
-RECYCLER_CONSTANTS.debrisHoldDuration = 300
+RECYCLER_CONSTANTS.debrisHoldDuration = 350
 
 -- gun
 GUN_CONSTANTS = {}
@@ -79,21 +79,21 @@ BULLET_DISPLAY_CONSTANTS.bounceHeight = 3
 
 -- game over
 GAME_OVER_CONSTANTS = {}
-GAME_OVER_CONSTANTS.waitToShowResultsDuration = 5000
-GAME_OVER_CONSTANTS.showResultsDuration = 5000
-GAME_OVER_CONSTANTS.timeMultiplier = 5
+GAME_OVER_CONSTANTS.waitToShowResultsDuration = 2000
+GAME_OVER_CONSTANTS.showResultsDuration = 3000
+GAME_OVER_CONSTANTS.timeMultiplier = 8
 
 -- enemy general settings
 ENEMY_CONSTANTS = {}
-ENEMY_CONSTANTS.minSpeed, ENEMY_CONSTANTS.maxSpeed = 5, 10
+ENEMY_CONSTANTS.minSpeed, ENEMY_CONSTANTS.maxSpeed = 1, 6
 ENEMY_CONSTANTS.hitAnimationDuration = 100
 ENEMY_CONSTANTS.explosionAnimationLoopCount = 3
-ENEMY_CONSTANTS.explosionAnimationFPS = 5
-ENEMY_CONSTANTS.minTotalPatrolDuration, ENEMY_CONSTANTS.maxTotalPatrolDuration = 2, 5
+ENEMY_CONSTANTS.explosionAnimationFPS = 6
+ENEMY_CONSTANTS.minTotalPatrolDuration, ENEMY_CONSTANTS.maxTotalPatrolDuration = 4, 6
 ENEMY_CONSTANTS.minPatrolSegmentDuration, ENEMY_CONSTANTS.maxPatrolSegmentDuration = 1, 2
 
-ENEMY_CONSTANTS.enemySpawnWaitDuration = 5000
-ENEMY_CONSTANTS.oneWaveDuration = 30000
+ENEMY_CONSTANTS.enemySpawnWaitDuration = 18000
+ENEMY_CONSTANTS.oneWaveDuration = 19000
 -- number of enemies spawn after every enemySpawnWaitDuration
 ENEMY_CONSTANTS.maxEnemySpawnRate = 6
 
@@ -111,6 +111,6 @@ BACKGROUND_CONSTANTS.cloudSeperationDistance = 3
 BACKGROUND_CONSTANTS.cloudSpeed = 40
 -- includes the cloud outside the max screen width
 BACKGROUND_CONSTANTS.cloudsAtStartCount = 7
-BACKGROUND_CONSTANTS.satelliteSpeed = 15
+BACKGROUND_CONSTANTS.satelliteSpeed = 6
 BACKGROUND_CONSTANTS.satelliteFPS = 3
 BACKGROUND_CONSTANTS.satelliteMinRespawnDuration, BACKGROUND_CONSTANTS.satelliteMaxRespawnDuration = 3, 6
