@@ -60,7 +60,6 @@ function GameOver:update()
         return
     end
 
-    print(#ACTIVE_BULLETS)
     if (DEBRIS_NOT_RECYCLED_COUNT <= 0
     and CURRENT_BULLET_COUNT <= 0
     and #ACTIVE_BULLETS <= 0)
