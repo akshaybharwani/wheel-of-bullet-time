@@ -20,9 +20,12 @@ function Shooter:init(gun)
     Shooter.super.init(self, imagetable)
     CURRENT_BULLET_COUNT = 0
     ACTIVE_BULLETS = {}
+    self.notifyBulletCountUpdated = NOTIFY_BULLET_COUNT_UPDATED
+    self.gunShootingState = GUN_SHOOTING_STATE
     self.currentFiringCooldown = maxFiringCooldown
 
     self.isGunDisabled = false
+    self.gunActivatedSound = SfxPlayer(SFX_FILES.gun_activated)
     self.bulletSound = SfxPlayer(SFX_FILES.gun_bullet)
 
     self.imagetable = imagetable
@@ -60,6 +63,7 @@ function Shooter:shootBullet(startX, startY, angle)
 end
 
 function Shooter:update()
+    -- TODO: too many variants of gunDisabled variables, consolidate
     if self.isGunDisabled then
         return
     end
@@ -68,34 +72,44 @@ function Shooter:update()
         return
     end
 
-    if WAS_GAME_ACTIVE_LAST_CHECK then
-        self:updateGunTopSprite()
-    end
-
     self:setFiringCooldown()
 
-    self:checkForShootingBullet()
+    if not WAS_GAME_ACTIVE_LAST_CHECK then
+        return
+    end
+
+    local isCurrentStateShooting = GUN_CURRENT_STATE == self.gunShootingState
+
+    self:updateGunTopSprite(isCurrentStateShooting)
+
+    if isCurrentStateShooting then
+        self:checkForShootingBullet()
+    end
 end
 
 function Shooter:checkForShootingBullet()
-    if WAS_GAME_ACTIVE_LAST_CHECK and (GUN_CURRENT_STATE == GUN_SHOOTING_STATE) then
-        if (CURRENT_CRANK_SHOOTING_TICKS == 1) then
-            if (self.currentFiringCooldown == 0 and CURRENT_BULLET_COUNT > 0) then
-                self:shootBullet(GUN_BASE_X, GUN_BASE_Y, GUN_CURRENT_ROTATION_ANGLE)
-                CURRENT_BULLET_COUNT -= 1
-                NOTIFICATION_CENTER:notify(NOTIFY_BULLET_COUNT_UPDATED)
-                self.currentFiringCooldown = maxFiringCooldown
-            end
+    if CURRENT_CRANK_SHOOTING_TICKS == 1 then
+        if (self.currentFiringCooldown == 0 and CURRENT_BULLET_COUNT > 0) then
+            self:shootBullet(self.gun.x, self.gun.y, GUN_CURRENT_ROTATION_ANGLE)
+            CURRENT_BULLET_COUNT -= 1
+            NOTIFICATION_CENTER:notify(self.notifyBulletCountUpdated)
+            self.currentFiringCooldown = maxFiringCooldown
         end
     end
 end
 
-function Shooter:updateGunTopSprite()
-    if GUN_CURRENT_STATE == GUN_SHOOTING_STATE then
+function Shooter:updateGunTopSprite(isCurrentStateShooting)
+    if isCurrentStateShooting then
         self:updateAnimation()
+        if not self.gunActivatedSound:isPlaying() then
+            self.gunActivatedSound:playLooping()
+        end
         -- TODO: this seems resource intensive?
         self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
     else
+        if self.gunActivatedSound:isPlaying() then
+            self.gunActivatedSound:stop()
+        end
         self:setVisible(false)
     end
 end

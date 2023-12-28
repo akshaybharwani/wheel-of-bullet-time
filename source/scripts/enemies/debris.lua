@@ -112,6 +112,7 @@ function Debris:setupSpawnAnimation(x, y)
 end
 
 function Debris:expire()
+    -- TODO: debris should not expire when they are getting vacuumed
     DEBRIS_NOT_RECYCLED_COUNT -= 1
     self:clearCollideRect()
     self:remove()
