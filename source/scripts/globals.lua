@@ -48,6 +48,9 @@ GUN_CONSTANTS.maxHP = 4
 GUN_CONSTANTS.animationFPS = 2
 GUN_CONSTANTS.maxRotationAngle = 85
 GUN_CONSTANTS.rotationSpeed = 3
+GUN_CONSTANTS.colliderSizeX = 40
+GUN_CONSTANTS.colliderSizeY = 44
+GUN_CONSTANTS.colliderPosition = 12
 
 -- gun shooter
 GUN_SHOOTER_CONSTANTS = {}
