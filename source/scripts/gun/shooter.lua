@@ -64,6 +64,7 @@ function Shooter:update()
 
     if GUN_CURRENT_STATE == self.gunShootingState then
         self:updateGunTopSprite()
+        self:playSound()
         self:checkForShootingBullet()
     end
 end
@@ -74,13 +75,12 @@ function Shooter:subscribeEvents()
         self:updateGunTopSprite()
     end)
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
+        self:stopSound()
         self.isGunDisabled = true
     end)
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_STATE_CHANGED, self, function(currentState)
         if currentState ~= self.gunShootingState then
-            if self.gunActivatedSound:isPlaying() then
-                self.gunActivatedSound:stop()
-            end
+            self:stopSound()
             self:setVisible(false)
         end
     end)
@@ -109,11 +109,20 @@ end
 
 function Shooter:updateGunTopSprite()
     self:updateAnimation()
+    -- TODO: this seems resource intensive?
+    self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
+end
+
+function Shooter:playSound()
     if not self.gunActivatedSound:isPlaying() then
         self.gunActivatedSound:playLooping()
     end
-    -- TODO: this seems resource intensive?
-    self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
+end
+
+function Shooter:stopSound()
+    if self.gunActivatedSound:isPlaying() then
+        self.gunActivatedSound:stop()
+    end
 end
 
 function Shooter:removeBullet(bullet)

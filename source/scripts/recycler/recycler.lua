@@ -20,8 +20,10 @@ local ammoGenerationDuration = recyclerConstants.ammoGenerationDuration
 
 function Recycler:init(x, y, connectorY, isLeftToGun)
     Recycler.super.init(self)
+    self.notifyBulletCountUpdated = NOTIFY_BULLET_COUNT_UPDATED
 
     self.deathSound = SfxPlayer(SFX_FILES.recycler_lost)
+    self.workingSound = SfxPlayer(SFX_FILES.recyclers_working)
 
     self.type = GUN_TYPE_NAME
     self.available = true
@@ -45,6 +47,39 @@ function Recycler:init(x, y, connectorY, isLeftToGun)
     self:setZIndex(GUN_Z_INDEX)
 
     self.connector = RecyclerConnector(self, connectorY)
+end
+
+function Recycler:update()
+    if self.debrisToRecyclerAnimator ~= nil then
+        if not self.debrisToRecyclerAnimator:ended() then
+            local p = self.debrisToRecyclerAnimator:currentValue()
+            local x1, y1 = p:unpack()
+            self.collectedDebrisSprite:moveTo(x1, y1 - self.collectedDebrisSprite:getSize())
+        else
+            self.debrisToRecyclerAnimator = nil
+            self.recyclingSprite:add()
+            self.collectedDebrisSprite:remove()
+            self.workingSound:play()
+            local ammoTimer = pd.timer.new(ammoGenerationDuration)
+            ammoTimer.timerEndedCallback = function(timer)
+                self:sendAmmoToGun()
+            end
+        end
+    elseif self.ammoToGunAnimator ~= nil then
+        if not self.ammoToGunAnimator:ended() then
+            local p = self.ammoToGunAnimator:currentValue()
+            local x1, y1 = p:unpack()
+            self.generatedAmmoSprite:moveTo(x1, y1 - self.generatedAmmoSprite:getSize())
+        else
+            self.ammoToGunAnimator = nil
+            self.generatedAmmoSprite:remove()
+            -- TODO: these values could be updated in a better central place?
+            CURRENT_BULLET_COUNT += 1
+            DEBRIS_NOT_RECYCLED_COUNT -= 1
+            NOTIFICATION_CENTER:notify(self.notifyBulletCountUpdated)
+            self.available = true
+        end
+    end
 end
 
 function Recycler:addSprite()
@@ -152,36 +187,4 @@ function Recycler:sendAmmoToGun()
     end
     self.recyclingSprite:remove()
     self.generatedAmmoSprite:add()
-end
-
-function Recycler:update()
-    if self.debrisToRecyclerAnimator ~= nil then
-        if self.debrisToRecyclerAnimator:ended() ~= true then
-            local p = self.debrisToRecyclerAnimator:currentValue()
-            local x1, y1 = p:unpack()
-            self.collectedDebrisSprite:moveTo(x1, y1 - self.collectedDebrisSprite:getSize())
-        else
-            self.debrisToRecyclerAnimator = nil
-            self.recyclingSprite:add()
-            self.collectedDebrisSprite:remove()
-            local ammoTimer = pd.timer.new(ammoGenerationDuration)
-            ammoTimer.timerEndedCallback = function(timer)
-                self:sendAmmoToGun()
-            end
-        end
-    elseif self.ammoToGunAnimator ~= nil then
-        if self.ammoToGunAnimator:ended() ~= true then
-            local p = self.ammoToGunAnimator:currentValue()
-            local x1, y1 = p:unpack()
-            self.generatedAmmoSprite:moveTo(x1, y1 - self.generatedAmmoSprite:getSize())
-        else
-            self.ammoToGunAnimator = nil
-            self.generatedAmmoSprite:remove()
-            -- TODO: these values could be updated in a better central place?
-            CURRENT_BULLET_COUNT += 1
-            DEBRIS_NOT_RECYCLED_COUNT -= 1
-            NOTIFICATION_CENTER:notify(NOTIFY_BULLET_COUNT_UPDATED)
-            self.available = true
-        end
-    end
 end

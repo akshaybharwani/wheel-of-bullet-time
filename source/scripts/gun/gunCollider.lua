@@ -11,6 +11,8 @@ local colliderPosition = gunConstants.colliderPosition
 
 function GunCollider:init(gun)
     GunCollider.super.init(self)
+
+    self.gunDangerSound = SfxPlayer(SFX_FILES.danger)
     self.gun = gun
     self.type = GUN_TYPE_NAME
     self:setBounds(GUN_BASE_X - colliderPosition, GUN_BASE_Y - colliderPosition,
@@ -20,7 +22,7 @@ function GunCollider:init(gun)
     self:setCollidesWithGroups({ ENEMY_GROUP })
     self:moveTo(GUN_BASE_X, GUN_BASE_Y)
     self:add()
-    table.insert(ACTIVE_TARGETS, self.colliderSprite)
+    table.insert(ACTIVE_TARGETS, self)
 end
 
 function GunCollider:getHit()
@@ -36,6 +38,13 @@ function GunCollider:getHit()
                 table.remove(ACTIVE_TARGETS, i)
                 break
             end
+        end
+        if self.gunDangerSound:isPlaying() then
+            self.gunDangerSound:stop()
+        end
+    elseif self.gun.currentHP == 1 then
+        if not self.gunDangerSound:isPlaying() then
+            self.gunDangerSound:playLooping()
         end
     end
 end
