@@ -43,23 +43,7 @@ function Shooter:init(gun)
     self:playAnimation()
     self:setVisible(false)
 
-    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_WAS_HIT, self, function()
-        self:changeState(tostring(self.gun.currentHP))
-        self:updateGunTopSprite()
-    end)
-    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
-        self.isGunDisabled = true
-    end)
-end
-
-function Shooter:setFiringCooldown()
-    self.currentFiringCooldown = math.max(0, self.currentFiringCooldown - DELTA_TIME)
-end
-
-function Shooter:shootBullet(startX, startY, angle)
-    local bullet = Bullet(self, startX, startY, angle)
-    table.insert(ACTIVE_BULLETS, bullet)
-    self.bulletSound:play()
+    self:subscribeEvents()
 end
 
 function Shooter:update()
@@ -78,13 +62,38 @@ function Shooter:update()
         return
     end
 
-    local isCurrentStateShooting = GUN_CURRENT_STATE == self.gunShootingState
-
-    self:updateGunTopSprite(isCurrentStateShooting)
-
-    if isCurrentStateShooting then
+    if GUN_CURRENT_STATE == self.gunShootingState then
+        self:updateGunTopSprite()
         self:checkForShootingBullet()
     end
+end
+
+function Shooter:subscribeEvents()
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_WAS_HIT, self, function()
+        self:changeState(tostring(self.gun.currentHP))
+        self:updateGunTopSprite()
+    end)
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
+        self.isGunDisabled = true
+    end)
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_STATE_CHANGED, self, function(currentState)
+        if currentState ~= self.gunShootingState then
+            if self.gunActivatedSound:isPlaying() then
+                self.gunActivatedSound:stop()
+            end
+            self:setVisible(false)
+        end
+    end)
+end
+
+function Shooter:setFiringCooldown()
+    self.currentFiringCooldown = math.max(0, self.currentFiringCooldown - DELTA_TIME)
+end
+
+function Shooter:shootBullet(startX, startY, angle)
+    local bullet = Bullet(self, startX, startY, angle)
+    table.insert(ACTIVE_BULLETS, bullet)
+    self.bulletSound:play()
 end
 
 function Shooter:checkForShootingBullet()
@@ -98,20 +107,13 @@ function Shooter:checkForShootingBullet()
     end
 end
 
-function Shooter:updateGunTopSprite(isCurrentStateShooting)
-    if isCurrentStateShooting then
-        self:updateAnimation()
-        if not self.gunActivatedSound:isPlaying() then
-            self.gunActivatedSound:playLooping()
-        end
-        -- TODO: this seems resource intensive?
-        self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
-    else
-        if self.gunActivatedSound:isPlaying() then
-            self.gunActivatedSound:stop()
-        end
-        self:setVisible(false)
+function Shooter:updateGunTopSprite()
+    self:updateAnimation()
+    if not self.gunActivatedSound:isPlaying() then
+        self.gunActivatedSound:playLooping()
     end
+    -- TODO: this seems resource intensive?
+    self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
 end
 
 function Shooter:removeBullet(bullet)

@@ -9,10 +9,10 @@ class("Vacuum").extends(AnimatedSprite)
 
 TOP_VACUUM_VAPOR_POSITION = nil
 
-local vacuumLine = nil
-local vacuumVapors = nil
-
 local gunVacuumConstants = GUN_VACUUM_CONSTANTS
+local vacuumLength = gunVacuumConstants.vacuumLength
+local vacuumVaporDistance = gunVacuumConstants.vacuumVaporDistance
+local vacuumVaporCount = gunVacuumConstants.vacuumVaporCount
 local gunConstants = GUN_CONSTANTS
 local maxHP = gunConstants.maxHP
 
@@ -22,8 +22,13 @@ local imagetable = gfx.imagetable.new(imagetablePath)
 function Vacuum:init(gun)
     Vacuum.super.init(self, imagetable)
     TOP_VACUUM_VAPOR_POSITION = nil
+    self.gunVacuumState = GUN_VACUUM_STATE
 
     self.isGunDisabled = false
+    self.isVacuumingDebris = false
+    self.vacuumEmptySound = SfxPlayer(SFX_FILES.gun_vacuum_empty)
+    self.vacuumDebrisSound = SfxPlayer(SFX_FILES.gun_vacuum_debris)
+
     self.imagetable = imagetable
     self.gun = gun
 
@@ -42,50 +47,7 @@ function Vacuum:init(gun)
     self:setupVacuumVapor()
     self:setVacuumLine()
 
-    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_WAS_HIT, self, function()
-        self:changeState(tostring(self.gun.currentHP))
-        self:updateGunTopSprite()
-    end)
-    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
-        self.isGunDisabled = true
-    end)
-end
-
-function Vacuum:setupVacuumVapor()
-    self.vacuumVapors = {}
-    for i = 1, gunVacuumConstants.vacuumVaporCount, 1 do
-        local distanceFromGun = i * gunVacuumConstants.vacuumVaporDistance
-        table.insert(self.vacuumVapors, VacuumVapor(GUN_BASE_X, GUN_BASE_Y - distanceFromGun, distanceFromGun))
-    end
-    vacuumVapors = self.vacuumVapors
-    TOP_VACUUM_VAPOR_POSITION = { x = vacuumVapors[#vacuumVapors].x, y = vacuumVapors[#vacuumVapors].y }
-end
-
-function Vacuum:checkForCollisions()
-    for i = 1, #self.vacuumVapors do
-        local vacuumVapor = self.vacuumVapors[i]
-        if vacuumVapor ~= nil then
-            local collisions = vacuumVapor:overlappingSprites()
-            for i = 1, #collisions do
-                local other = collisions[i]
-                if other.type == DEBRIS_TYPE_NAME then
-                    other:moveTowardsGun()
-                end
-            end
-        end
-    end
-end
-
-function Vacuum:setVacuumLine()
-    -- refer Examples/Single File Examples/crank.lua
-    local angleRad = math.rad(GUN_CURRENT_ROTATION_ANGLE)
-    local x2 = gunVacuumConstants.vacuumLength * math.sin(angleRad)
-    local y2 = -1 * gunVacuumConstants.vacuumLength * math.cos(angleRad)
-
-    x2 += GUN_BASE_X
-    y2 += GUN_BASE_Y
-
-    vacuumLine = pd.geometry.lineSegment.new(GUN_BASE_X, GUN_BASE_Y, x2, y2)
+    self:subscribeEvents()
 end
 
 function Vacuum:update()
@@ -97,47 +59,121 @@ function Vacuum:update()
         return
     end
 
-    -- TODO: double checks for this and shooter. consolidate
-    if WAS_GAME_ACTIVE_LAST_CHECK then
-        self:updateGunTopSprite()
+    if WAS_GUN_ROTATED then
+        self:updateVacuumVapors()
     end
 
-    if not self.gun.available then
+    if not WAS_GAME_ACTIVE_LAST_CHECK then
+        return
+    end
+
+    if GUN_CURRENT_STATE == self.gunVacuumState then
+        self:checkForCollisions()
+        self:updateGunTopSprite()
+    end
+end
+
+function Vacuum:subscribeEvents()
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_WAS_HIT, self, function()
+        self:changeState(tostring(self.gun.currentHP))
+        self:updateGunTopSprite()
+    end)
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
+        self.isGunDisabled = true
         if #self.vacuumVapors > 0 then
             for i = 1, #self.vacuumVapors do
                 self.vacuumVapors[i]:remove()
             end
         end
-        return
-    end
-
-    if WAS_GAME_ACTIVE_LAST_CHECK and (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
-        self:checkForCollisions()
-    end
-
-    if WAS_GUN_ROTATED then
-        self:setVacuumLine()
-        -- this is so that vacuumVapors only update positions after creation of vacuumLine
-        -- maybe there is a better way
-        for i = 1, #self.vacuumVapors, 1 do
-            self.vacuumVapors[i]:updatePosition(vacuumLine)
+    end)
+    NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_STATE_CHANGED, self, function(currentState)
+        if currentState ~= self.gunVacuumState then
+            if self.vacuumEmptySound:isPlaying() then
+                self.vacuumEmptySound:stop()
+            end
+            if self.vacuumDebrisSound:isPlaying() then
+                self.vacuumDebrisSound:stop()
+            end
+            self:setVisible(false)
         end
+    end)
+end
 
-        for i = 2, #self.vacuumVapors, 1 do
-            if self.vacuumVapors[i].y < self.vacuumVapors[i - 1].y then
-                TOP_VACUUM_VAPOR_POSITION = { x = self.vacuumVapors[i].x, y = self.vacuumVapors[i].y }
-            else
-                TOP_VACUUM_VAPOR_POSITION = { x = self.vacuumVapors[i - 1].x, y = self.vacuumVapors[i - 1].y }
+function Vacuum:setupVacuumVapor()
+    self.vacuumVapors = {}
+    for i = 1, vacuumVaporCount, 1 do
+        local distanceFromGun = i * vacuumVaporDistance
+        table.insert(self.vacuumVapors, VacuumVapor(GUN_BASE_X, GUN_BASE_Y - distanceFromGun, distanceFromGun))
+    end
+    TOP_VACUUM_VAPOR_POSITION = { x = self.vacuumVapors[#self.vacuumVapors].x, y = self.vacuumVapors[#self.vacuumVapors].y }
+end
+
+function Vacuum:updateVacuumVapors()
+    self:setVacuumLine()
+    -- this is so that vacuumVapors only update positions after creation of vacuumLine
+    -- maybe there is a better way
+    for i = 1, #self.vacuumVapors, 1 do
+        self.vacuumVapors[i]:updatePosition(self.vacuumLine)
+    end
+
+    for i = 2, #self.vacuumVapors, 1 do
+        if self.vacuumVapors[i].y < self.vacuumVapors[i - 1].y then
+            TOP_VACUUM_VAPOR_POSITION = { x = self.vacuumVapors[i].x, y = self.vacuumVapors[i].y }
+        else
+            TOP_VACUUM_VAPOR_POSITION = { x = self.vacuumVapors[i - 1].x, y = self.vacuumVapors[i - 1].y }
+        end
+    end
+end
+
+function Vacuum:checkForCollisions()
+    if self.isVacuumingDebris then
+        self.isVacuumingDebris = false
+    end
+    for i = 1, #self.vacuumVapors do
+        local vacuumVapor = self.vacuumVapors[i]
+        if vacuumVapor ~= nil then
+            local collisions = vacuumVapor:overlappingSprites()
+            for i = 1, #collisions do
+                local other = collisions[i]
+                if other.type == DEBRIS_TYPE_NAME then
+                    other:moveTowardsGun()
+                    if not self.isVacuumingDebris then
+                        self.isVacuumingDebris = true
+                    end
+                end
             end
         end
     end
 end
 
+function Vacuum:setVacuumLine()
+    -- refer Examples/Single File Examples/crank.lua
+    local angleRad = math.rad(GUN_CURRENT_ROTATION_ANGLE)
+    local x2 = vacuumLength * math.sin(angleRad)
+    local y2 = -1 * vacuumLength * math.cos(angleRad)
+
+    x2 += GUN_BASE_X
+    y2 += GUN_BASE_Y
+
+    self.vacuumLine = pd.geometry.lineSegment.new(GUN_BASE_X, GUN_BASE_Y, x2, y2)
+end
+
 function Vacuum:updateGunTopSprite()
-    if (GUN_CURRENT_STATE == GUN_VACUUM_STATE) then
-        self:updateAnimation()
-        self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
+    self:updateAnimation()
+    if self.isVacuumingDebris then
+        if self.vacuumEmptySound:isPlaying() then
+            self.vacuumEmptySound:stop()
+        end
+        if not self.vacuumDebrisSound:isPlaying() then
+            self.vacuumDebrisSound:playLooping()
+        end
     else
-        self:setVisible(false)
+        if not self.vacuumEmptySound:isPlaying() then
+            self.vacuumEmptySound:play()
+        end
+        if self.vacuumDebrisSound:isPlaying() then
+            self.vacuumDebrisSound:stop()
+        end
     end
+    self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
 end
