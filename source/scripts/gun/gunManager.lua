@@ -2,6 +2,7 @@ import "scripts/gun/shooter"
 import "scripts/gun/vacuum"
 import "scripts/recycler/recyclerManager"
 import "scripts/gun/bulletDisplay"
+import "scripts/gun/gunCollider"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
@@ -61,37 +62,16 @@ function GunManager:init()
     self.gunBaseSprite:setZIndex(GUN_Z_INDEX)
 
     self:setImage(gunTopDefaultImage)
-    self:setCollideRect(12, 12, 40, 44)
-    -- self:getSize())
-    self:setGroups(GUN_GROUP)
-    self:setCollidesWithGroups({ ENEMY_GROUP })
+    self.colliderSprite = GunCollider(self)
     self:moveTo(GUN_BASE_X, GUN_BASE_Y)
     self:setZIndex(GUN_Z_INDEX)
 
     self:add()
     self.gunBaseSprite:add()
 
-    table.insert(ACTIVE_TARGETS, self)
-
     Shooter(self)
     Vacuum(self)
     BulletDisplay()
-end
-
-function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
-    -- logic to check if it doesn't overlap gun base
-    if (x - RECYCLER_SIZE / 2 <= gunEndX + gunPadding
-            and x + RECYCLER_SIZE / 2 >= gunStartX - gunPadding) then
-        return true
-    end
-
-    for _, pair in ipairs(pairs) do
-        local distanceBetweenX = math.abs(pair.x - x)
-        if distanceBetweenX < RECYCLER_SIZE then
-            return true
-        end
-    end
-    return false
 end
 
 function GunManager:update()
@@ -134,6 +114,22 @@ function GunManager:update()
     end
 end
 
+function isOverlappingGunElements(pairs, x, gunStartX, gunEndX)
+    -- logic to check if it doesn't overlap gun base
+    if (x - RECYCLER_SIZE / 2 <= gunEndX + gunPadding
+            and x + RECYCLER_SIZE / 2 >= gunStartX - gunPadding) then
+        return true
+    end
+
+    for _, pair in ipairs(pairs) do
+        local distanceBetweenX = math.abs(pair.x - x)
+        if distanceBetweenX < RECYCLER_SIZE then
+            return true
+        end
+    end
+    return false
+end
+
 function GunManager:changeState(state)
     GUN_CURRENT_STATE = state
     NOTIFICATION_CENTER:notify(NOTIFY_GUN_STATE_CHANGED, state)
@@ -156,21 +152,4 @@ end
 
 function GunManager:setTopSprite(sprite)
     self:setImage(sprite)
-end
-
-function GunManager:getHit()
-    if self.currentHP > 0 then
-        self.currentHP -= 1
-        NOTIFICATION_CENTER:notify(NOTIFY_GUN_WAS_HIT)
-    end
-    if self.currentHP <= 0 then
-        self.available = false
-        self:clearCollideRect()
-        for i = 1, #ACTIVE_TARGETS do
-            if ACTIVE_TARGETS[i] == self then
-                table.remove(ACTIVE_TARGETS, i)
-                break
-            end
-        end
-    end
 end

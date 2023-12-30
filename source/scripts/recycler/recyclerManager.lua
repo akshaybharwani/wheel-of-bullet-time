@@ -16,6 +16,8 @@ function RecyclerManager:init()
     RecyclerManager.super.init(self)
     ACTIVE_RECYCLERS = {}
     self.collectedDebris = 0
+
+    self.debrisCollectedSound = SfxPlayer(SFX_FILES.debris_collected)
     
     self:setupDebrisHoldTimer()
 
@@ -82,16 +84,19 @@ function RecyclerManager:generateRecyclerPositions(maxCount, minX, maxX, maxY)
     return pairs
 end
 
-function RecyclerManager:setupDebrisHoldTimer() 
+function RecyclerManager:setupDebrisHoldTimer()
     self.holdDebrisTimer = pd.timer.new(debrisHoldDuration)
     self.holdDebrisTimer:pause()
     self.holdDebrisTimer.discardOnCompletion = false
     self.holdDebrisTimer.repeats = true
     self.holdDebrisTimer.timerEndedCallback = function(timer)
         if self.collectedDebris > 0 then
-            for i = 1, #ACTIVE_RECYCLERS do
-                if ACTIVE_RECYCLERS[i].available == true then
-                    ACTIVE_RECYCLERS[i]:sendDebrisToRecycler()
+            local activeRecyclers = ACTIVE_RECYCLERS
+            for i = 1, #activeRecyclers do
+                local recycler = activeRecyclers[i]
+                if recycler[i].available == true then
+                    self.debrisCollectedSound:play()
+                    recycler[i]:sendDebrisToRecycler()
                     self.collectedDebris -= 1
                     break
                 end
