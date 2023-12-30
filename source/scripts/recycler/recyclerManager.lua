@@ -94,9 +94,9 @@ function RecyclerManager:setupDebrisHoldTimer()
             local activeRecyclers = ACTIVE_RECYCLERS
             for i = 1, #activeRecyclers do
                 local recycler = activeRecyclers[i]
-                if recycler[i].available == true then
+                if recycler.available == true then
                     self.debrisCollectedSound:play()
-                    recycler[i]:sendDebrisToRecycler()
+                    recycler:sendDebrisToRecycler()
                     self.collectedDebris -= 1
                     break
                 end
