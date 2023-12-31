@@ -8,9 +8,16 @@ class('TimeDisplay').extends(gfx.sprite)
 local uiConstants = UI_CONSTANTS
 local numberPadding = uiConstants.numberPadding
 
+local timeDisplayConstants = TIME_DISPLAY_CONSTANTS
+local playAnimationFPS = timeDisplayConstants.playAnimationFPS
+
+local playPauseImagePath = "images/ui/UI_time_play3f_pause1f-table-16-16"
+local playingAnimationState = "playing"
+local pausedAnimationState = "paused"
+
 local numberOfPaddings = 6
 
-local totalTimeDisplayWidth = 64 + (numberPadding * numberOfPaddings)
+local totalTimeDisplayWidth = 80 + (numberPadding * numberOfPaddings)
 
 function TimeDisplay:init()
     self.numbersTimeImagetable = utils.numbersTimeImagetable
@@ -23,18 +30,28 @@ function TimeDisplay:init()
     self.seconds = 00
 
     self.timeY = self.numberHeight / 2
-    self.timeX = HALF_SCREEN_WIDTH - totalTimeDisplayWidth / 2 + self.numberWidth / 2
+    self.timeX = HALF_SCREEN_WIDTH - totalTimeDisplayWidth / 2 + self.numberWidth
 
-    self.leftBracketSprite = utils.getTimeUISprite(17, utils.getPosX(self.timeX, 0, 0), self.timeY, UI_Z_INDEX)
+    local imageTable = gfx.imagetable.new(playPauseImagePath)
+    self.playPauseSprite = AnimatedSprite.new(imageTable)
+    self.playPauseWidth, _ = imageTable:getImage(1):getSize()
+    self.playPauseSprite:addState(playingAnimationState, 1, 3, {tickStep = playAnimationFPS})
+    self.playPauseSprite:addState(pausedAnimationState, 4, nil).asDefault()
+    self.playPauseSprite:moveTo(self.timeX, self.timeY)
+    self.playPauseSprite:playAnimation()
+
+    self.timeX += self.playPauseWidth / 2
+    self.leftBracketSprite = utils.getTimeUISprite(17, self.timeX + numberPadding, self.timeY, UI_Z_INDEX)
 
     self.firstNumberSprite,
     self.secondNumberSprite,
     self.thirdNumberSprite,
     self.fourthNumberSprite = utils.getFormattedTime(self.minutes, self.seconds, self.timeX, self.timeY, UI_Z_INDEX, numberPadding)
-    -- ! Hack: figure out a way to do this using the function itself 
-    self.rightBracketSprite = utils.getTimeUISprite(18, self.timeX + (totalTimeDisplayWidth - self.numberWidth) - numberPadding, self.timeY, UI_Z_INDEX)
+    -- ! Hack: figure out a way to do this using the function itself
+    local rightBracketPosX = self.timeX + (totalTimeDisplayWidth - (self.numberWidth + self.playPauseWidth)) - numberPadding
+    self.rightBracketSprite = utils.getTimeUISprite(18, rightBracketPosX, self.timeY, UI_Z_INDEX)
 
-    self:setBounds(self.timeX + self.numberWidth , 0, self.numberWidth * numberOfPaddings, self.numberHeight)
+    self:setBounds(self.timeX + self.numberWidth, 0, self.numberWidth * numberOfPaddings, self.numberHeight)
     self:setZIndex(UI_Z_INDEX - 1)
     self:add()
 end
@@ -44,8 +61,15 @@ function TimeDisplay:update()
         return
     end
 
-    if not IS_GAME_ACTIVE then
+    if not WAS_GAME_ACTIVE_LAST_CHECK then
+        if self.playPauseSprite.currentState ~= pausedAnimationState then
+            self.playPauseSprite:changeState(pausedAnimationState)
+        end
         return
+    end
+
+    if (self.playPauseSprite.currentState ~= playingAnimationState) then
+        self.playPauseSprite:changeState(playingAnimationState)
     end
 
     self:updateClock()

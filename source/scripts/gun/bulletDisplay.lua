@@ -36,13 +36,13 @@ function BulletDisplay:init()
     self.numberWidth = utils.numbersTimeFirstImage.width
     
     local firstNumber = string.sub(self.bulletCountString, 1, 1)
-    self.firstNumberSprite = utils.getNumberSprite(firstNumber, utils.getPosX(self.bulletSpriteX, 1, 0), self.bulletSpriteY, UI_Z_INDEX)
+    self.firstNumberSprite = utils.getNumberSprite(firstNumber, utils.getTimeUIPosX(self.bulletSpriteX, 1, 0), self.bulletSpriteY, UI_Z_INDEX)
 
     local secondNumber = string.sub(self.bulletCountString, 2, 2)
-    self.secondNumberSprite = utils.getNumberSprite(secondNumber, utils.getPosX(self.bulletSpriteX, 2, numberPadding), self.bulletSpriteY, UI_Z_INDEX)
+    self.secondNumberSprite = utils.getNumberSprite(secondNumber, utils.getTimeUIPosX(self.bulletSpriteX, 2, numberPadding), self.bulletSpriteY, UI_Z_INDEX)
 
     local thirdNumber = string.sub(self.bulletCountString, 3, 3)
-    self.thirdNumberSprite = utils.getNumberSprite(thirdNumber, utils.getPosX(self.bulletSpriteX, 3, numberPadding), self.bulletSpriteY, UI_Z_INDEX)
+    self.thirdNumberSprite = utils.getNumberSprite(thirdNumber, utils.getTimeUIPosX(self.bulletSpriteX, 3, numberPadding), self.bulletSpriteY, UI_Z_INDEX)
     self:add()
 
     NOTIFICATION_CENTER:subscribe(NOTIFY_BULLET_COUNT_UPDATED, self, function()

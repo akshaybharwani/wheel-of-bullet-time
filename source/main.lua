@@ -75,6 +75,8 @@ function pd.update()
     end ]]
     pd.drawFPS(x, y)
 
+    --gfx.drawLine(HALF_SCREEN_WIDTH, 0, HALF_SCREEN_WIDTH, SCREEN_HEIGHT)
+
     -- reset game state after updating everything
     if IS_GAME_ACTIVE then
         IS_GAME_ACTIVE = false
