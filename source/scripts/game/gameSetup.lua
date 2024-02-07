@@ -92,6 +92,7 @@ function GameSetup:setupGameEntities()
     self.gameStartSound:play()
 
     NotificationCenter()
+    MUSIC_PLAYER = MusicPlayer()
     CrankInput()
     self.gunManager = GunManager()
     -- ? is assigning a manager to initialization of another manager a good idea?

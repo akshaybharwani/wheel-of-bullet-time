@@ -118,5 +118,11 @@ BACKGROUND_CONSTANTS.satelliteSpeed = 6
 BACKGROUND_CONSTANTS.satelliteFPS = 3
 BACKGROUND_CONSTANTS.satelliteMinRespawnDuration, BACKGROUND_CONSTANTS.satelliteMaxRespawnDuration = 3, 6
 
+-- time Display on Top
 TIME_DISPLAY_CONSTANTS = {}
 TIME_DISPLAY_CONSTANTS.playAnimationFPS = 10
+
+-- audio
+AUDIO_CONSTANTS = {}
+AUDIO_CONSTANTS.fadeSeconds = 0.5
+AUDIO_CONSTANTS.maxVolume = 1

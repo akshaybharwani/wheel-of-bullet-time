@@ -22,6 +22,7 @@ import "scripts/game/crankTimer"
 import "scripts/game/crankInput"
 
 import "scripts/audio/sfxPlayer"
+import "scripts/audio/musicPlayer"
 import "scripts/background/background"
 import "scripts/enemies/enemyManager"
 import "scripts/gun/gunManager"
