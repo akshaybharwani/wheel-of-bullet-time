@@ -29,6 +29,7 @@ import "scripts/gun/gunManager"
 import "scripts/game/timeDisplay"
 import "scripts/game/gameOver"
 import "scripts/game/gameSetup"
+import "scripts/game/tutorial"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
