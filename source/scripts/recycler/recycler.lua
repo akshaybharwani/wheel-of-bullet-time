@@ -33,7 +33,9 @@ function Recycler:init(x, y, connectorY, isLeftToGun)
 
     self.recyclerImageTable = gfx.imagetable.new(recyclerImageTablePath)
     self.collectedDebrisSprite = gfx.sprite.new(gfx.image.new(collectedDebrisImagePath))
+    self.collectedDebrisSpriteSize = self.collectedDebrisSprite:getSize()
     self.generatedAmmoSprite = gfx.sprite.new(gfx.image.new(generatedAmmoImagePath))
+    self.generatedAmmoSpriteSize = self.generatedAmmoSprite:getSize()
     self.recyclingSprite = gfx.sprite.new(gfx.image.new(recyclingUIImagePath))
 
     self.recyclingSprite:moveTo(x, y)
@@ -54,7 +56,7 @@ function Recycler:update()
         if not self.debrisToRecyclerAnimator:ended() then
             local p = self.debrisToRecyclerAnimator:currentValue()
             local x1, y1 = p:unpack()
-            self.collectedDebrisSprite:moveTo(x1, y1 - self.collectedDebrisSprite:getSize())
+            self.collectedDebrisSprite:moveTo(x1, y1 - self.collectedDebrisSpriteSize)
         else
             self.debrisToRecyclerAnimator = nil
             self.recyclingSprite:add()
@@ -69,7 +71,7 @@ function Recycler:update()
         if not self.ammoToGunAnimator:ended() then
             local p = self.ammoToGunAnimator:currentValue()
             local x1, y1 = p:unpack()
-            self.generatedAmmoSprite:moveTo(x1, y1 - self.generatedAmmoSprite:getSize())
+            self.generatedAmmoSprite:moveTo(x1, y1 - self.generatedAmmoSpriteSize)
         else
             self.ammoToGunAnimator = nil
             self.generatedAmmoSprite:remove()
