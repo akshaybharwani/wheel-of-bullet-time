@@ -34,9 +34,10 @@ function MusicPlayer:init()
     NOTIFICATION_CENTER:subscribe(NOTIFY_GAME_STARTED, self, function()
         if GUN_CURRENT_STATE == self.gunNeutralState then
             self:playSong(MUSIC_FILES.timeStopped, true, true)
-        else
-            self:playSong(MUSIC_FILES.timeFlowing, true, true)
         end
+        --[[ else
+            self:playSong(MUSIC_FILES.timeFlowing, true, true)
+        end ]]
     end)
 
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_STATE_CHANGED, self, function(currentState)
@@ -48,11 +49,12 @@ function MusicPlayer:init()
             if not MUSIC_FILES.timeStopped:isPlaying() then
                 self:playSong(MUSIC_FILES.timeStopped, true, true)
             end
-        else
+        end
+        --[[ else
             if not MUSIC_FILES.timeFlowing:isPlaying() then
                 self:playSong(MUSIC_FILES.timeFlowing, true, true)
             end
-        end
+        end ]]
     end)
 
     --[[ self.lowPassFilter = pd.sound.twopolefilter.new(pd.sound.kFilterLowPass)
