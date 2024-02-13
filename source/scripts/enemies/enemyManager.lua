@@ -47,31 +47,34 @@ function EnemyManager:init(debrisManager)
     self.currentEnemySpawnRate = 1
     self.currentWaveDuration = 0
     self.isGunDisabled = false
+    -- TODO: enemies are not removed when they are killed
     self.enemies = {}
-    self.time = pd.getTime()
 
     self.debrisManager = debrisManager
     self.gameActiveSpawnTimer = CrankTimer(enemySpawnWaitDuration / 1000, true, function()
         self:handleEnemySpawning()
     end)
-    self.gunDisabledSpawnTimer = pd.timer.new(enemySpawnWaitDuration / GAME_OVER_CONSTANTS.timeMultiplier)
-    self.gunDisabledSpawnTimer.repeats = true
-    self.gunDisabledSpawnTimer:pause()
-    self.gunDisabledSpawnTimer.timerEndedCallback = function(timer)
-        self:handleEnemySpawning()
-    end
+    self:handleEnemySpawning()
+    self:setupGunDisabledSpawnTimer()
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function()
         self.gameActiveSpawnTimer:remove()
         self.isGunDisabled = true
         self.gunDisabledSpawnTimer:start()
     end)
     NOTIFICATION_CENTER:subscribe(NOTIFY_GAME_OVER, self, function()
-
         self.gunDisabledSpawnTimer:remove()
         --self:destroyAllEnemies()
     end)
-    self:spawnEnemies()
     self:add()
+end
+
+function EnemyManager:setupGunDisabledSpawnTimer()
+    self.gunDisabledSpawnTimer = pd.timer.new(enemySpawnWaitDuration / GAME_OVER_CONSTANTS.timeMultiplier)
+    self.gunDisabledSpawnTimer.repeats = true
+    self.gunDisabledSpawnTimer:pause()
+    self.gunDisabledSpawnTimer.timerEndedCallback = function(timer)
+        self:handleEnemySpawning()
+    end
 end
 
 function EnemyManager:handleEnemySpawning()

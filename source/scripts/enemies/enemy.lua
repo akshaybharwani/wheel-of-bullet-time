@@ -107,11 +107,11 @@ end
 function Enemy:setStartingPosition()
     local halfWidth = self.width / 2
     local halfHeight = self.height / 2
-    local startY = -halfHeight
-    local startXPositions = { -halfWidth, math.random(halfWidth, SCREEN_WIDTH - halfWidth),
-        SCREEN_WIDTH + halfWidth }
+    local startY = 0
+    local startXPositions = { 0, math.random(halfWidth, SCREEN_WIDTH - halfWidth),
+        SCREEN_WIDTH }
     local startX = startXPositions[math.random(1, #startXPositions)]
-    if startX == -halfWidth or startX == SCREEN_WIDTH + halfWidth then
+    if startX == 0 or startX == SCREEN_WIDTH then
         startY = math.random(-halfHeight, SCREEN_HEIGHT / 2 - halfHeight)
     end
 

@@ -75,10 +75,6 @@ function GunManager:init()
 end
 
 function GunManager:update()
-    if IS_GUN_DISABLED or IS_GAME_OVER then
-        return
-    end
-
     self:readRotationInput()
 
     -- TODO: revisit this. not sure if this is entirely correct according to specs
