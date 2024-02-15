@@ -53,6 +53,11 @@ function Vacuum:init(gun)
 end
 
 function Vacuum:update()
+
+    if GUN_CURRENT_STATE == self.gunVacuumState then
+        self:updateGunTopSprite()
+    end
+
     if self.isGunDisabled then
         return
     end
@@ -71,8 +76,7 @@ function Vacuum:update()
 
     if GUN_CURRENT_STATE == self.gunVacuumState then
         self:checkForCollisions()
-        self:playSound()
-        self:updateGunTopSprite()
+        self:playVacuumingSound()
     end
 end
 
@@ -83,7 +87,7 @@ function Vacuum:subscribeEvents()
     end)
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
         self.isGunDisabled = true
-        self:stopSound()
+        self:stopVacuumingSound()
         if #self.vacuumVapors > 0 then
             for i = 1, #self.vacuumVapors do
                 self.vacuumVapors[i]:remove()
@@ -92,7 +96,7 @@ function Vacuum:subscribeEvents()
     end)
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_STATE_CHANGED, self, function(currentState)
         if currentState ~= self.gunVacuumState then
-            self:stopSound()
+            self:stopVacuumingSound()
             self:setVisible(false)
         end
     end)
@@ -167,7 +171,7 @@ function Vacuum:updateGunTopSprite()
     self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
 end
 
-function Vacuum:playSound()
+function Vacuum:playVacuumingSound()
     if self.isVacuumingDebris then
         if self.vacuumEmptySound:isPlaying() then
             self.vacuumEmptySound:stop()
@@ -185,7 +189,7 @@ function Vacuum:playSound()
     end
 end
 
-function Vacuum:stopSound()
+function Vacuum:stopVacuumingSound()
     if self.vacuumEmptySound:isPlaying() then
         self.vacuumEmptySound:stop()
     end

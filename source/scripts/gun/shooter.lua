@@ -48,6 +48,12 @@ end
 
 function Shooter:update()
     -- TODO: too many variants of gunDisabled variables, consolidate
+
+    if GUN_CURRENT_STATE == self.gunShootingState then
+        self:updateGunTopSprite()
+        self:playShootingSound()
+    end
+
     if self.isGunDisabled then
         return
     end
@@ -63,8 +69,6 @@ function Shooter:update()
     end
 
     if GUN_CURRENT_STATE == self.gunShootingState then
-        self:updateGunTopSprite()
-        self:playSound()
         self:checkForShootingBullet()
     end
 end
@@ -75,12 +79,12 @@ function Shooter:subscribeEvents()
         self:updateGunTopSprite()
     end)
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_IS_DISABLED, self, function(_)
-        self:stopSound()
+        self:stopShootingSound()
         self.isGunDisabled = true
     end)
     NOTIFICATION_CENTER:subscribe(NOTIFY_GUN_STATE_CHANGED, self, function(currentState)
         if currentState ~= self.gunShootingState then
-            self:stopSound()
+            self:stopShootingSound()
             self:setVisible(false)
         end
     end)
@@ -113,13 +117,13 @@ function Shooter:updateGunTopSprite()
     self.gun:setTopSprite(self.imagetable:getImage(self:getCurrentFrameIndex()))
 end
 
-function Shooter:playSound()
+function Shooter:playShootingSound()
     if not self.gunActivatedSound:isPlaying() then
         self.gunActivatedSound:playLooping()
     end
 end
 
-function Shooter:stopSound()
+function Shooter:stopShootingSound()
     if self.gunActivatedSound:isPlaying() then
         self.gunActivatedSound:stop()
     end
