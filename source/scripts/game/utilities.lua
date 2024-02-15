@@ -39,6 +39,16 @@ function UTILITIES.arrayRemove(array, checkFunction)
     return removedElements
 end
 
+function UTILITIES.tableContains(table, element)
+    for _, value in pairs(table) do
+      if value == element then
+        return true
+      end
+    end
+    return false
+  end
+  
+
 -- time functions
 
 local numbersTimeImagePath = "images/ui/UI_numbers_and_time-table-8-16"

@@ -3,6 +3,8 @@ import "scripts/gun/vacuumVapor"
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
+local utils <const> = UTILITIES
+
 -- TODO: Shooter and Vacuum can base the same script
 
 class("Vacuum").extends(AnimatedSprite)
@@ -126,17 +128,22 @@ function Vacuum:checkForCollisions()
     if self.isVacuumingDebris then
         self.isVacuumingDebris = false
     end
+    self:checkVacuumVaporCollisions()
+end
+
+function Vacuum:checkVacuumVaporCollisions()
+    local debrisCollided = {}
+    -- TODO: this looks too expensive. collider rect cant be rotated, so cant be used. revisit to improve
     for i = 1, #self.vacuumVapors do
-        local vacuumVapor = self.vacuumVapors[i]
-        if vacuumVapor ~= nil then
-            local collisions = vacuumVapor:overlappingSprites()
-            for i = 1, #collisions do
-                local other = collisions[i]
-                if other.type == DEBRIS_TYPE_NAME then
-                    other:moveTowardsGun()
-                    if not self.isVacuumingDebris then
-                        self.isVacuumingDebris = true
-                    end
+        local collisions = self.vacuumVapors[i]:overlappingSprites()
+        for j = 1, #collisions do
+            local other = collisions[j]
+            if other.type == DEBRIS_TYPE_NAME
+            and not utils.tableContains(debrisCollided, other) then
+                other:moveTowardsGun()
+                table.insert(debrisCollided, other)
+                if not self.isVacuumingDebris then
+                    self.isVacuumingDebris = true
                 end
             end
         end
