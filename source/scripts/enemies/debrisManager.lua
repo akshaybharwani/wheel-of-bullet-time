@@ -61,7 +61,7 @@ function DebrisManager:update()
         return
     end
 
-    if not IS_GAME_ACTIVE then
+    if not WAS_GAME_ACTIVE_LAST_CHECK then
         return
     end
 

@@ -69,6 +69,21 @@ function EnemyManager:init(debrisManager)
     self:add()
 end
 
+function EnemyManager:update()
+    if not IS_GAME_STARTED then
+        return
+    end
+
+    if IS_GAME_OVER then
+        return
+    end
+
+    if #ACTIVE_DEBRIS <= 0 and #self.enemies <= 0 then
+        self:handleEnemySpawning()
+        self.gameActiveSpawnTimer:reset()
+    end
+end
+
 function EnemyManager:setupGunDisabledSpawnTimer()
     self.gunDisabledSpawnTimer = pd.timer.new(enemySpawnWaitDuration / GAME_OVER_CONSTANTS.timeMultiplier)
     self.gunDisabledSpawnTimer.repeats = true
@@ -84,7 +99,6 @@ function EnemyManager:handleEnemySpawning()
 end
 
 function EnemyManager:spawnEnemies()
-    print(#self.enemies)
     if #self.enemies > maxEnemiesOnScreen then
         return
     end

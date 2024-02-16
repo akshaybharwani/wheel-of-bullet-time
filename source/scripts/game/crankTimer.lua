@@ -27,3 +27,7 @@ function CrankTimer:update()
         end
     end
 end
+
+function CrankTimer:reset()
+    self.timer = 0
+end
