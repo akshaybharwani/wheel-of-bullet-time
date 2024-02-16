@@ -84,7 +84,7 @@ BULLET_DISPLAY_CONSTANTS.bounceHeight = 3
 GAME_OVER_CONSTANTS = {}
 GAME_OVER_CONSTANTS.waitToShowResultsDuration = 2000
 GAME_OVER_CONSTANTS.showResultsDuration = 3000
-GAME_OVER_CONSTANTS.timeMultiplier = 8
+GAME_OVER_CONSTANTS.timeMultiplier = 32
 
 -- enemy general settings
 ENEMY_CONSTANTS = {}
@@ -99,6 +99,7 @@ ENEMY_CONSTANTS.enemySpawnWaitDuration = 18000
 ENEMY_CONSTANTS.oneWaveDuration = 19000
 -- number of enemies spawn after every enemySpawnWaitDuration
 ENEMY_CONSTANTS.maxEnemySpawnRate = 6
+ENEMY_CONSTANTS.maxEnemiesOnScreen = 30
 
 -- enemy data
 -- * Go to scripts/enemyManager for setting individual enemy data

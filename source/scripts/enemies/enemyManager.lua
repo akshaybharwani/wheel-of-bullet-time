@@ -10,6 +10,7 @@ local enemyConstants = ENEMY_CONSTANTS
 local enemySpawnWaitDuration = enemyConstants.enemySpawnWaitDuration
 local oneWaveDuration = enemyConstants.oneWaveDuration
 local maxEnemySpawnRate = enemyConstants.maxEnemySpawnRate
+local maxEnemiesOnScreen = enemyConstants.maxEnemiesOnScreen
 
 local explosionImagePath = "images/enemies/enemy_explosion-table-64-64"
 
@@ -83,11 +84,16 @@ function EnemyManager:handleEnemySpawning()
 end
 
 function EnemyManager:spawnEnemies()
+    print(#self.enemies)
+    if #self.enemies > maxEnemiesOnScreen then
+        return
+    end
     for i = 1, self.currentEnemySpawnRate do
         local enemyToSpawn = enemies[math.random(1, #enemies)]
-        local enemy = Enemy(enemyToSpawn, self.debrisManager, self.isGunDisabled)
+        local enemy = Enemy(enemyToSpawn, self, self.debrisManager, self.isGunDisabled)
         table.insert(self.enemies, enemy)
     end
+
 end
 
 function EnemyManager:handleEnemyWave()
@@ -96,6 +102,16 @@ function EnemyManager:handleEnemyWave()
         if (self.currentWaveDuration >= oneWaveDuration) then
             self.currentEnemySpawnRate += 1
             self.currentWaveDuration = 0
+        end
+    end
+end
+
+function EnemyManager:removeEnemy(enemy)
+    for i = 1, #self.enemies do
+        if self.enemies[i] == enemy then
+            table.remove(self.enemies, i)
+            enemy:remove()
+            break
         end
     end
 end

@@ -16,27 +16,29 @@ local explosionAnimationFPS = enemyConstants.explosionAnimationFPS
 local minTotalPatrolDuration, maxTotalPatrolDuration = enemyConstants.minTotalPatrolDuration, enemyConstants.maxTotalPatrolDuration
 local minPatrolSegmentDuration, maxPatrolSegmentDuration = enemyConstants.minPatrolSegmentDuration, enemyConstants.minPatrolSegmentDuration
 
-function Enemy:init(enemyType, debrisManager, isGunDisabled)
+function Enemy:init(enemyType, enemyManager, debrisManager, isGunDisabled)
     Enemy.super.init(self)
+
+    self.enemyManager = enemyManager
+    self.debrisManager = debrisManager
 
     self.isGunDisabled = isGunDisabled
 
     self.hitSound = SfxPlayer(SFX_FILES.enemy_hit)
     self.selfDestructSound = SfxPlayer(SFX_FILES.enemy_selfdestruct)
 
-    self.deathSound = enemyType.deathSound
     self.enemyType = enemyType
-    self.debrisManager = debrisManager
-    self.hp = enemyType.hp
+    self.deathSound = self.enemyType.deathSound
+    self.hp = self.enemyType.hp
     self.type = ENEMY_TYPE_NAME
     self.speed = math.random(minSpeed, maxSpeed)
-    self.shieldColliderSize = enemyType.shieldColliderSize
 
     self:setupExplosionAnimation()
 
     self.enemyBaseImage = gfx.image.new(enemyType.baseImagePath)
     self:setImage(self.enemyBaseImage)
 
+    -- TODO: where is setup attack collider size?
     self:setupShieldCollider()
     self:setupHitAnimator()
     self:setStartingPosition()
@@ -75,8 +77,9 @@ function Enemy:setupExplosionAnimation()
     self.explosionSprite:addState("exploding", nil, nil, {tickStep = explosionAnimationFPS})
     self.explosionSprite.states.exploding.loop = explosionAnimationLoopCount
     self.exploding = false
-    self.explosionSprite.states.exploding.onAnimationEndEvent = function (self)
-        self:remove()
+    self.explosionSprite.states.exploding.onAnimationEndEvent = function ()
+        self.explosionSprite:remove()
+        self.enemyManager:removeEnemy(self)
     end
 end
 
@@ -169,14 +172,14 @@ function Enemy:shatter()
     -- TODO: this affects moveWithCollisions, which it shouldn't as it immediately gets removed
     --self:clearCollideRect()
     self.debrisManager:spawnDebris(self.x, self.y)
-    self:remove()
+    self.enemyManager:removeEnemy(self)
 end
 
 function Enemy:explode(target)
     self:clearCollideRect()
     self:setVisible(false)
 
-    -- magic number 220, might want to revisit
+    -- ! magic number 220, might want to revisit
     self.explosionSprite:moveTo(target.x, 220 - self.explosionSpriteHeight / 2)
     if self.hitAnimator.timeLeft > 0 then
         self.hitAnimator:remove()
@@ -186,7 +189,7 @@ function Enemy:explode(target)
 end
 
 function Enemy:setupShieldCollider()
-    local shieldColliderSize = self.shieldColliderSize
+    local shieldColliderSize = self.enemyType.shieldColliderSize
     local shieldColliderOrigin = self.width / 2 - shieldColliderSize / 2
     self:setCollideRect(shieldColliderOrigin, shieldColliderOrigin, shieldColliderSize,
         shieldColliderSize)
