@@ -45,9 +45,10 @@ function VacuumVapor:updatePosition(vacuumLine)
 end
 
 function VacuumVapor:moveTowardsGun()
+    local topVacuumVaporPosition = TOP_VACUUM_VAPOR_POSITION
     if geo.distanceToPoint(GUN_BASE_X, GUN_BASE_Y, self.x, self.y) < vacuumVaporPadding then
-        if (TOP_VACUUM_VAPOR_POSITION) then
-            self:moveTo(TOP_VACUUM_VAPOR_POSITION.x, TOP_VACUUM_VAPOR_POSITION.y)
+        if (topVacuumVaporPosition) then
+            self:moveTo(topVacuumVaporPosition.x, topVacuumVaporPosition.y)
         else
             self:remove()
         end

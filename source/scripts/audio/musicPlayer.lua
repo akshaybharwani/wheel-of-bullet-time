@@ -15,7 +15,7 @@ MUSIC_FILES = {
     timeStopped = fp("BGM_ingame_timestopped_loop")
 }
 
-local audioConstants = AUDIO_CONSTANTS 
+local audioConstants = AUDIO_CONSTANTS
 local maxVolume = audioConstants.maxVolume
 local fadeSeconds = audioConstants.fadeSeconds
 
@@ -47,14 +47,16 @@ function MusicPlayer:init()
 
         if GUN_CURRENT_STATE == self.gunNeutralState then
             if not MUSIC_FILES.timeStopped:isPlaying() then
-                self:playSong(MUSIC_FILES.timeStopped, true, true)
+                self:playSong(MUSIC_FILES.timeStopped, false, true)
             end
-        end
-        --[[ else
-            if not MUSIC_FILES.timeFlowing:isPlaying() then
+        else
+            if MUSIC_FILES.timeStopped:isPlaying() then
+                self.currentSong:pause()
+            end
+            --[[ if not MUSIC_FILES.timeFlowing:isPlaying() then
                 self:playSong(MUSIC_FILES.timeFlowing, true, true)
-            end
-        end ]]
+            end ]]
+        end
     end)
 
     --[[ self.lowPassFilter = pd.sound.twopolefilter.new(pd.sound.kFilterLowPass)
