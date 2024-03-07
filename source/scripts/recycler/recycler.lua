@@ -17,6 +17,7 @@ local recyclerConstants = RECYCLER_CONSTANTS
 local maxHP = recyclerConstants.maxHP
 local debrisTravelDuration = recyclerConstants.debrisTravelDuration
 local ammoGenerationDuration = recyclerConstants.ammoGenerationDuration
+local bulletCountToGenerate = recyclerConstants.bulletCountToGenerate
 
 function Recycler:init(x, y, connectorY, isLeftToGun)
     Recycler.super.init(self)
@@ -30,6 +31,7 @@ function Recycler:init(x, y, connectorY, isLeftToGun)
     self.currentHP = maxHP
 
     self.isLeftToGun = isLeftToGun
+    self.currentBulletCountToGenerate = 1
 
     self.recyclerImageTable = gfx.imagetable.new(recyclerImageTablePath)
     self.collectedDebrisSprite = gfx.sprite.new(gfx.image.new(collectedDebrisImagePath))
@@ -61,11 +63,8 @@ function Recycler:update()
             self.debrisToRecyclerAnimator = nil
             self.recyclingSprite:add()
             self.collectedDebrisSprite:remove()
-            self.workingSound:play()
-            local ammoTimer = pd.timer.new(ammoGenerationDuration)
-            ammoTimer.timerEndedCallback = function(timer)
-                self:sendAmmoToGun()
-            end
+            self.currentBulletCountToGenerate = 1
+            self:setupAmmoGenerationTimer()
         end
     elseif self.ammoToGunAnimator ~= nil then
         if not self.ammoToGunAnimator:ended() then
@@ -79,7 +78,13 @@ function Recycler:update()
             CURRENT_BULLET_COUNT += 1
             DEBRIS_NOT_RECYCLED_COUNT -= 1
             NOTIFICATION_CENTER:notify(self.notifyBulletCountUpdated)
-            self.available = true
+            -- ! HACK: improve the entire recycler and connector stuff
+            if self.currentBulletCountToGenerate < bulletCountToGenerate then
+                self.currentBulletCountToGenerate += 1
+                self:setupAmmoGenerationTimer()
+            else
+                self.available = true
+            end
         end
     end
 end
@@ -114,6 +119,13 @@ function Recycler:getHit()
         end
     end
     self:setImage(self.recyclerImageTable:getImage(maxHP + 1 - self.currentHP))
+end
+
+function Recycler:setupAmmoGenerationTimer()
+    local ammoTimer = pd.timer.new(ammoGenerationDuration)
+    ammoTimer.timerEndedCallback = function(timer)
+        self:sendAmmoToGun()
+    end
 end
 
 -- TODO: change all this animation to AnimatedSprite
@@ -172,7 +184,7 @@ function Recycler:setupAmmoToGunAnimation()
         self.ammoToGunAnimator = Animator.new(debrisTravelDuration, connectorLine,
             playdate.easingFunctions.linear)
     end
-    self.collectedDebrisSprite:moveTo(initialX, initialY - self.collectedDebrisSprite:getSize())
+    self.generatedAmmoSprite:moveTo(initialX, initialY - self.generatedAmmoSprite:getSize())
 end
 
 function Recycler:sendDebrisToRecycler()
@@ -184,9 +196,12 @@ function Recycler:sendDebrisToRecycler()
 end
 
 function Recycler:sendAmmoToGun()
+    self.workingSound:play()
+    if self.currentBulletCountToGenerate == bulletCountToGenerate then
+        self.recyclingSprite:remove()
+    end
     if self.ammoToGunAnimator == nil then
         self:setupAmmoToGunAnimation()
     end
-    self.recyclingSprite:remove()
     self.generatedAmmoSprite:add()
 end

@@ -41,7 +41,7 @@ RECYCLER_CONSTANTS.maxHP = 4
 RECYCLER_CONSTANTS.connectorAnimationDuration = 300
 RECYCLER_CONSTANTS.maxRecyclerCount = 5
 RECYCLER_CONSTANTS.debrisHoldDuration = 350
-
+RECYCLER_CONSTANTS.bulletCountToGenerate = 2
 -- gun
 GUN_CONSTANTS = {}
 GUN_CONSTANTS.maxHP = 4
